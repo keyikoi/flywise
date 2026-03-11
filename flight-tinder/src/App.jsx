@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Plane, MapPin, Calendar, Users, Heart, X, Sparkles, Home } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion'
+import { Plane, MapPin, Calendar, Users, Heart, X, Sparkles, Home, ChevronLeft } from 'lucide-react'
 
 // ============ 假数据 ============
 const destinations = [
@@ -555,74 +555,104 @@ function TutorialCard({ onComplete }) {
   )
 }
 
-// ============ 航班卡片 ============
-function FlightCard({ flight, destination, onSwipe }) {
+// ============ 可拖拽的航班卡片 ============
+function DraggableCard({ flight, destination, onSwipe, isTopCard, isRemoving }) {
+  const cardRef = useRef(null)
+  const x = useMotionValue(0)
+  const rotate = useTransform(x, [-200, 200], [-25, 25])
+
+  // Like/Nope 指示器透明度
+  const likeOpacity = useTransform(x, [0, 150], [0, 1])
+  const nopeOpacity = useTransform(x, [0, -150], [0, 1])
+
+  const handleDragEnd = (_, info) => {
+    const threshold = 100
+    if (info.offset.x > threshold) {
+      // 右滑 - 喜欢
+      animate(x, window.innerWidth, {
+        type: 'tween',
+        duration: 0.3,
+        onComplete: () => onSwipe('right')
+      })
+    } else if (info.offset.x < -threshold) {
+      // 左滑 - 跳过
+      animate(x, -window.innerWidth, {
+        type: 'tween',
+        duration: 0.3,
+        onComplete: () => onSwipe('left')
+      })
+    } else {
+      // 回弹
+      animate(x, 0, { type: 'spring', stiffness: 500, damping: 30 })
+    }
+  }
+
   return (
     <motion.div
-      className="absolute inset-0 bg-white rounded-3xl shadow-xl overflow-hidden"
+      ref={cardRef}
+      style={{ x, rotate }}
+      drag={isTopCard ? true : false}
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.7}
+      onDragEnd={isTopCard ? handleDragEnd : undefined}
+      className={`absolute inset-0 bg-white rounded-3xl shadow-xl overflow-hidden ${isTopCard ? 'cursor-grab active:cursor-grabbing' : ''}`}
       initial={{ scale: 0.95, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.95, opacity: 0 }}
+      animate={{
+        scale: isRemoving ? 0.9 : (isTopCard ? 1 : 0.95),
+        opacity: isRemoving ? 0 : (isTopCard ? 1 : 1)
+      }}
+      transition={{ duration: 0.2 }}
     >
       {/* 目的地插画区域 */}
-      <div className={`h-64 bg-gradient-to-br ${destination.gradient} relative overflow-hidden`}>
+      <div className={`h-56 bg-gradient-to-br ${destination.gradient} relative overflow-hidden`}>
         {/* 装饰性圆形 */}
         <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
 
         {/* 目的地内容 */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-          <motion.div
-            className="text-8xl mb-4"
-            initial={{ scale: 0.8, y: 20 }}
-            animate={{ scale: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            {destination.image}
-          </motion.div>
-          <motion.h2
-            className="text-4xl font-bold"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            {destination.city}
-          </motion.h2>
-          <motion.p
-            className="text-white/80 text-center mt-2 px-8"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            {destination.country}
-          </motion.p>
+          <div className="text-7xl mb-2">{destination.image}</div>
+          <h2 className="text-3xl font-bold">{destination.city}</h2>
+          <p className="text-white/80 text-center mt-1 px-8 text-sm">{destination.country}</p>
         </div>
 
         {/* 右上角标签 */}
-        <div className="absolute top-4 right-4 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium">
+        <div className="absolute top-4 right-4 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-medium">
           {destination.bestTime}
         </div>
+
+        {/* 滑动指示器 - 只在顶层卡片显示 */}
+        {isTopCard && (
+          <>
+            <motion.div style={{ opacity: likeOpacity }} className="absolute top-4 left-4 px-4 py-2 bg-green-500 rounded-full text-white font-bold text-sm border-2 border-white">
+              ✈️ 收藏
+            </motion.div>
+            <motion.div style={{ opacity: nopeOpacity }} className="absolute top-4 right-4 px-4 py-2 bg-red-500 rounded-full text-white font-bold text-sm border-2 border-white">
+              ✕ 跳过
+            </motion.div>
+          </>
+        )}
       </div>
 
       {/* 航班信息区域 */}
-      <div className="p-5 flex-1 overflow-y-auto">
+      <div className="p-4">
         {/* 日期 */}
-        <div className="flex items-center gap-2 text-gray-500 mb-4">
+        <div className="flex items-center gap-2 text-gray-500 mb-3">
           <Calendar className="w-4 h-4" />
           <span className="text-sm font-medium">{flight.date}</span>
         </div>
 
         {/* 航线信息 */}
-        <div className="bg-gray-50 rounded-2xl p-4 mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-2xl font-bold text-gray-900">{flight.departure}</span>
-            <div className="flex-1 mx-4 relative">
+        <div className="bg-gray-50 rounded-2xl p-3 mb-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xl font-bold text-gray-900">{flight.departure}</span>
+            <div className="flex-1 mx-3 relative">
               <div className="h-0.5 bg-gray-300" />
-              <Plane className="absolute top-1/2 left-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rotate-90" />
+              <Plane className="absolute top-1/2 left-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 rotate-90" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">{flight.arrival}</span>
+            <span className="text-xl font-bold text-gray-900">{flight.arrival}</span>
           </div>
-          <div className="flex items-center justify-between text-sm text-gray-500">
+          <div className="flex items-center justify-between text-xs text-gray-500">
             <span>SFO</span>
             <span className="flex items-center gap-2">
               {flight.stops === '直飞' ? (
@@ -638,10 +668,10 @@ function FlightCard({ flight, destination, onSwipe }) {
         </div>
 
         {/* 价格 */}
-        <div className="flex items-end justify-between mb-4">
+        <div className="flex items-end justify-between mb-3">
           <div>
-            <div className="text-3xl font-bold text-gray-900">${flight.price}</div>
-            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium mt-1 ${getPriceColor(flight.priceStatus)}`}>
+            <div className="text-2xl font-bold text-gray-900">${flight.price}</div>
+            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${getPriceColor(flight.priceStatus)}`}>
               <Sparkles className="w-3 h-3" />
               {getPriceLabel(flight.priceStatus, flight.priceChange)}
             </div>
@@ -649,69 +679,140 @@ function FlightCard({ flight, destination, onSwipe }) {
         </div>
 
         {/* 种草文案 */}
-        <div className="bg-gradient-to-r from-orange-50 to-pink-50 rounded-2xl p-4">
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">💡</span>
+        <div className="bg-gradient-to-r from-orange-50 to-pink-50 rounded-2xl p-3">
+          <div className="flex items-start gap-2">
+            <span className="text-xl">💡</span>
             <div>
-              <div className="font-medium text-gray-900 mb-1">推荐理由</div>
-              <p className="text-sm text-gray-600">{destination.tagline}</p>
+              <div className="font-medium text-gray-900 text-sm mb-0.5">推荐理由</div>
+              <p className="text-xs text-gray-600">{destination.tagline}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* 底部操作按钮 */}
-      <div className="px-5 pb-5 pt-2 flex items-center justify-center gap-6">
+      <div className="px-4 pb-4 pt-2 flex items-center justify-center gap-4">
         <motion.button
           onClick={() => onSwipe('left')}
-          className="w-16 h-16 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center shadow-lg hover:border-gray-300 transition-colors"
+          className="w-14 h-14 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center shadow-lg"
           whileTap={{ scale: 0.9 }}
         >
-          <X className="w-8 h-8 text-gray-400" />
+          <X className="w-7 h-7 text-gray-400" />
         </motion.button>
         <motion.button
           onClick={() => onSwipe('right')}
-          className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center shadow-lg"
+          className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center shadow-lg"
           whileTap={{ scale: 0.9 }}
         >
-          <Heart className="w-8 h-8 text-white" />
+          <Heart className="w-7 h-7 text-white" />
         </motion.button>
       </div>
     </motion.div>
   )
 }
 
+// ============ 收藏列表页 ============
+function SavedListPage({ saved, onBack, destinations }) {
+  return (
+    <div className="flex flex-col h-full bg-gray-100">
+      {/* 顶部导航 */}
+      <div className="bg-white px-4 py-3 flex items-center gap-4 border-b border-gray-100">
+        <button onClick={onBack} className="p-2 -ml-2">
+          <ChevronLeft className="w-6 h-6 text-gray-600" />
+        </button>
+        <h1 className="text-lg font-semibold text-gray-900">已收藏 ({saved.length})</h1>
+      </div>
+
+      {/* 内容区 */}
+      <div className="flex-1 overflow-y-auto p-4">
+        {saved.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+              <Heart className="w-12 h-12 text-gray-300" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">还没有收藏任何航班</h2>
+            <p className="text-gray-500 mb-6">右滑喜欢的航班，它们会出现在这里</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {saved.map((flight, i) => {
+              const dest = destinations.find(d => d.id === flight.destinationId)
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bg-white rounded-2xl p-4 shadow-sm"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${dest.gradient} flex items-center justify-center text-3xl flex-shrink-0`}>
+                      {dest.image}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 truncate">{dest.city}, {dest.country}</h3>
+                      <p className="text-sm text-gray-500">{flight.date}</p>
+                      <p className="text-sm text-gray-500">{flight.route}</p>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-lg font-bold text-orange-500">${flight.price}</span>
+                        <span className={`text-xs px-2 py-1 rounded-full ${getPriceColor(flight.priceStatus)}`}>
+                          {getPriceLabel(flight.priceStatus, flight.priceChange)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ============ 主滑动界面 ============
-function SwipePage({ data, onBack, onSave }) {
+function SwipePage({ data, onBack }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [saved, setSaved] = useState([])
   const [showTutorial, setShowTutorial] = useState(true)
-  const [direction, setDirection] = useState(null)
+  const [showSavedList, setShowSavedList] = useState(false)
+  const [isSwiping, setIsSwiping] = useState(false)
 
   const currentFlight = flights[currentIndex]
-  const destination = destinations.find(d => d.id === currentFlight?.destinationId)
+  const destination = currentFlight ? destinations.find(d => d.id === currentFlight.destinationId) : null
+  const nextFlight = flights[currentIndex + 1]
+  const nextDestination = nextFlight ? destinations.find(d => d.id === nextFlight.destinationId) : null
 
   const handleSwipe = (dir) => {
-    setDirection(dir)
+    if (isSwiping) return
+    setIsSwiping(true)
+
+    if (dir === 'right') {
+      setSaved(prev => [...prev, currentFlight])
+    }
+
+    // 短暂延迟后切换到下一张
     setTimeout(() => {
-      if (dir === 'right') {
-        setSaved([...saved, currentFlight])
-        onSave && onSave(currentFlight)
-      }
       setCurrentIndex(prev => prev + 1)
-      setDirection(null)
-    }, 300)
+      setIsSwiping(false)
+    }, 100)
+  }
+
+  // 显示收藏列表
+  if (showSavedList) {
+    return <SavedListPage saved={saved} onBack={() => setShowSavedList(false)} destinations={destinations} />
   }
 
   return (
     <div className="flex flex-col h-full bg-gray-100">
       {/* 顶部导航 */}
-      <div className="bg-white px-4 py-3 flex items-center justify-between border-b border-gray-100">
+      <div className="bg-white px-4 py-3 flex items-center justify-between border-b border-gray-100 flex-shrink-0">
         <button onClick={onBack} className="p-2 -ml-2">
           <Home className="w-6 h-6 text-gray-600" />
         </button>
         <h1 className="text-lg font-semibold text-gray-900">探索目的地</h1>
-        <button className="p-2 -mr-2 relative">
+        <button onClick={() => setShowSavedList(true)} className="p-2 -mr-2 relative">
           <Heart className="w-6 h-6 text-gray-600" />
           {saved.length > 0 && (
             <span className="absolute top-1 right-1 w-4 h-4 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center">
@@ -723,51 +824,53 @@ function SwipePage({ data, onBack, onSave }) {
 
       {/* 卡片区域 */}
       <div className="flex-1 relative p-4 overflow-hidden">
-        {currentFlight && destination ? (
-          <>
-            <AnimatePresence>
-              <motion.div
-                key={currentIndex}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                  x: direction === 'left' ? -500 : direction === 'right' ? 500 : 0,
-                  rotate: direction === 'left' ? -20 : direction === 'right' ? 20 : 0,
-                }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-                className="absolute inset-4"
-              >
-                <FlightCard flight={currentFlight} destination={destination} onSwipe={handleSwipe} />
-              </motion.div>
-            </AnimatePresence>
-
-            {/* 下一张卡片预览 */}
-            {flights[currentIndex + 1] && (
-              <div className="absolute inset-4 bg-white rounded-3xl shadow-lg transform scale-95 opacity-50 -z-10" />
+        <div className="h-full flex items-center justify-center">
+          {/* 卡片容器 */}
+          <div className="relative w-full h-full max-h-[550px]">
+            {/* 预览卡片（第二张）- 不透明 */}
+            {nextFlight && nextDestination && (
+              <div className="absolute inset-0 bg-white rounded-3xl shadow-xl overflow-hidden transform scale-95">
+                {/* 目的地插画区域 */}
+                <div className={`h-56 bg-gradient-to-br ${nextDestination.gradient} relative overflow-hidden`}>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                    <div className="text-7xl mb-2">{nextDestination.image}</div>
+                    <h2 className="text-3xl font-bold">{nextDestination.city}</h2>
+                    <p className="text-white/80 text-center mt-1 px-8 text-sm">{nextDestination.country}</p>
+                  </div>
+                </div>
+                {/* 航班信息 */}
+                <div className="p-4">
+                  <div className="flex items-center gap-2 text-gray-500 mb-3">
+                    <Calendar className="w-4 h-4" />
+                    <span className="text-sm font-medium">{nextFlight.date}</span>
+                  </div>
+                  <div className="bg-gray-50 rounded-2xl p-3 mb-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xl font-bold text-gray-900">{nextFlight.departure}</span>
+                      <div className="flex-1 mx-3 relative">
+                        <div className="h-0.5 bg-gray-300" />
+                        <Plane className="absolute top-1/2 left-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 rotate-90" />
+                      </div>
+                      <span className="text-xl font-bold text-gray-900">{nextFlight.arrival}</span>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900">${nextFlight.price}</div>
+                </div>
+              </div>
             )}
-          </>
-        ) : (
-          <div className="flex flex-col items-center justify-center h-full text-center p-8">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center mb-6">
-              <Sparkles className="w-12 h-12 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              已看完所有推荐
-            </h2>
-            <p className="text-gray-500 mb-6">
-              查看你收藏的航班，或重新调整偏好
-            </p>
-            <motion.button
-              onClick={() => setCurrentIndex(0)}
-              className="px-8 py-4 rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold shadow-lg"
-              whileTap={{ scale: 0.95 }}
-            >
-              重新浏览
-            </motion.button>
+
+            {/* 当前卡片（顶层） */}
+            {currentFlight && destination && (
+              <DraggableCard
+                flight={currentFlight}
+                destination={destination}
+                onSwipe={handleSwipe}
+                isTopCard={true}
+                isRemoving={false}
+              />
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       {/* 教程覆盖层 */}
@@ -810,7 +913,6 @@ function App() {
       key="swipe"
       data={onboardingData}
       onBack={() => setPage(0)}
-      onSave={() => {}}
     />,
   ]
 
