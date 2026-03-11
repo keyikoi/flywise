@@ -556,7 +556,7 @@ function TutorialCard({ onComplete }) {
 }
 
 // ============ 可拖拽的航班卡片 ============
-function DraggableCard({ flight, destination, onSwipe, isTopCard, isRemoving }) {
+function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
   const cardRef = useRef(null)
   const x = useMotionValue(0)
   const rotate = useTransform(x, [-200, 200], [-25, 25])
@@ -572,14 +572,14 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, isRemoving }) 
       animate(x, window.innerWidth, {
         type: 'tween',
         duration: 0.3,
-        onComplete: () => onSwipe('right')
+        onComplete: () => onSwipe(cardId, 'right')
       })
     } else if (info.offset.x < -threshold) {
       // 左滑 - 跳过
       animate(x, -window.innerWidth, {
         type: 'tween',
         duration: 0.3,
-        onComplete: () => onSwipe('left')
+        onComplete: () => onSwipe(cardId, 'left')
       })
     } else {
       // 回弹
@@ -590,17 +590,19 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, isRemoving }) 
   return (
     <motion.div
       ref={cardRef}
-      style={{ x, rotate }}
-      drag={isTopCard ? true : false}
+      style={{
+        x,
+        rotate,
+        zIndex: isTopCard ? 10 : 1
+      }}
+      drag={isTopCard}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.7}
       onDragEnd={isTopCard ? handleDragEnd : undefined}
-      className={`absolute inset-0 bg-white rounded-3xl shadow-xl overflow-hidden ${isTopCard ? 'cursor-grab active:cursor-grabbing' : ''}`}
+      className="absolute inset-0 bg-white rounded-3xl shadow-xl overflow-hidden"
       initial={{ scale: 0.95, opacity: 0 }}
-      animate={{
-        scale: isRemoving ? 0.9 : (isTopCard ? 1 : 0.95),
-        opacity: isRemoving ? 0 : (isTopCard ? 1 : 1)
-      }}
+      animate={isTopCard ? { scale: 1, opacity: 1 } : { scale: 0.95, opacity: 0.5 }}
+      exit={{ scale: 0.9, opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
       {/* 目的地插画区域 */}
@@ -777,31 +779,33 @@ function SwipePage({ data, onBack }) {
   const [saved, setSaved] = useState([])
   const [showTutorial, setShowTutorial] = useState(true)
   const [showSavedList, setShowSavedList] = useState(false)
-  const [isSwiping, setIsSwiping] = useState(false)
+  const [swipedCards, setSwipedCards] = useState(new Set())
 
-  const currentFlight = flights[currentIndex]
-  const destination = currentFlight ? destinations.find(d => d.id === currentFlight.destinationId) : null
-  const nextFlight = flights[currentIndex + 1]
-  const nextDestination = nextFlight ? destinations.find(d => d.id === nextFlight.destinationId) : null
-
-  const handleSwipe = (dir) => {
-    if (isSwiping) return
-    setIsSwiping(true)
-
-    if (dir === 'right') {
-      setSaved(prev => [...prev, currentFlight])
+  const handleSwipe = (cardId, direction) => {
+    if (direction === 'right') {
+      const flight = flights.find(f => f.id === cardId)
+      const destination = destinations.find(d => d.id === flight.destinationId)
+      setSaved(prev => [...prev, { ...flight, destination }])
     }
+    setSwipedCards(prev => new Set(prev).add(cardId))
 
-    // 短暂延迟后切换到下一张
+    // 动画完成后切换到下一张
     setTimeout(() => {
       setCurrentIndex(prev => prev + 1)
-      setIsSwiping(false)
-    }, 100)
+    }, 300)
   }
 
   // 显示收藏列表
   if (showSavedList) {
     return <SavedListPage saved={saved} onBack={() => setShowSavedList(false)} destinations={destinations} />
+  }
+
+  // 获取当前显示的卡片（最多 2 张）
+  const visibleCards = []
+  for (let i = 0; i < 2 && currentIndex + i < flights.length; i++) {
+    const flight = flights[currentIndex + i]
+    const destination = destinations.find(d => d.id === flight.destinationId)
+    visibleCards.push({ flight, destination, isTop: i === 0 })
   }
 
   return (
@@ -827,48 +831,31 @@ function SwipePage({ data, onBack }) {
         <div className="h-full flex items-center justify-center">
           {/* 卡片容器 */}
           <div className="relative w-full h-full max-h-[550px]">
-            {/* 预览卡片（第二张）- 不透明 */}
-            {nextFlight && nextDestination && (
-              <div className="absolute inset-0 bg-white rounded-3xl shadow-xl overflow-hidden transform scale-95">
-                {/* 目的地插画区域 */}
-                <div className={`h-56 bg-gradient-to-br ${nextDestination.gradient} relative overflow-hidden`}>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-                    <div className="text-7xl mb-2">{nextDestination.image}</div>
-                    <h2 className="text-3xl font-bold">{nextDestination.city}</h2>
-                    <p className="text-white/80 text-center mt-1 px-8 text-sm">{nextDestination.country}</p>
-                  </div>
-                </div>
-                {/* 航班信息 */}
-                <div className="p-4">
-                  <div className="flex items-center gap-2 text-gray-500 mb-3">
-                    <Calendar className="w-4 h-4" />
-                    <span className="text-sm font-medium">{nextFlight.date}</span>
-                  </div>
-                  <div className="bg-gray-50 rounded-2xl p-3 mb-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xl font-bold text-gray-900">{nextFlight.departure}</span>
-                      <div className="flex-1 mx-3 relative">
-                        <div className="h-0.5 bg-gray-300" />
-                        <Plane className="absolute top-1/2 left-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 rotate-90" />
-                      </div>
-                      <span className="text-xl font-bold text-gray-900">{nextFlight.arrival}</span>
-                    </div>
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900">${nextFlight.price}</div>
-                </div>
-              </div>
-            )}
-
-            {/* 当前卡片（顶层） */}
-            {currentFlight && destination && (
-              <DraggableCard
-                flight={currentFlight}
-                destination={destination}
-                onSwipe={handleSwipe}
-                isTopCard={true}
-                isRemoving={false}
-              />
-            )}
+            {/* 渲染顺序：先渲染顶层卡片，再渲染下层卡片，确保 DOM 顺序正确 */}
+            <AnimatePresence>
+              {/* 先渲染下层卡片（在底层） */}
+              {visibleCards.filter(c => !c.isTop).map(({ flight, destination }) => (
+                <DraggableCard
+                  key={`bottom-${flight.id}`}
+                  flight={flight}
+                  destination={destination}
+                  onSwipe={() => {}}
+                  isTopCard={false}
+                  cardId={flight.id}
+                />
+              ))}
+              {/* 再渲染顶层卡片（在上层） */}
+              {visibleCards.filter(c => c.isTop).map(({ flight, destination }) => (
+                <DraggableCard
+                  key={`top-${flight.id}`}
+                  flight={flight}
+                  destination={destination}
+                  onSwipe={handleSwipe}
+                  isTopCard={true}
+                  cardId={flight.id}
+                />
+              ))}
+            </AnimatePresence>
           </div>
         </div>
       </div>
