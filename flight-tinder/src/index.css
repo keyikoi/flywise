@@ -26,3 +26,9 @@ body {
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+/* 航班时间字体 - Manrope */
+.flight-time {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+}

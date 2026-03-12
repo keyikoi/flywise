@@ -660,7 +660,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
             {/* 左侧：出发信息 - 固定宽度 */}
             <div className="flex-shrink-0 w-20">
               <div className="text-xs text-gray-500 mb-0.5">{flight.departureDate}</div>
-              <div className="text-3xl font-bold text-gray-900 tracking-tight">{flight.departureTime}</div>
+              <div className="text-3xl font-bold flight-time text-gray-900 tracking-tight">{flight.departureTime}</div>
               <div className="text-xs text-gray-500 mt-0.5 font-medium">SFO</div>
             </div>
 
@@ -683,7 +683,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
             <div className="flex-shrink-0 w-20 text-right">
               <div className="text-xs text-gray-500 mb-0.5">{flight.arrivalDate}</div>
               <div className="flex items-center justify-end gap-0.5">
-                <div className="text-3xl font-bold text-gray-900 tracking-tight">{flight.arrivalTime}</div>
+                <div className="text-3xl font-bold flight-time text-gray-900 tracking-tight">{flight.arrivalTime}</div>
                 {flight.arrivalDay && (
                   <div className="text-xs text-gray-500 font-medium">{flight.arrivalDay}</div>
                 )}
@@ -703,7 +703,10 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
         {/* 价格 */}
         <div className="flex items-end justify-between mb-3">
           <div>
-            <div className="text-2xl font-bold text-gray-900">${flight.price}</div>
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-lg font-bold flight-time text-gray-900">$</span>
+              <span className="text-3xl font-bold flight-time text-gray-900">{flight.price}</span>
+            </div>
             <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${getPriceColor(flight.priceStatus)}`}>
               <Sparkles className="w-3 h-3" />
               {getPriceLabel(flight.priceStatus, flight.priceChange)}

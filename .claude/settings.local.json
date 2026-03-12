@@ -4,7 +4,8 @@
       "Bash(cd flight-tinder:*)",
       "Bash(npm install:*)",
       "Bash(npm run:*)",
-      "Bash(lsof -ti:5173 | xargs kill -9 2>/dev/null; echo \"Done\")"
+      "Bash(lsof -ti:5173 | xargs kill -9 2>/dev/null; echo \"Done\")",
+      "Bash(git restore:*)"
     ]
   }
 }
