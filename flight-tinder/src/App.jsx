@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion'
-import { Plane, MapPin, Calendar, Users, Heart, X, Sparkles, Home, ChevronLeft } from 'lucide-react'
+import { MapPin, Users, Heart, X, Sparkles, Home, ChevronLeft, Plane } from 'lucide-react'
 
 // ============ 假数据 ============
 const destinations = [
@@ -57,8 +57,11 @@ const flights = [
     destinationId: 1,
     date: '3 月 15 日 - 3 月 22 日',
     route: 'SFO → KIX',
-    departure: '09:30',
-    arrival: '14:30 (+1)',
+    departureDate: '3 月 15 日',
+    arrivalDate: '3 月 16 日',
+    departureTime: '09:30',
+    arrivalTime: '14:30',
+    arrivalDay: '+1',
     duration: '14h',
     stops: '直飞',
     price: 580,
@@ -70,8 +73,11 @@ const flights = [
     destinationId: 2,
     date: '4 月 1 日 - 4 月 10 日',
     route: 'SFO → CDG',
-    departure: '17:45',
-    arrival: '13:20 (+1)',
+    departureDate: '4 月 1 日',
+    arrivalDate: '4 月 2 日',
+    departureTime: '17:45',
+    arrivalTime: '13:20',
+    arrivalDay: '+1',
     duration: '11h',
     stops: '直飞',
     price: 720,
@@ -83,8 +89,11 @@ const flights = [
     destinationId: 3,
     date: '5 月 5 日 - 5 月 12 日',
     route: 'SFO → DPS',
-    departure: '23:55',
-    arrival: '06:30 (+2)',
+    departureDate: '5 月 5 日',
+    arrivalDate: '5 月 7 日',
+    departureTime: '23:55',
+    arrivalTime: '06:30',
+    arrivalDay: '+2',
     duration: '18h',
     stops: '1 转机',
     price: 890,
@@ -96,8 +105,11 @@ const flights = [
     destinationId: 4,
     date: '3 月 20 日 - 3 月 27 日',
     route: 'SFO → JFK',
-    departure: '08:00',
-    arrival: '16:25',
+    departureDate: '3 月 20 日',
+    arrivalDate: '3 月 20 日',
+    departureTime: '08:00',
+    arrivalTime: '16:25',
+    arrivalDay: '',
     duration: '5h 30m',
     stops: '直飞',
     price: 320,
@@ -109,9 +121,12 @@ const flights = [
     destinationId: 5,
     date: '2 月 10 日 - 2 月 17 日',
     route: 'SFO → KEF',
-    departure: '16:30',
-    arrival: '07:45 (+1)',
-    duration: '9h',
+    departureDate: '2 月 10 日',
+    arrivalDate: '2 月 10 日',
+    departureTime: '16:30',
+    arrivalTime: '19:45',
+    arrivalDay: '',
+    duration: '6h 15m',
     stops: '直飞',
     price: 450,
     priceStatus: 'good',
@@ -606,7 +621,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
       transition={{ duration: 0.2 }}
     >
       {/* 目的地插画区域 */}
-      <div className={`h-56 bg-gradient-to-br ${destination.gradient} relative overflow-hidden`}>
+      <div className={`h-64 bg-gradient-to-br ${destination.gradient} relative overflow-hidden`}>
         {/* 装饰性圆形 */}
         <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
@@ -638,35 +653,51 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
 
       {/* 航班信息区域 */}
       <div className="p-4">
-        {/* 日期 */}
-        <div className="flex items-center gap-2 text-gray-500 mb-3">
-          <Calendar className="w-4 h-4" />
-          <span className="text-sm font-medium">{flight.date}</span>
-        </div>
-
         {/* 航线信息 */}
-        <div className="bg-gray-50 rounded-2xl p-3 mb-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xl font-bold text-gray-900">{flight.departure}</span>
-            <div className="flex-1 mx-3 relative">
-              <div className="h-0.5 bg-gray-300" />
-              <Plane className="absolute top-1/2 left-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 rotate-90" />
+        <div className="bg-gray-50 rounded-2xl p-4 mb-3">
+          {/* 时间行 */}
+          <div className="flex items-center gap-3">
+            {/* 左侧：出发信息 - 固定宽度 */}
+            <div className="flex-shrink-0 w-20">
+              <div className="text-xs text-gray-500 mb-0.5">{flight.departureDate}</div>
+              <div className="text-3xl font-bold text-gray-900 tracking-tight">{flight.departureTime}</div>
+              <div className="text-xs text-gray-500 mt-0.5 font-medium">SFO</div>
             </div>
-            <span className="text-xl font-bold text-gray-900">{flight.arrival}</span>
+
+            {/* 中间：时长胶囊 + 线段 */}
+            <div className="flex-1 flex items-center justify-center">
+              <div className="flex-1 max-w-12 h-px bg-gray-400" />
+              <div className="px-4 py-1.5 bg-gray-900 rounded-full text-white text-xs font-medium whitespace-nowrap flex items-center gap-1.5 -mx-px">
+                {flight.duration}
+                {flight.stops === '直飞' && (
+                  <>
+                    <span className="text-gray-400">·</span>
+                    <span className="text-gray-100">直飞</span>
+                  </>
+                )}
+              </div>
+              <div className="flex-1 max-w-12 h-px bg-gray-400" />
+            </div>
+
+            {/* 右侧：到达信息 - 固定宽度 */}
+            <div className="flex-shrink-0 w-20 text-right">
+              <div className="text-xs text-gray-500 mb-0.5">{flight.arrivalDate}</div>
+              <div className="flex items-center justify-end gap-0.5">
+                <div className="text-3xl font-bold text-gray-900 tracking-tight">{flight.arrivalTime}</div>
+                {flight.arrivalDay && (
+                  <div className="text-xs text-gray-500 font-medium">{flight.arrivalDay}</div>
+                )}
+              </div>
+              <div className="text-xs text-gray-500 mt-0.5 font-medium">KIX</div>
+            </div>
           </div>
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>SFO</span>
-            <span className="flex items-center gap-2">
-              {flight.stops === '直飞' ? (
-                <span className="px-2 py-0.5 bg-blue-100 text-blue-600 rounded-full text-xs font-medium">直飞</span>
-              ) : (
-                <span className="px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full text-xs font-medium">{flight.stops}</span>
-              )}
-              <span>·</span>
-              <span>{flight.duration}</span>
-            </span>
-            <span>KIX</span>
-          </div>
+
+          {/* 转机标签（仅非直飞显示） */}
+          {flight.stops !== '直飞' && (
+            <div className="flex items-center justify-center">
+              <span className="px-3 py-1 bg-orange-100 text-orange-600 rounded-full text-xs font-medium">{flight.stops}</span>
+            </div>
+          )}
         </div>
 
         {/* 价格 */}
@@ -693,7 +724,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
       </div>
 
       {/* 底部操作按钮 */}
-      <div className="px-4 pb-4 pt-2 flex items-center justify-center gap-4">
+      <div className="px-4 pb-6 pt-3 flex items-center justify-center gap-4">
         <motion.button
           onClick={() => onSwipe('left')}
           className="w-14 h-14 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center shadow-lg"
@@ -830,7 +861,7 @@ function SwipePage({ data, onBack }) {
       <div className="flex-1 relative p-4 overflow-hidden">
         <div className="h-full flex items-center justify-center">
           {/* 卡片容器 */}
-          <div className="relative w-full h-full max-h-[550px]">
+          <div className="relative w-full h-full max-h-[650px]">
             {/* 渲染顺序：先渲染顶层卡片，再渲染下层卡片，确保 DOM 顺序正确 */}
             <AnimatePresence>
               {/* 先渲染下层卡片（在底层） */}
