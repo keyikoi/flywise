@@ -95,7 +95,9 @@ const flights = [
     arrivalTime: '06:30',
     arrivalDay: '+2',
     duration: '18h',
-    stops: '1 转机',
+    stops: '中转',
+    stopsCity: '新加坡',
+    stopsDuration: '2h 15m',
     price: 890,
     priceStatus: 'high',
     priceChange: 12,
@@ -725,7 +727,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
       dragElastic={0.4}
       dragMomentum={false}
       onDragEnd={isTopCard ? handleDragEnd : undefined}
-      className="absolute inset-0 bg-white rounded-[32px] overflow-hidden touch-none select-none border border-gray-100"
+      className="absolute inset-0 bg-white rounded-[32px] overflow-hidden touch-none select-none shadow-strong"
       initial={{ scale: 0.93, opacity: 0, y: 20 }}
       animate={
         isTopCard
@@ -778,8 +780,8 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
           </motion.p>
         </div>
 
-        {/* 右上角标签 - 毛玻璃 */}
-        <div className="absolute top-4 right-4 px-4 py-2 bg-white/25 backdrop-blur-md rounded-full text-white text-xs font-bold tracking-wide border border-white/30 shadow-md">
+        {/* 右上角标签 - 去掉投影 */}
+        <div className="absolute top-4 right-4 px-4 py-2 bg-white/25 backdrop-blur-md rounded-full text-white text-xs font-bold tracking-wide border border-white/30">
           {destination.bestTime}
         </div>
 
@@ -806,11 +808,26 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
             </motion.div>
           </>
         )}
+
+        {/* 推荐理由 - 图片区域内 */}
+        <div className="absolute bottom-4 left-0 right-0 flex items-center justify-center gap-2 px-6">
+          {/* 左侧引号 */}
+          <svg className="w-6 h-6 text-white/60 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M14.017 21v-7.391c0-5.704 3.731-9.575 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.575 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+          </svg>
+          <p className="text-white/90 text-sm text-center font-medium leading-relaxed flex-1">
+            {destination.tagline}
+          </p>
+          {/* 右侧引号 */}
+          <svg className="w-6 h-6 text-white/60 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9.983 3v7.391c0 5.704-3.731 9.575-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.575-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-3.983v-10h9.983z" />
+          </svg>
+        </div>
       </div>
 
       {/* 航班信息区域 - 视觉升级 */}
       <div className="p-5">
-        {/* 航线信息 - 去掉卡片感，更自然流畅 */}
+        {/* 航线信息 */}
         <div className="mb-4 pb-4 border-b border-gray-100">
           {/* 时间行 */}
           <div className="flex items-center gap-4">
@@ -853,12 +870,12 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
             </div>
           </div>
 
-          {/* 转机标签 */}
+          {/* 中转信息 - 无背景无边框 */}
           {flight.stops !== '直飞' && (
-            <div className="flex items-center justify-center mt-4">
-              <span className="px-3 py-1.5 bg-gray-900/15/80 text-gray-900 rounded-full text-xs font-bold border border-purple-200">
-                {flight.stops}
-              </span>
+            <div className="flex items-center justify-center mt-2">
+              <p className="text-sm text-slate-gray">
+                中转 <span className="font-bold text-gray-900">{flight.stopsCity}</span> <span className="text-gray-500">{flight.stopsDuration}</span>
+              </p>
             </div>
           )}
         </div>
