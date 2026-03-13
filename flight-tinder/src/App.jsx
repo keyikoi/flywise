@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo } from 'react'
 import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion'
-import { MapPin, Users, Heart, X, Sparkles, Home, ChevronLeft, Plane } from 'lucide-react'
+import { MapPin, Users, Heart, X, Sparkles, Home, ChevronLeft, Plane, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 
 // ============ 假数据 ============
 const destinations = [
@@ -8,8 +8,9 @@ const destinations = [
     id: 1,
     city: '京都',
     country: '日本',
-    image: '🏯',
-    gradient: 'from-rose-400 via-pink-500 to-rose-600',
+    image: '/images/cities/京都.png',
+    gradient: 'from-[#f8e0e0] via-[#f0c8c8] to-[#e8b0b0]',
+    textColor: 'text-[#3a2a2a]',
     tagline: '千年古都与樱花之美',
     bestTime: '3-5 月樱花季',
   },
@@ -17,8 +18,9 @@ const destinations = [
     id: 2,
     city: '巴黎',
     country: '法国',
-    image: '🗼',
-    gradient: 'from-violet-500 via-purple-600 to-indigo-600',
+    image: '/images/cities/巴黎.png',
+    gradient: 'from-[#e8e0f0] via-[#d0c0e0] to-[#b8a0d0]',
+    textColor: 'text-[#2a1a3a]',
     tagline: '浪漫之都的艺术与美食',
     bestTime: '全年适宜',
   },
@@ -26,8 +28,9 @@ const destinations = [
     id: 3,
     city: '巴厘岛',
     country: '印度尼西亚',
-    image: '🏝️',
-    gradient: 'from-teal-400 via-cyan-500 to-blue-600',
+    image: '/images/cities/巴厘岛.png',
+    gradient: 'from-[#d0f0e8] via-[#a8e0d0] to-[#80d0b8]',
+    textColor: 'text-[#1a3a30]',
     tagline: '热带天堂的度假体验',
     bestTime: '4-10 月旱季',
   },
@@ -35,8 +38,9 @@ const destinations = [
     id: 4,
     city: '纽约',
     country: '美国',
-    image: '🗽',
+    image: '/images/cities/nyc.png',
     gradient: 'from-[#0f1724] via-[#1a2744] to-[#0a1628]',
+    textColor: 'text-white',
     tagline: '不夜城的无限可能',
     bestTime: '9-11 月秋叶季',
   },
@@ -44,8 +48,9 @@ const destinations = [
     id: 5,
     city: '雷克雅未克',
     country: '冰岛',
-    image: '❄️',
-    gradient: 'from-cyan-500 via-blue-600 to-indigo-700',
+    image: '/images/cities/雷克雅未克.png',
+    gradient: 'from-[#1a2f3a] via-[#2d4a5a] to-[#1a3a4a]',
+    textColor: 'text-white',
     tagline: '极光与冰川的奇幻之旅',
     bestTime: '9-3 月极光季',
   },
@@ -180,16 +185,25 @@ function getPriceColor(status) {
   switch (status) {
     case 'low': return 'text-green-600 bg-green-100'
     case 'good': return 'text-teal-600 bg-teal-100'
-    case 'high': return 'text-purple-600 bg-gray-900/15'
+    case 'high': return 'text-rose-600 bg-rose-100'
     default: return 'text-gray-600 bg-gray-100'
+  }
+}
+
+function getPriceIcon(status) {
+  switch (status) {
+    case 'low': return TrendingDown
+    case 'good': return TrendingDown
+    case 'high': return TrendingUp
+    default: return Minus
   }
 }
 
 function getPriceLabel(status, change) {
   switch (status) {
-    case 'low': return `比平时低${Math.abs(change)}% 🎉`
-    case 'good': return `比平时低${Math.abs(change)}% ✨`
-    case 'high': return `比平时高${change}% 🔥`
+    case 'low': return `比平时低${Math.abs(change)}%`
+    case 'good': return `比平时低${Math.abs(change)}%`
+    case 'high': return `比平时高${change}%`
     default: return '价格正常'
   }
 }
@@ -754,45 +768,53 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
       }}
     >
       {/* 目的地插画区域 - 视觉升级 */}
-      <div className={`h-64 relative overflow-hidden noise-overlay`}>
+      <div className={`h-[380px] relative overflow-hidden`}>
         {/* 渐变背景 */}
         <div className={`absolute inset-0 bg-gradient-to-br ${destination.gradient}`} />
 
         {/* 动态光晕装饰 */}
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-white/15 rounded-full blur-2xl" />
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/25 rounded-full blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-white/20 rounded-full blur-2xl" />
 
         {/* 目的地内容 */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+        <div className={`relative flex flex-col items-center justify-center ${destination.textColor} py-8`}>
           <motion.div
-            className="text-8xl mb-3 drop-shadow-2xl"
-            initial={{ scale: 0.8, y: 20 }}
+            className="w-[300px] h-[252px] mb-4"
+            initial={{ scale: 0.8, y: 10 }}
             animate={{ scale: 1, y: 0 }}
-            transition={{ delay: 0.15, type: 'spring', stiffness: 400 }}
+            transition={{ delay: 0.1, type: 'spring', stiffness: 400 }}
           >
-            {destination.image}
+            <img
+              src={destination.image}
+              alt={`${destination.city}`}
+              className="w-full h-full object-cover"
+            />
           </motion.div>
           <motion.h2
             className="text-4xl font-extrabold tracking-tight drop-shadow-medium"
-            initial={{ y: 15, opacity: 0 }}
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.15 }}
+          >
+            {destination.city}·{destination.country}
+          </motion.h2>
+          {/* 推荐语 */}
+          <motion.div
+            className="flex items-center justify-center gap-2 mt-2"
+            initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            {destination.city}
-          </motion.h2>
-          <motion.p
-            className="text-white/90 text-sm mt-1 px-6 text-center font-medium tracking-wide"
-            initial={{ y: 15, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.25 }}
-          >
-            {destination.country}
-          </motion.p>
-        </div>
-
-        {/* 右上角标签 - 去掉投影 */}
-        <div className="absolute top-4 right-4 px-4 py-2 bg-white/25 backdrop-blur-md rounded-full text-white text-xs font-bold tracking-wide border border-white/30">
-          {destination.bestTime}
+            <svg className={`w-4 h-4 flex-shrink-0 ${destination.textColor} opacity-50`} viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/>
+            </svg>
+            <p className={`text-sm px-6 text-center font-medium leading-relaxed ${destination.textColor}`}>
+              {destination.tagline}
+            </p>
+            <svg className={`w-4 h-4 flex-shrink-0 ${destination.textColor} opacity-50 scale-x-[-1] scale-y-[-1]`} viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/>
+            </svg>
+          </motion.div>
         </div>
 
         {/* 滑动指示器 - 更大更明显 */}
@@ -819,23 +841,6 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
           </>
         )}
 
-        {/* 推荐理由 - 精致设计 */}
-        <div className="absolute bottom-4 left-0 right-0 px-6">
-          <div className="flex items-center justify-center gap-2">
-            {/* 左侧引号 */}
-            <svg className="w-4 h-4 text-white/50 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/>
-            </svg>
-            {/* 推荐语文本 */}
-            <p className="text-white/95 text-sm text-center font-medium leading-relaxed">
-              {destination.tagline}
-            </p>
-            {/* 右侧引号 - 水平 + 垂直翻转 */}
-            <svg className="w-4 h-4 text-white/50 flex-shrink-0 scale-x-[-1] scale-y-[-1]" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/>
-            </svg>
-          </div>
-        </div>
       </div>
 
       {/* 航班信息区域 */}
@@ -900,14 +905,17 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
         <div className="h-px bg-gray-100 mb-3" />
 
         {/* 价格区域 */}
-        <div className="flex items-end justify-between mb-2">
-          <div>
+        <div className="flex items-end justify-between mb-4">
+          <div className="flex items-end gap-3">
             <div className="flex items-baseline gap-1">
               <span className="text-xl font-bold flight-time text-slate-gray">$</span>
               <span className="text-4xl font-bold flight-time text-ink-black tracking-tight">{flight.price}</span>
             </div>
-            <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold mt-2 ${getPriceColor(flight.priceStatus)}`}>
-              <Sparkles className="w-3.5 h-3.5" />
+            <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold mb-1 ${getPriceColor(flight.priceStatus)}`}>
+              {(() => {
+                const Icon = getPriceIcon(flight.priceStatus)
+                return <Icon className="w-3.5 h-3.5" />
+              })()}
               {getPriceLabel(flight.priceStatus, flight.priceChange)}
             </div>
           </div>
@@ -915,7 +923,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
       </div>
 
       {/* 底部操作按钮 */}
-      <div className="px-5 pb-4 pt-1 flex items-center justify-center gap-5">
+      <div className="px-5 pb-6 flex items-center justify-center gap-5">
         {/* 跳过按钮 */}
         <motion.button
           onClick={() => onSwipe('left')}
@@ -980,8 +988,12 @@ function SavedListPage({ saved, onBack, destinations }) {
                   className="bg-white rounded-2xl p-4 shadow-soft border border-purple-100/50"
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${dest.gradient} flex items-center justify-center text-3xl flex-shrink-0 shadow-md`}>
-                      {dest.image}
+                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${dest.gradient} flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden`}>
+                      <img
+                        src={dest.image}
+                        alt={`${dest.city}`}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-ink-black truncate tracking-tight">{dest.city}, {dest.country}</h3>
@@ -1061,10 +1073,10 @@ function SwipePage({ data, onBack }) {
       </div>
 
       {/* 卡片区域 */}
-      <div className="flex-1 relative p-4 overflow-hidden">
-        <div className="h-full flex items-center justify-center">
+      <div className="relative flex-1 p-4 overflow-hidden">
+        <div className="h-full flex items-start justify-center">
           {/* 卡片容器 */}
-          <div className="relative w-full h-full max-h-[600px]">
+          <div className="relative w-full max-w-md h-[660px]">
             {/* 渲染顺序：先渲染下层卡片，再渲染顶层卡片 */}
             <AnimatePresence>
               {/* 下层卡片（在底层） */}

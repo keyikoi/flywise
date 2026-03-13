@@ -5,7 +5,13 @@
       "Bash(npm install:*)",
       "Bash(npm run:*)",
       "Bash(lsof -ti:5173 | xargs kill -9 2>/dev/null; echo \"Done\")",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(cd /Users/keyi/work/claude-code-test/flight-tinder && npx eslint src/App.jsx 2>&1 || true)",
+      "Bash(curl -s http://localhost:5173/src/App.jsx 2>&1 | head -30)",
+      "Bash(node --check src/App.jsx 2>&1 || true)",
+      "Bash(curl -s http://localhost:5173/__vite_error 2>&1 || echo \"No error endpoint\")",
+      "Bash(curl -s http://localhost:5173/ 2>&1 | head -20)",
+      "Bash(curl -s http://localhost:5173/src/main.jsx 2>&1 | head -20)"
     ]
   }
 }
