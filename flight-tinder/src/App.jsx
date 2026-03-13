@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion'
 import { MapPin, Users, Heart, X, Sparkles, Home, ChevronLeft, Plane } from 'lucide-react'
 
@@ -191,9 +191,7 @@ function OnboardingPage1({ onComplete, data, onUpdate }) {
     if (newSelected.has(index)) {
       newSelected.delete(index)
     } else {
-      if (newSelected.size < 5) {
-        newSelected.add(index)
-      }
+      newSelected.add(index)
     }
     setSelected(newSelected)
     onUpdate({ interests: Array.from(newSelected) })
@@ -216,7 +214,7 @@ function OnboardingPage1({ onComplete, data, onUpdate }) {
 
       {/* 标题 */}
       <h1 className="text-3xl font-bold text-gray-900 mb-3">
-        选择 5 个你感兴趣的
+        选择你感兴趣的
       </h1>
       <p className="text-gray-500 text-base mb-8">
         帮助我们了解你的旅行偏好，推荐更匹配的目的地
@@ -248,43 +246,57 @@ function OnboardingPage1({ onComplete, data, onUpdate }) {
         <button className="text-gray-400 font-medium px-4 py-2">
           跳过
         </button>
-        <div className="flex items-center gap-4">
-          <span className="text-gray-400 text-sm">
-            {selected.size}/5 已选择
-          </span>
-          <motion.button
-            onClick={onComplete}
-            disabled={selected.size < 5}
-            className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${
-              selected.size >= 5
-                ? 'bg-gray-900 text-white shadow-lg'
-                : 'bg-gray-300 text-gray-400'
-            }`}
-            whileTap={{ scale: 0.9 }}
-          >
-            <span className="text-xl">→</span>
-          </motion.button>
-        </div>
+        <motion.button
+          onClick={onComplete}
+          className="w-14 h-14 rounded-full bg-gray-900 text-white flex items-center justify-center shadow-medium"
+          whileTap={{ scale: 0.9 }}
+        >
+          <span className="text-xl">→</span>
+        </motion.button>
       </div>
     </motion.div>
   )
 }
 
 function OnboardingPage2({ onComplete, data, onUpdate }) {
-  const [selected, setSelected] = useState(new Set(data.tripTypes || []))
+  const [selectedTripType, setSelectedTripType] = useState(data.tripTypes?.[0] ?? 0)
 
-  const toggleTripType = (index) => {
-    const newSelected = new Set(selected)
-    if (newSelected.has(index)) {
-      newSelected.delete(index)
-    } else {
-      newSelected.add(index)
-    }
-    setSelected(newSelected)
-    onUpdate({ tripTypes: Array.from(newSelected) })
+  const selectTripType = (index) => {
+    setSelectedTripType(index)
+    onUpdate({ tripTypes: [index] })
   }
 
   const [budget, setBudget] = useState(data.budget || 1)
+  const [minPrice, setMinPrice] = useState(500)
+  const [maxPrice, setMaxPrice] = useState(2000)
+
+  // 预计算柱状图高度（固定不变）
+  const barHeights = useMemo(() => {
+    return Array.from({ length: 30 }).map((_, i) => {
+      const center = 15
+      const distance = Math.abs(i - center)
+      const baseHeight = Math.max(15, 100 - (distance * distance) * 0.3 - Math.random() * 20)
+      return Math.min(100, Math.max(10, baseHeight))
+    })
+  }, [])
+
+  const handleLeftDrag = (_, info) => {
+    const el = info.point.element
+    if (el) {
+      const rect = el.parentElement.getBoundingClientRect()
+      const newLeft = Math.max(0, Math.min(1, (info.point.x - rect.left) / rect.width))
+      setMinPrice(Math.round(500 + newLeft * 1500))
+    }
+  }
+
+  const handleRightDrag = (_, info) => {
+    const el = info.point.element
+    if (el) {
+      const rect = el.parentElement.getBoundingClientRect()
+      const newRight = Math.max(0, Math.min(1, (info.point.x - rect.left) / rect.width))
+      setMaxPrice(Math.round(500 + newRight * 1500))
+    }
+  }
 
   return (
     <motion.div
@@ -322,9 +334,9 @@ function OnboardingPage2({ onComplete, data, onUpdate }) {
           {tripTypes.map((item, index) => (
             <motion.button
               key={index}
-              onClick={() => toggleTripType(index)}
+              onClick={() => selectTripType(index)}
               className={`w-full p-4 rounded-2xl border-2 flex items-center justify-between transition-all ${
-                selected.has(index)
+                selectedTripType === index
                   ? 'border-gray-900 bg-white text-gray-900'
                   : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
@@ -332,12 +344,12 @@ function OnboardingPage2({ onComplete, data, onUpdate }) {
             >
               <span className="flex items-center gap-3">
                 <span className="text-2xl">{item.icon}</span>
-                <span className={`font-medium ${selected.has(index) ? 'text-gray-900' : 'text-gray-900'}`}>{item.label}</span>
+                <span className="font-medium text-gray-900">{item.label}</span>
               </span>
               <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                selected.has(index) ? 'border-gray-900 bg-gray-900' : 'border-gray-300'
+                selectedTripType === index ? 'border-gray-900 bg-gray-900' : 'border-gray-300'
               }`}>
-                {selected.has(index) && (
+                {selectedTripType === index && (
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
@@ -356,24 +368,74 @@ function OnboardingPage2({ onComplete, data, onUpdate }) {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             预算范围？
           </h2>
-          <div className="flex gap-3">
-            {budgets.map((item, index) => (
-              <motion.button
-                key={index}
-                onClick={() => setBudget(index)}
-                className={`flex-1 p-4 rounded-2xl border transition-all ${
-                  budget === index
-                    ? 'border-gray-900 bg-white text-gray-900'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
-                }`}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="text-center">
-                  <div className={`text-2xl font-bold ${budget === index ? 'text-gray-900' : 'text-gray-900'}`}>{item.icon}</div>
-                  <div className={`text-xs mt-1 ${budget === index ? 'text-gray-500' : 'text-gray-500'}`}>{item.range}</div>
+
+          {/* 价格分布柱状图 */}
+          <div className="mb-6">
+            <div className="flex items-end justify-center gap-1 h-16 mb-4">
+              {barHeights.map((height, i) => {
+                const pricePerBar = 1500 / 30
+                const barMinPrice = 500 + i * pricePerBar
+                const barMaxPrice = barMinPrice + pricePerBar
+                const isSelected = barMinPrice >= minPrice && barMaxPrice <= maxPrice
+                return (
+                  <div
+                    key={i}
+                    className={`w-1.5 rounded-t-sm transition-colors ${
+                      isSelected ? 'bg-electric-purple' : 'bg-gray-200'
+                    }`}
+                    style={{ height: `${height}%` }}
+                  />
+                )
+              })}
+            </div>
+
+            {/* 双滑块 */}
+            <div className="relative h-6">
+              {/* 轨道背景 - 灰色 */}
+              <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-1 bg-gray-200 rounded-full" />
+              <input
+                type="range"
+                min="500"
+                max="2000"
+                value={minPrice}
+                onChange={(e) => setMinPrice(Number(e.target.value))}
+                className="absolute top-1/2 -translate-y-1/2 left-0 right-0 w-full h-1 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-gray-300 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:z-20"
+                style={{ zIndex: 10 }}
+              />
+              <input
+                type="range"
+                min="500"
+                max="2000"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(Number(e.target.value))}
+                className="absolute top-1/2 -translate-y-1/2 left-0 right-0 w-full h-1 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-gray-300 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:z-20"
+                style={{ zIndex: 10 }}
+              />
+              {/* 选中区域 */}
+              <div
+                className="absolute top-1/2 -translate-y-1/2 h-1 bg-electric-purple rounded-full pointer-events-none"
+                style={{
+                  left: `${((minPrice - 500) / 1500) * 100}%`,
+                  right: `${100 - ((maxPrice - 500) / 1500) * 100}%`
+                }}
+              />
+            </div>
+
+            {/* 价格输入框 */}
+            <div className="flex items-center justify-between mt-4 gap-4">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">最低</label>
+                <div className="px-4 py-2 rounded-full border border-gray-200 bg-gray-50 text-sm font-medium text-gray-900">
+                  ${minPrice}
                 </div>
-              </motion.button>
-            ))}
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">最高</label>
+                <div className="px-4 py-2 rounded-full border border-gray-200 bg-gray-50 text-sm font-medium text-gray-900">
+                  ${maxPrice}+
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

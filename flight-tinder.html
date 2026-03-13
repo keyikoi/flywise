@@ -50,6 +50,7 @@ window.$RefreshSig$ = () => (type) => type;</script>
     --color-rose-200: oklch(89.2% 0.058 10.001);
     --color-rose-400: oklch(71.2% 0.194 13.428);
     --color-rose-500: oklch(64.5% 0.246 16.439);
+    --color-gray-50: oklch(98.5% 0.002 247.839);
     --color-gray-100: oklch(96.7% 0.003 264.542);
     --color-gray-200: oklch(92.8% 0.006 264.531);
     --color-gray-300: oklch(87.2% 0.01 258.338);
@@ -90,6 +91,7 @@ window.$RefreshSig$ = () => (type) => type;</script>
     --tracking-wider: 0.05em;
     --leading-tight: 1.25;
     --leading-relaxed: 1.625;
+    --radius-sm: 0.25rem;
     --radius-2xl: 1rem;
     --drop-shadow-2xl: 0 25px 25px rgb(0 0 0 / 0.15);
     --blur-sm: 8px;
@@ -251,6 +253,9 @@ window.$RefreshSig$ = () => (type) => type;</script>
   }
 }
 @layer utilities {
+  .pointer-events-none {
+    pointer-events: none;
+  }
   .absolute {
     position: absolute;
   }
@@ -293,17 +298,32 @@ window.$RefreshSig$ = () => (type) => type;</script>
   .right-5 {
     right: calc(var(--spacing) * 5);
   }
+  .right-\[20\%\] {
+    right: 20%;
+  }
+  .right-\[25\%\] {
+    right: 25%;
+  }
   .-bottom-16 {
     bottom: calc(var(--spacing) * -16);
   }
   .-left-16 {
     left: calc(var(--spacing) * -16);
   }
+  .left-0 {
+    left: calc(var(--spacing) * 0);
+  }
   .left-4 {
     left: calc(var(--spacing) * 4);
   }
   .left-5 {
     left: calc(var(--spacing) * 5);
+  }
+  .left-\[20\%\] {
+    left: 20%;
+  }
+  .left-\[25\%\] {
+    left: 25%;
   }
   .z-10 {
     z-index: 10;
@@ -380,6 +400,9 @@ window.$RefreshSig$ = () => (type) => type;</script>
   .inline-flex {
     display: inline-flex;
   }
+  .h-1 {
+    height: calc(var(--spacing) * 1);
+  }
   .h-2 {
     height: calc(var(--spacing) * 2);
   }
@@ -445,6 +468,9 @@ window.$RefreshSig$ = () => (type) => type;</script>
   }
   .max-h-\[700px\] {
     max-height: 700px;
+  }
+  .w-1\.5 {
+    width: calc(var(--spacing) * 1.5);
   }
   .w-2 {
     width: calc(var(--spacing) * 2);
@@ -525,8 +551,14 @@ window.$RefreshSig$ = () => (type) => type;</script>
     --tw-translate-y: calc(calc(1 / 2 * 100%) * -1);
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
+  .cursor-grab {
+    cursor: grab;
+  }
   .touch-none {
     touch-action: none;
+  }
+  .appearance-none {
+    appearance: none;
   }
   .flex-col {
     flex-direction: column;
@@ -610,6 +642,10 @@ window.$RefreshSig$ = () => (type) => type;</script>
   .rounded-full {
     border-radius: calc(infinity * 1px);
   }
+  .rounded-t-sm {
+    border-top-left-radius: var(--radius-sm);
+    border-top-right-radius: var(--radius-sm);
+  }
   .border {
     border-style: var(--tw-border-style);
     border-width: 1px;
@@ -634,6 +670,9 @@ window.$RefreshSig$ = () => (type) => type;</script>
   }
   .border-gray-300 {
     border-color: var(--color-gray-300);
+  }
+  .border-gray-900 {
+    border-color: var(--color-gray-900);
   }
   .border-purple-100 {
     border-color: var(--color-purple-100);
@@ -683,8 +722,14 @@ window.$RefreshSig$ = () => (type) => type;</script>
       background-color: color-mix(in oklab, var(--color-emerald-500) 95%, transparent);
     }
   }
+  .bg-gray-50 {
+    background-color: var(--color-gray-50);
+  }
   .bg-gray-100 {
     background-color: var(--color-gray-100);
+  }
+  .bg-gray-200 {
+    background-color: var(--color-gray-200);
   }
   .bg-gray-300 {
     background-color: var(--color-gray-300);
@@ -694,6 +739,24 @@ window.$RefreshSig$ = () => (type) => type;</script>
   }
   .bg-gray-900 {
     background-color: var(--color-gray-900);
+  }
+  .bg-gray-900\/15 {
+    background-color: color-mix(in srgb, oklch(21% 0.034 264.665) 15%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-gray-900) 15%, transparent);
+    }
+  }
+  .bg-gray-900\/40 {
+    background-color: color-mix(in srgb, oklch(21% 0.034 264.665) 40%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-gray-900) 40%, transparent);
+    }
+  }
+  .bg-gray-900\/95 {
+    background-color: color-mix(in srgb, oklch(21% 0.034 264.665) 95%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-gray-900) 95%, transparent);
+    }
   }
   .bg-green-100 {
     background-color: var(--color-green-100);
@@ -706,6 +769,9 @@ window.$RefreshSig$ = () => (type) => type;</script>
   }
   .bg-teal-100 {
     background-color: var(--color-teal-100);
+  }
+  .bg-transparent {
+    background-color: transparent;
   }
   .bg-white {
     background-color: var(--color-white);
@@ -888,6 +954,9 @@ window.$RefreshSig$ = () => (type) => type;</script>
   }
   .text-center {
     text-align: center;
+  }
+  .text-left {
+    text-align: left;
   }
   .text-right {
     text-align: right;
@@ -1089,6 +1158,13 @@ window.$RefreshSig$ = () => (type) => type;</script>
       }
     }
   }
+  .hover\:border-gray-900 {
+    &:hover {
+      @media (hover: hover) {
+        border-color: var(--color-gray-900);
+      }
+    }
+  }
   .hover\:bg-gray-300 {
     &:hover {
       @media (hover: hover) {
@@ -1118,6 +1194,84 @@ window.$RefreshSig$ = () => (type) => type;</script>
     &:focus {
       --tw-outline-style: none;
       outline-style: none;
+    }
+  }
+  .active\:cursor-grabbing {
+    &:active {
+      cursor: grabbing;
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:pointer-events-auto {
+    &::-webkit-slider-thumb {
+      pointer-events: auto;
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:z-20 {
+    &::-webkit-slider-thumb {
+      z-index: 20;
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:h-5 {
+    &::-webkit-slider-thumb {
+      height: calc(var(--spacing) * 5);
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:h-6 {
+    &::-webkit-slider-thumb {
+      height: calc(var(--spacing) * 6);
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:w-5 {
+    &::-webkit-slider-thumb {
+      width: calc(var(--spacing) * 5);
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:w-6 {
+    &::-webkit-slider-thumb {
+      width: calc(var(--spacing) * 6);
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:cursor-grab {
+    &::-webkit-slider-thumb {
+      cursor: grab;
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:appearance-none {
+    &::-webkit-slider-thumb {
+      appearance: none;
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:rounded-full {
+    &::-webkit-slider-thumb {
+      border-radius: calc(infinity * 1px);
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:border {
+    &::-webkit-slider-thumb {
+      border-style: var(--tw-border-style);
+      border-width: 1px;
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:border-2 {
+    &::-webkit-slider-thumb {
+      border-style: var(--tw-border-style);
+      border-width: 2px;
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:border-gray-300 {
+    &::-webkit-slider-thumb {
+      border-color: var(--color-gray-300);
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:bg-white {
+    &::-webkit-slider-thumb {
+      background-color: var(--color-white);
+    }
+  }
+  .\[\&\:\:-webkit-slider-thumb\]\:shadow-md {
+    &::-webkit-slider-thumb {
+      --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+      box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     }
   }
 }
@@ -1188,6 +1342,21 @@ body {
 }
 .gradient-electric {
   background: linear-gradient(135deg, #6666FF 0%, #8888FF 100%);
+}
+.bg-electric-purple {
+  background-color: #6666FF;
+}
+.bg-electric-purple\/15 {
+  background-color: rgba(102, 102, 255, 0.15);
+}
+.bg-electric-purple\/8 {
+  background-color: rgba(102, 102, 255, 0.08);
+}
+.border-electric-purple {
+  border-color: #6666FF;
+}
+.text-electric-purple {
+  color: #6666FF;
 }
 .gradient-warm {
   background: linear-gradient(135deg, #FF8E53 0%, #FF6B6B 100%);
@@ -1530,7 +1699,7 @@ body {
 }
 </style></head>
   <body>
-    <div id="root"><div class="h-screen w-full max-w-md mx-auto bg-white overflow-hidden relative"><div class="flex flex-col h-full px-6 pt-12 pb-8" style="opacity: 1; transform: none;"><div class="flex items-center gap-2 mb-8"><div class="w-2 h-2 rounded-full bg-electric-purple"></div><div class="w-2 h-2 rounded-full bg-electric-purple/40"></div><div class="w-2 h-2 rounded-full bg-gray-400"></div><div class="w-2 h-2 rounded-full bg-gray-400"></div></div><h1 class="text-3xl font-bold text-gray-900 mb-3">选择 5 个你感兴趣的</h1><p class="text-gray-500 text-base mb-8">帮助我们了解你的旅行偏好，推荐更匹配的目的地</p><div class="flex-1 overflow-y-auto scrollbar-hide"><div class="flex flex-wrap gap-3"><button class="px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-gray-200 bg-white text-gray-700 hover:border-gray-300" tabindex="0"><span class="mr-2">🏖️</span>海滩度假</button><button class="px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-electric-purple bg-electric-purple text-white" tabindex="0" style="transform: none;"><span class="mr-2">🍜</span>美食探索</button><button class="px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-gray-200 bg-white text-gray-700 hover:border-gray-300" tabindex="0"><span class="mr-2">🏛️</span>历史文化</button><button class="px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-gray-200 bg-white text-gray-700 hover:border-gray-300" tabindex="0"><span class="mr-2">🏔️</span>户外冒险</button><button class="px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-electric-purple bg-electric-purple text-white" tabindex="0" style="transform: none;"><span class="mr-2">🛍️</span>购物血拼</button><button class="px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-electric-purple bg-electric-purple text-white" tabindex="0" style="transform: none;"><span class="mr-2">📸</span>拍照打卡</button><button class="px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-gray-200 bg-white text-gray-700 hover:border-gray-300" tabindex="0"><span class="mr-2">🍷</span>品酒体验</button><button class="px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-gray-200 bg-white text-gray-700 hover:border-gray-300" tabindex="0"><span class="mr-2">🧘</span>放松疗愈</button><button class="px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-electric-purple bg-electric-purple text-white" tabindex="0" style="transform: none;"><span class="mr-2">🎨</span>艺术展览</button><button class="px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-gray-200 bg-white text-gray-700 hover:border-gray-300" tabindex="0"><span class="mr-2">🌃</span>夜生活</button><button class="px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-gray-200 bg-white text-gray-700 hover:border-gray-300" tabindex="0"><span class="mr-2">👨‍‍👧</span>亲子友好</button><button class="px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-gray-200 bg-white text-gray-700 hover:border-gray-300" tabindex="0"><span class="mr-2">💑</span>浪漫情侣</button></div></div><div class="flex items-center justify-between pt-6 border-t border-gray-100 safe-bottom"><button class="text-gray-400 font-medium px-4 py-2">跳过</button><div class="flex items-center gap-4"><span class="text-gray-400 text-sm">4/5 已选择</span><button disabled="" class="w-14 h-14 rounded-full flex items-center justify-center transition-all bg-gray-300 text-gray-400" tabindex="0"><span class="text-xl">→</span></button></div></div></div></div></div>
+    <div id="root"></div>
     <script type="module" src="./flight-tinder_files/main.jsx"></script>
   
 
