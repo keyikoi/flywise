@@ -9,7 +9,7 @@ const destinations = [
     city: '京都',
     country: '日本',
     image: '🏯',
-    gradient: 'from-orange-400 to-red-500',
+    gradient: 'from-purple-400 to-indigo-500',
     tagline: '千年古都与樱花之美',
     bestTime: '3-5 月樱花季',
   },
@@ -168,7 +168,7 @@ function getPriceColor(status) {
   switch (status) {
     case 'low': return 'text-green-600 bg-green-100'
     case 'good': return 'text-teal-600 bg-teal-100'
-    case 'high': return 'text-orange-600 bg-orange-100'
+    case 'high': return 'text-purple-600 bg-gray-900/15'
     default: return 'text-gray-600 bg-gray-100'
   }
 }
@@ -208,9 +208,9 @@ function OnboardingPage1({ onComplete, data, onUpdate }) {
     >
       {/* 进度指示器 */}
       <div className="flex items-center gap-2 mb-8">
-        <div className="w-2 h-2 rounded-full bg-orange-500" />
+        <div className="w-2 h-2 rounded-full bg-gray-900" />
         {[1, 2, 3].map((_, i) => (
-          <div key={i} className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-orange-300' : 'bg-gray-200'}`} />
+          <div key={i} className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-gray-900/40' : 'bg-gray-400'}`} />
         ))}
       </div>
 
@@ -231,7 +231,7 @@ function OnboardingPage1({ onComplete, data, onUpdate }) {
               onClick={() => toggleInterest(index)}
               className={`px-4 py-3 rounded-full border-2 text-sm font-medium transition-all ${
                 selected.has(index)
-                  ? 'border-orange-500 bg-orange-50 text-orange-700'
+                  ? 'border-gray-900 bg-white text-gray-900'
                   : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
               }`}
               whileTap={{ scale: 0.95 }}
@@ -257,8 +257,8 @@ function OnboardingPage1({ onComplete, data, onUpdate }) {
             disabled={selected.size < 5}
             className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${
               selected.size >= 5
-                ? 'bg-orange-500 text-white shadow-lg'
-                : 'bg-gray-200 text-gray-400'
+                ? 'bg-gray-900 text-white shadow-lg'
+                : 'bg-gray-300 text-gray-400'
             }`}
             whileTap={{ scale: 0.9 }}
           >
@@ -295,17 +295,17 @@ function OnboardingPage2({ onComplete, data, onUpdate }) {
     >
       {/* 进度指示器 */}
       <div className="flex items-center gap-2 mb-8 flex-shrink-0">
-        <div className="w-2 h-2 rounded-full bg-orange-500" />
-        <div className="w-2 h-2 rounded-full bg-orange-500" />
+        <div className="w-2 h-2 rounded-full bg-gray-900" />
+        <div className="w-2 h-2 rounded-full bg-gray-900" />
         {[1, 2].map((_, i) => (
-          <div key={i} className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-orange-300' : 'bg-gray-200'}`} />
+          <div key={i} className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-gray-900/40' : 'bg-gray-300'}`} />
         ))}
       </div>
 
       {/* 标题 - 和谁旅行 */}
       <div className="mb-8 flex-shrink-0">
-        <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-4">
-          <Users className="w-6 h-6 text-orange-500" />
+        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+          <Users className="w-6 h-6 text-gray-900" />
         </div>
         <h1 className="text-3xl font-bold text-gray-900 mb-3">
           和谁一起旅行？
@@ -325,23 +325,23 @@ function OnboardingPage2({ onComplete, data, onUpdate }) {
               onClick={() => toggleTripType(index)}
               className={`w-full p-4 rounded-2xl border-2 flex items-center justify-between transition-all ${
                 selected.has(index)
-                  ? 'border-orange-500 bg-orange-50'
-                  : 'border-gray-100 bg-white hover:border-gray-200'
+                  ? 'border-gray-900 bg-white text-gray-900'
+                  : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
               whileTap={{ scale: 0.98 }}
             >
               <span className="flex items-center gap-3">
                 <span className="text-2xl">{item.icon}</span>
-                <span className="font-medium text-gray-900">{item.label}</span>
+                <span className={`font-medium ${selected.has(index) ? 'text-gray-900' : 'text-gray-900'}`}>{item.label}</span>
               </span>
-              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                selected.has(index) ? 'border-orange-500 bg-orange-500' : 'border-gray-300'
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                selected.has(index) ? 'border-gray-900 bg-gray-900' : 'border-gray-300'
               }`}>
                 {selected.has(index) && (
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="text-white text-xs"
+                    className="text-white text-xs font-bold"
                   >
                     ✓
                   </motion.span>
@@ -361,16 +361,16 @@ function OnboardingPage2({ onComplete, data, onUpdate }) {
               <motion.button
                 key={index}
                 onClick={() => setBudget(index)}
-                className={`flex-1 p-4 rounded-2xl border-2 transition-all ${
+                className={`flex-1 p-4 rounded-2xl border transition-all ${
                   budget === index
-                    ? 'border-orange-500 bg-orange-50'
-                    : 'border-gray-100 bg-white hover:border-gray-200'
+                    ? 'border-gray-900 bg-white text-gray-900'
+                    : 'border-gray-200 bg-white hover:border-gray-300'
                 }`}
                 whileTap={{ scale: 0.95 }}
               >
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">{item.icon}</div>
-                  <div className="text-xs text-gray-500 mt-1">{item.range}</div>
+                  <div className={`text-2xl font-bold ${budget === index ? 'text-gray-900' : 'text-gray-900'}`}>{item.icon}</div>
+                  <div className={`text-xs mt-1 ${budget === index ? 'text-gray-500' : 'text-gray-500'}`}>{item.range}</div>
                 </div>
               </motion.button>
             ))}
@@ -382,7 +382,7 @@ function OnboardingPage2({ onComplete, data, onUpdate }) {
       <div className="flex justify-end pt-6 border-t border-gray-100 safe-bottom flex-shrink-0">
         <motion.button
           onClick={onComplete}
-          className="w-14 h-14 rounded-full bg-orange-500 text-white flex items-center justify-center shadow-lg"
+          className="w-14 h-14 rounded-full bg-gray-900 text-white flex items-center justify-center shadow-medium"
           whileTap={{ scale: 0.9 }}
         >
           <span className="text-xl">→</span>
@@ -411,16 +411,16 @@ function OnboardingPage3({ onComplete, data, onUpdate }) {
     >
       {/* 进度指示器 */}
       <div className="flex items-center gap-2 mb-8 flex-shrink-0">
-        <div className="w-2 h-2 rounded-full bg-orange-500" />
-        <div className="w-2 h-2 rounded-full bg-orange-500" />
-        <div className="w-2 h-2 rounded-full bg-orange-500" />
-        <div className="w-2 h-2 rounded-full bg-orange-300" />
+        <div className="w-2 h-2 rounded-full bg-gray-900" />
+        <div className="w-2 h-2 rounded-full bg-gray-900" />
+        <div className="w-2 h-2 rounded-full bg-gray-900" />
+        <div className="w-2 h-2 rounded-full bg-gray-900/40" />
       </div>
 
       {/* 标题 */}
       <div className="mb-8 flex-shrink-0">
-        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-4">
-          <MapPin className="w-6 h-6 text-blue-500" />
+        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+          <MapPin className="w-6 h-6 text-gray-900" />
         </div>
         <h1 className="text-3xl font-bold text-gray-900 mb-3">
           你从哪里出发？
@@ -432,34 +432,27 @@ function OnboardingPage3({ onComplete, data, onUpdate }) {
 
       {/* 可滚动内容区 */}
       <div className="flex-1 overflow-y-auto scrollbar-hide">
-        {/* 出发地输入 */}
+        {/* 出发城市选择 */}
         <div className="mb-8">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
             出发城市
           </label>
-          <div className="relative">
-            <input
-              type="text"
-              value={departure}
-              onChange={(e) => setDeparture(e.target.value)}
-              placeholder="搜索城市或机场"
-              className="w-full p-4 pl-12 rounded-2xl border-2 border-gray-200 focus:border-orange-500 focus:outline-none text-lg"
-            />
-            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          </div>
-        </div>
-
-        {/* 快速选择 */}
-        <div className="mb-8">
-          <p className="text-sm text-gray-500 mb-3">或使用当前位置</p>
           <motion.button
-            className="w-full p-4 rounded-2xl bg-gray-100 flex items-center gap-3 hover:bg-gray-200 transition-colors"
+            className="w-full p-4 rounded-2xl border-2 border-gray-900 flex items-center justify-between hover:border-gray-900 transition-colors"
             whileTap={{ scale: 0.98 }}
           >
-            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-              <span className="text-lg">📍</span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                <MapPin className="w-5 h-5 text-gray-600" />
+              </div>
+              <div className="text-left">
+                <div className="font-medium text-gray-900">旧金山</div>
+                <div className="text-sm text-gray-500">SFO · 当前位置</div>
+              </div>
             </div>
-            <span className="font-medium text-gray-900">旧金山 (SFO)</span>
+            <svg className="w-5 h-5 text-gray-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
           </motion.button>
         </div>
 
@@ -475,20 +468,26 @@ function OnboardingPage3({ onComplete, data, onUpdate }) {
                 onClick={() => setSelectedDates(option.value)}
                 className={`w-full p-4 rounded-2xl border-2 flex items-center justify-between transition-all ${
                   selectedDates === option.value
-                    ? 'border-orange-500 bg-orange-50'
-                    : 'border-gray-100 bg-white hover:border-gray-200'
+                    ? 'border-gray-900 bg-white text-gray-900'
+                    : 'border-gray-200 bg-white hover:border-gray-300'
                 }`}
                 whileTap={{ scale: 0.98 }}
               >
                 <span className="flex items-center gap-3">
                   <span className="text-2xl">{option.icon}</span>
-                  <span className="font-medium text-gray-900">{option.label}</span>
+                  <span className={`font-medium ${selectedDates === option.value ? 'text-gray-900' : 'text-gray-900'}`}>{option.label}</span>
                 </span>
-                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                  selectedDates === option.value ? 'border-orange-500 bg-orange-500' : 'border-gray-300'
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                  selectedDates === option.value ? 'border-gray-900 bg-gray-900' : 'border-gray-300'
                 }`}>
                   {selectedDates === option.value && (
-                    <span className="text-white text-xs">✓</span>
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="text-white text-xs font-bold"
+                    >
+                      ✓
+                    </motion.span>
                   )}
                 </div>
               </motion.button>
@@ -501,7 +500,7 @@ function OnboardingPage3({ onComplete, data, onUpdate }) {
       <div className="flex justify-end pt-6 border-t border-gray-100 safe-bottom flex-shrink-0">
         <motion.button
           onClick={onComplete}
-          className="w-14 h-14 rounded-full bg-orange-500 text-white flex items-center justify-center shadow-lg"
+          className="w-14 h-14 rounded-full bg-gray-900 text-white flex items-center justify-center shadow-medium"
           whileTap={{ scale: 0.9 }}
         >
           <span className="text-xl">→</span>
@@ -620,30 +619,31 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
   const scale = useTransform(x, [-100, 100], [0.97, 1])
 
   const handleDragEnd = (_, info) => {
-    const threshold = 80 // 降低阈值，更灵敏
+    const threshold = 60 // 更低的阈值
     const velocity = info.velocity.x
 
-    if (Math.abs(info.offset.x) > threshold || Math.abs(velocity) > 500) {
+    if (Math.abs(info.offset.x) > threshold || Math.abs(velocity) > 400) {
       // 达到阈值或速度够快 → 飞出
       const direction = info.offset.x > 0 ? 1 : -1
       const flyDistance = window.innerWidth * 0.8
 
+      // 立即触发 onSwipe，让下层卡片提前准备
+      onSwipe(cardId, direction > 0 ? 'right' : 'left')
+
+      // 然后飞出去
       animate(x, direction * flyDistance, {
-        type: 'spring',
-        stiffness: 300,
-        damping: 25,
-        mass: 0.8,
-        duration: 0.4,
-        onComplete: () => onSwipe(cardId, direction > 0 ? 'right' : 'left')
+        type: 'tween',
+        ease: 'easeOut',
+        duration: 0.25
       })
     } else {
-      // 回弹 - 更 Q 弹的效果
+      // 回弹 - 更快更干脆
       animate(x, 0, {
         type: 'spring',
-        stiffness: 400,
-        damping: 30,
-        mass: 0.5,
-        duration: 0.5
+        stiffness: 500,
+        damping: 35,
+        mass: 0.4,
+        duration: 0.3
       })
     }
   }
@@ -658,12 +658,12 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
         zIndex: isTopCard ? 10 : 1,
         cursor: isTopCard ? 'grab' : 'default'
       }}
-      drag={isTopCard}
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.6} // 降低弹性，增加阻尼
-      dragMomentum={false} // 关闭惯性，更跟手
+      drag={isTopCard ? 'x' : false}
+      dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
+      dragElastic={0.4}
+      dragMomentum={false}
       onDragEnd={isTopCard ? handleDragEnd : undefined}
-      className="absolute inset-0 bg-white rounded-[32px] shadow-strong overflow-hidden touch-none select-none"
+      className="absolute inset-0 bg-white rounded-[32px] overflow-hidden touch-none select-none border border-gray-100"
       initial={{ scale: 0.93, opacity: 0, y: 20 }}
       animate={
         isTopCard
@@ -673,10 +673,10 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
       exit={{ scale: 0.85, opacity: 0, rotate: isTopCard ? 20 : -20 }}
       transition={{
         type: 'spring',
-        stiffness: 350,
-        damping: 30,
-        mass: 0.6,
-        duration: 0.25
+        stiffness: 400,
+        damping: 35,
+        mass: 0.5,
+        duration: 0.2
       }}
     >
       {/* 目的地插画区域 - 视觉升级 */}
@@ -699,7 +699,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
             {destination.image}
           </motion.div>
           <motion.h2
-            className="text-4xl font-extrabold tracking-tight drop-shadow-lg"
+            className="text-4xl font-extrabold tracking-tight drop-shadow-medium"
             initial={{ y: 15, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -735,7 +735,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
             </motion.div>
             <motion.div
               style={{ opacity: nopeOpacity }}
-              className="absolute top-5 right-5 px-5 py-2.5 bg-rose-500/95 backdrop-blur-md rounded-full text-white font-bold text-sm shadow-xl border-2 border-white/50"
+              className="absolute top-5 right-5 px-5 py-2.5 bg-emerald-500/95 backdrop-blur-md rounded-full text-white font-bold text-sm shadow-xl border-2 border-white/50"
             >
               <span className="flex items-center gap-1.5">
                 <X className="w-4 h-4" strokeWidth={3} />
@@ -748,8 +748,8 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
 
       {/* 航班信息区域 - 视觉升级 */}
       <div className="p-5">
-        {/* 航线信息卡片 - 主题色点缀 */}
-        <div className="bg-gradient-to-br from-mist-gray to-white rounded-2xl p-5 mb-4 border border-gray-100 shadow-soft">
+        {/* 航线信息 - 去掉卡片感，更自然流畅 */}
+        <div className="mb-4 pb-4 border-b border-gray-100">
           {/* 时间行 */}
           <div className="flex items-center gap-4">
             {/* 左侧：出发信息 */}
@@ -763,8 +763,8 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
 
             {/* 中间：时长胶囊 + 线段 */}
             <div className="flex-1 flex items-center justify-center">
-              <div className="flex-1 max-w-14 h-px bg-gradient-to-r from-gray-300 to-gray-400" />
-              <div className="px-4 py-2.5 bg-ink-black rounded-full text-white text-xs font-bold whitespace-nowrap flex items-center gap-2 -mx-px shadow-md">
+              <div className="flex-1 max-w-14 h-px bg-gray-300" />
+              <div className="px-4 py-2.5 bg-gray-900 rounded-full text-white text-xs font-bold whitespace-nowrap flex items-center gap-2 -mx-px">
                 <span>{flight.duration}</span>
                 {flight.stops === '直飞' && (
                   <>
@@ -773,7 +773,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
                   </>
                 )}
               </div>
-              <div className="flex-1 max-w-14 h-px bg-gradient-to-l from-gray-300 to-gray-400" />
+              <div className="flex-1 max-w-14 h-px bg-gray-300" />
             </div>
 
             {/* 右侧：到达信息 */}
@@ -794,7 +794,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
           {/* 转机标签 */}
           {flight.stops !== '直飞' && (
             <div className="flex items-center justify-center mt-4">
-              <span className="px-3 py-1.5 bg-orange-100/80 text-orange-700 rounded-full text-xs font-bold border border-orange-200">
+              <span className="px-3 py-1.5 bg-gray-900/15/80 text-gray-900 rounded-full text-xs font-bold border border-purple-200">
                 {flight.stops}
               </span>
             </div>
@@ -816,10 +816,10 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
         </div>
 
         {/* 种草文案 - 电光紫主题 */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-purple-50/80 to-electric-purple/10 rounded-2xl p-4 border border-purple-100/50">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-electric-purple/15 to-transparent rounded-full blur-xl" />
+        <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-electric-purple/15 to-pink-200/15 rounded-full blur-2xl" />
           <div className="flex items-start gap-3 relative z-10">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-electric-purple to-purple-400 flex items-center justify-center flex-shrink-0 shadow-colored">
+            <div className="w-10 h-10 rounded-full gradient-electric flex items-center justify-center flex-shrink-0 shadow-colored">
               <span className="text-lg">✨</span>
             </div>
             <div>
@@ -831,7 +831,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
       </div>
 
       {/* 底部操作按钮 - 重新设计 */}
-      <div className="px-5 pb-6 pt-2 flex items-center justify-center gap-5">
+      <div className="px-5 pb-5 pt-1 flex items-center justify-center gap-5">
         {/* 跳过按钮 */}
         <motion.button
           onClick={() => onSwipe('left')}
@@ -842,7 +842,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
           <X className="w-8 h-8 text-gray-400 group-hover:text-rose-500 transition-colors" strokeWidth={2.5} />
         </motion.button>
 
-        {/* 收藏按钮 - 电光紫主题 */}
+        {/* 收藏按钮 - 黑色主题 */}
         <motion.button
           onClick={() => onSwipe('right')}
           className="w-16 h-16 rounded-full gradient-electric flex items-center justify-center shadow-colored hover:shadow-lg transition-shadow"
@@ -865,7 +865,7 @@ function SavedListPage({ saved, onBack, destinations }) {
         <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-white/60 transition-colors">
           <ChevronLeft className="w-6 h-6 text-ink-black" />
         </button>
-        <h1 className="text-lg font-extrabold text-ink-black tracking-tight">已收藏 <span className="text-electric-purple">({saved.length})</span></h1>
+        <h1 className="text-lg font-extrabold text-ink-black tracking-tight">已收藏 <span className="text-gray-900">({saved.length})</span></h1>
       </div>
 
       {/* 内容区 */}
@@ -904,7 +904,7 @@ function SavedListPage({ saved, onBack, destinations }) {
                       <p className="text-sm text-slate-gray mt-0.5">{flight.date}</p>
                       <p className="text-xs text-slate-gray mt-1 font-medium">{flight.route}</p>
                       <div className="flex items-center justify-between mt-2.5">
-                        <span className="text-xl font-bold flight-time text-electric-purple">${flight.price}</span>
+                        <span className="text-xl font-bold flight-time text-gray-900">${flight.price}</span>
                         <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${getPriceColor(flight.priceStatus)}`}>
                           {getPriceLabel(flight.priceStatus, flight.priceChange)}
                         </span>
@@ -937,10 +937,8 @@ function SwipePage({ data, onBack }) {
     }
     setSwipedCards(prev => new Set(prev).add(cardId))
 
-    // 动画完成后切换到下一张
-    setTimeout(() => {
-      setCurrentIndex(prev => prev + 1)
-    }, 300)
+    // 立即切换到下一张，让动画和卡片切换同步
+    setCurrentIndex(prev => prev + 1)
   }
 
   // 显示收藏列表
@@ -982,7 +980,7 @@ function SwipePage({ data, onBack }) {
       <div className="flex-1 relative p-4 overflow-hidden">
         <div className="h-full flex items-center justify-center">
           {/* 卡片容器 */}
-          <div className="relative w-full h-full max-h-[680px]">
+          <div className="relative w-full h-full max-h-[700px]">
             {/* 渲染顺序：先渲染下层卡片，再渲染顶层卡片 */}
             <AnimatePresence>
               {/* 下层卡片（在底层） */}

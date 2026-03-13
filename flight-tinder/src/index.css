@@ -2,10 +2,19 @@
 
 /* ========== 设计令牌 ========== */
 :root {
-  /* 主题色 - Electric Purple 电光紫 */
+  /* 主题色 - Electric Purple 电光紫 #6666FF */
   --electric-purple: #6666FF;
   --electric-purple-light: #8888FF;
   --electric-purple-dark: #5555EE;
+  --electric-purple-rgb: 102, 102, 255;
+
+  /* 紫色系 - 同色系不同透明度 */
+  --purple-50: rgba(102, 102, 255, 0.08);
+  --purple-100: rgba(102, 102, 255, 0.15);
+  --purple-200: rgba(102, 102, 255, 0.25);
+  --purple-300: rgba(102, 102, 255, 0.4);
+  --purple-400: rgba(102, 102, 255, 0.6);
+  --purple-500: rgba(102, 102, 255, 0.8);
 
   /* 强调色 */
   --coral-pink: #FF6B6B;
@@ -13,7 +22,7 @@
   --sunset-orange: #FF8E53;
 
   /* 中性色 */
-  --ink-black: #1A1A2E;
+  --ink-black: #0a0a0f;
   --slate-gray: #6B7280;
   --mist-gray: #F3F4F6;
   --pure-white: #FFFFFF;
@@ -86,6 +95,27 @@ body {
 /* ========== 渐变背景 ========== */
 .gradient-electric {
   background: linear-gradient(135deg, #6666FF 0%, #8888FF 100%);
+}
+
+/* ========== Electric Purple 工具类 ========== */
+.bg-electric-purple {
+  background-color: #6666FF;
+}
+
+.bg-electric-purple\/15 {
+  background-color: rgba(102, 102, 255, 0.15);
+}
+
+.bg-electric-purple\/8 {
+  background-color: rgba(102, 102, 255, 0.08);
+}
+
+.border-electric-purple {
+  border-color: #6666FF;
+}
+
+.text-electric-purple {
+  color: #6666FF;
 }
 
 .gradient-warm {
