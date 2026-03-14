@@ -759,13 +759,13 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
       }}
     >
       {/* 目的地插画区域 - 视觉升级 */}
-      <div className={`h-[380px] relative overflow-hidden`}>
+      <div className={`h-[395px] relative overflow-hidden`}>
         {/* 渐变背景 */}
         <div className={`absolute inset-0 bg-gradient-to-br ${destination.gradient}`} />
 
         {/* 动态光晕装饰 */}
-        <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/25 rounded-full blur-3xl" />
-        <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-white/20 rounded-full blur-2xl" />
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/25 rounded-full blur-[64px]" />
+        <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-white/20 rounded-full blur-[40px]" />
 
         {/* 目的地内容 */}
         <div className={`relative flex flex-col items-center justify-center ${destination.textColor} py-8`}>
@@ -791,7 +791,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
           </motion.h2>
           {/* 推荐语 */}
           <motion.div
-            className="flex items-start justify-center gap-1 mt-4 mb-6"
+            className="flex items-start justify-center gap-1 mt-[10px] mb-6"
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -835,24 +835,24 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
       </div>
 
       {/* 航班信息区域 */}
-      <div className="p-5 pt-6">
+      <div className="px-[20px] py-[24px]">
         {/* 航线信息 - 三段式布局 */}
-        <div className="mb-3">
+        <div className="mb-[12px]">
           {/* 时间行 */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-[12px]">
             {/* 左侧：出发信息块 - 左对齐 */}
-            <div className="flex-shrink-0 text-left">
-              <div className="text-xs text-slate-gray mb-1 font-medium">{flight.departureDate}</div>
-              <div className="text-4xl font-bold flight-time text-ink-black tracking-tight leading-none">
+            <div className="flex-shrink-0 text-left w-[92px]">
+              <div className="text-[12px] text-black mb-[4px] font-medium">{flight.departureDate}</div>
+              <div className="text-[36px] font-bold font-['Manrope'] text-black tracking-[-0.72px] leading-none">
                 {flight.departureTime}
               </div>
-              <div className="text-lg font-['Manrope'] font-light text-slate-gray mt-1 tracking-wide">
+              <div className="text-[18px] font-light font-['Manrope'] text-black mt-[4px] tracking-[0.45px]">
                 {flight.departureAirport}
               </div>
             </div>
 
             {/* 中间：时长胶囊 + 中转信息（整体居中） */}
-            <div className="flex-1 flex flex-col items-center justify-center px-4">
+            <div className="flex-1 flex flex-col items-center justify-center">
               <div className="flex items-center w-full">
                 {/* 左侧细线 */}
                 <div className="flex-1 h-px bg-gray-900 max-w-20" />
@@ -880,12 +880,12 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
             </div>
 
             {/* 右侧：到达信息块 - 右对齐 */}
-            <div className="flex-shrink-0 text-right">
-              <div className="text-xs text-slate-gray mb-1 font-medium">{flight.arrivalDate}</div>
-              <div className="text-4xl font-bold flight-time text-ink-black tracking-tight leading-none">
+            <div className="flex-shrink-0 text-right w-[86px]">
+              <div className="text-[12px] text-black mb-[4px] font-medium text-right">{flight.arrivalDate}</div>
+              <div className="text-[36px] font-bold font-['Manrope'] text-black tracking-[-0.72px] leading-none">
                 {flight.arrivalTime}
               </div>
-              <div className="text-lg font-['Manrope'] font-light text-slate-gray mt-1 tracking-wide">
+              <div className="text-[18px] font-light font-['Manrope'] text-black mt-[4px] tracking-[0.45px]">
                 {flight.arrivalAirport}
               </div>
             </div>
@@ -893,7 +893,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
         </div>
 
         {/* 分割线 */}
-        <div className="h-px bg-gray-100 mb-3" />
+        <div className="h-px bg-[#f3f4f6] mb-[12px]" />
 
         {/* 价格区域 */}
         <div className="flex items-end justify-between mb-4">
@@ -914,21 +914,21 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
       </div>
 
       {/* 底部操作按钮 */}
-      <div className="px-5 pb-10 flex items-center justify-center gap-5">
-        {/* 跳过按钮 */}
+      <div className="px-[134px] pb-[30px] pt-[12px] flex items-center justify-center gap-[20px]">
+        {/* 跳过按钮 - 白色带边框 */}
         <motion.button
           onClick={() => onSwipe('left')}
-          className="w-16 h-16 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center shadow-medium hover:shadow-lg transition-shadow group"
+          className="w-[64px] h-[64px] rounded-full bg-white border-2 border-[#e5e7eb] flex items-center justify-center shadow-[0px_8px_30px_0px_rgba(0,0,0,0.12)] hover:shadow-lg transition-shadow group"
           whileTap={{ scale: 0.85 }}
           whileHover={{ scale: 1.05 }}
         >
           <X className="w-8 h-8 text-gray-400 group-hover:text-rose-500 transition-colors" strokeWidth={2.5} />
         </motion.button>
 
-        {/* 收藏按钮 - 黑色主题 */}
+        {/* 收藏按钮 - 渐变紫色 */}
         <motion.button
           onClick={() => onSwipe('right')}
-          className="w-16 h-16 rounded-full gradient-electric flex items-center justify-center shadow-colored hover:shadow-lg transition-shadow"
+          className="w-[64px] h-[64px] rounded-full flex items-center justify-center shadow-[0px_8px_30px_0px_rgba(102,102,255,0.25)] hover:shadow-lg transition-shadow bg-gradient-to-br from-[#6666ff] to-[#8888ff]"
           whileTap={{ scale: 0.85 }}
           whileHover={{ scale: 1.05 }}
         >
