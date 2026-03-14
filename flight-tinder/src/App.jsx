@@ -598,6 +598,48 @@ function OnboardingPage3({ onComplete, data, onUpdate }) {
   )
 }
 
+// ============ 爱心动效组件 ============
+function HeartEffect({ heartEffect, onComplete }) {
+  const { startX, startY, endX, endY } = heartEffect
+
+  return (
+    <motion.div
+      className="fixed z-[100] pointer-events-none"
+      initial={{
+        x: startX,
+        y: startY,
+        scale: 0,
+        opacity: 1
+      }}
+      animate={{
+        x: endX,
+        y: endY,
+        scale: 0.3,
+        opacity: 0
+      }}
+      exit={{ scale: 0, opacity: 0 }}
+      transition={{
+        duration: 0.8,
+        ease: [0.25, 0.1, 0.25, 1]
+      }}
+      onAnimationComplete={onComplete}
+    >
+      <motion.div
+        className="w-[120px] h-[120px] gradient-electric rounded-full flex items-center justify-center shadow-colored"
+        initial={{ scale: 0.5, rotate: -10 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{
+          duration: 0.3,
+          type: 'spring',
+          stiffness: 400
+        }}
+      >
+        <Heart className="w-[60px] h-[60px] text-white" strokeWidth={0} fill="white" />
+      </motion.div>
+    </motion.div>
+  )
+}
+
 // ============ 教程卡片 ============
 function TutorialCard({ onComplete }) {
   return (
@@ -678,7 +720,7 @@ function TutorialCard({ onComplete }) {
 }
 
 // ============ 可拖拽的航班卡片 ============
-function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
+function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId, onShowHeartEffect }) {
   const cardRef = useRef(null)
 
   // 运动值
@@ -705,6 +747,17 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
       // 达到阈值或速度够快 → 飞出
       const direction = info.offset.x > 0 ? 1 : -1
       const flyDistance = window.innerWidth * 0.8
+
+      // 如果是右滑，触发动效
+      if (direction > 0) {
+        // 获取卡片中心位置
+        const cardRect = cardRef.current?.getBoundingClientRect()
+        if (cardRect && onShowHeartEffect) {
+          const startX = cardRect.left + cardRect.width / 2
+          const startY = cardRect.top + cardRect.height / 2
+          onShowHeartEffect({ startX, startY })
+        }
+      }
 
       // 立即触发 onSwipe，让下层卡片提前准备
       onSwipe(cardId, direction > 0 ? 'right' : 'left')
@@ -1015,6 +1068,7 @@ function SwipePage({ data, onBack }) {
   const [showTutorial, setShowTutorial] = useState(true)
   const [showSavedList, setShowSavedList] = useState(false)
   const [swipedCards, setSwipedCards] = useState(new Set())
+  const [heartEffect, setHeartEffect] = useState(null)
 
   const handleSwipe = (cardId, direction) => {
     if (direction === 'right') {
@@ -1028,9 +1082,32 @@ function SwipePage({ data, onBack }) {
     setCurrentIndex(prev => prev + 1)
   }
 
-  // 显示收藏列表
-  if (showSavedList) {
-    return <SavedListPage saved={saved} onBack={() => setShowSavedList(false)} destinations={destinations} />
+  const handleShowHeartEffect = ({ startX, startY }) => {
+    // 获取右上角收藏图标的位置
+    const savedButton = document.querySelector('[data-saved-button]')
+    const savedRect = savedButton?.getBoundingClientRect()
+
+    if (savedRect) {
+      const endX = savedRect.left + savedRect.width / 2 - 60 // 减去爱心半径
+      const endY = savedRect.top + savedRect.height / 2 - 60
+      setHeartEffect({ startX, startY, endX, endY })
+    }
+  }
+
+  const handleHeartEffectComplete = () => {
+    setHeartEffect(null)
+  }
+
+  // 显示收藏列表 - 支持 URL 参数 ?saved=1 直接显示
+  const showSavedFromURL = new URLSearchParams(window.location.search).get('saved') === '1'
+  if (showSavedList || showSavedFromURL) {
+    // 如果是从 URL 参数显示，使用示例数据
+    const sampleSaved = showSavedFromURL && saved.length === 0 ? flights.slice(0, 3).map(f => ({
+      ...f,
+      destination: destinations.find(d => d.id === f.destinationId)
+    })) : saved
+
+    return <SavedListPage saved={sampleSaved} onBack={() => setShowSavedList(false)} destinations={destinations} />
   }
 
   // 获取当前显示的卡片（最多 2 张）
@@ -1049,7 +1126,7 @@ function SwipePage({ data, onBack }) {
           <Home className="w-6 h-6 text-ink-black" />
         </button>
         <h1 className="text-lg font-extrabold text-ink-black tracking-tight">探索目的地</h1>
-        <button onClick={() => setShowSavedList(true)} className="p-2 -mr-2 relative">
+        <button data-saved-button onClick={() => setShowSavedList(true)} className="p-2 -mr-2 relative">
           <Heart className="w-6 h-6 text-ink-black" />
           {saved.length > 0 && (
             <motion.span
@@ -1077,6 +1154,7 @@ function SwipePage({ data, onBack }) {
                   flight={flight}
                   destination={destination}
                   onSwipe={() => {}}
+                  onShowHeartEffect={() => {}}
                   isTopCard={false}
                   cardId={flight.id}
                 />
@@ -1088,6 +1166,7 @@ function SwipePage({ data, onBack }) {
                   flight={flight}
                   destination={destination}
                   onSwipe={handleSwipe}
+                  onShowHeartEffect={handleShowHeartEffect}
                   isTopCard={true}
                   cardId={flight.id}
                 />
@@ -1101,13 +1180,30 @@ function SwipePage({ data, onBack }) {
       <AnimatePresence>
         {showTutorial && <TutorialCard onComplete={() => setShowTutorial(false)} />}
       </AnimatePresence>
+
+      {/* 爱心动效 */}
+      <AnimatePresence>
+        {heartEffect && (
+          <HeartEffect
+            heartEffect={heartEffect}
+            onComplete={handleHeartEffectComplete}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
 
 // ============ 主 App ============
 function App() {
-  const [page, setPage] = useState(0)
+  // 从 URL 参数读取页面索引，支持 ?page=0,1,2,3
+  const getPageFromURL = () => {
+    const params = new URLSearchParams(window.location.search)
+    const pageParam = params.get('page')
+    return pageParam !== null ? parseInt(pageParam, 10) : 0
+  }
+
+  const [page, setPage] = useState(getPageFromURL())
   const [onboardingData, setOnboardingData] = useState({})
 
   const updateOnboardingData = (data) => {
