@@ -25,9 +25,42 @@
       "Bash(env | grep -i claude | head -20)",
       "Bash(cat:*)",
       "Bash(zsh -c 'afplay /System/Library/Sounds/Funk.aiff' 2>&1)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl:*)",
+      "Bash(lsof:*)",
+      "Read(//private/tmp/**)",
+      "Bash(unzip -o vibma-plugin.zip -d vibma-plugin)",
+      "mcp__Vibma__channel_info",
+      "mcp__Vibma__join_channel",
+      "mcp__Vibma__ping",
+      "mcp__Vibma__get_current_page",
+      "mcp__Vibma__search_nodes",
+      "mcp__Vibma__get_node_info",
+      "mcp__Vibma__scan_text_nodes",
+      "mcp__Vibma__export_node_as_image",
+      "mcp__Vibma__get_document_info",
+      "mcp__Vibma__delete_node",
+      "mcp__Vibma__create_frame",
+      "mcp__Vibma__get_selection",
+      "mcp__Vibma__set_text_content",
+      "mcp__Vibma__clone_node",
+      "mcp__Vibma__rename_page",
+      "mcp__Vibma__create_page",
+      "mcp__Vibma__set_current_page",
+      "mcp__Vibma__patch_nodes",
+      "mcp__Vibma__components",
+      "mcp__Vibma__create_text",
+      "mcp__plugin_figma_figma__generate_figma_design",
+      "Bash(open:*)",
+      "mcp__plugin_figma_figma__get_design_context",
+      "mcp__plugin_figma_figma__get_metadata"
     ]
   },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "Vibma"
+  ],
   "hooks": {
     "Elicitation": [
       {

@@ -614,15 +614,6 @@ function TutorialCard({ onComplete }) {
         transition={{ type: 'spring', damping: 25, stiffness: 400 }}
       >
         <div className="text-center mb-7">
-          {/* 动态图标 - 电光紫主题 */}
-          <motion.div
-            className="w-20 h-20 rounded-full gradient-electric flex items-center justify-center mx-auto mb-5 shadow-colored animate-pulse-glow"
-            initial={{ scale: 0.8, rotate: -10 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 0.2, type: 'spring' }}
-          >
-            <Plane className="w-9 h-9 text-white" strokeWidth={2} />
-          </motion.div>
           <h2 className="text-2xl font-extrabold text-ink-black mb-2 tracking-tight">
             滑动选择航班
           </h2>
@@ -631,42 +622,42 @@ function TutorialCard({ onComplete }) {
           </p>
         </div>
 
-        <div className="space-y-3.5 mb-7">
-          {/* 右滑说明 - 电光紫主题 */}
+        <div className="flex gap-3 mb-7">
+          {/* 左滑说明 - 左侧卡片 */}
           <motion.div
-            className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-electric-purple/5 border border-electric-purple/20"
+            className="flex-1 flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-rose-50 to-rose-50/30 border border-rose-200/50"
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
             <motion.div
-              className="w-14 h-14 rounded-full gradient-electric flex items-center justify-center shadow-colored"
-              whileHover={{ scale: 1.05 }}
-            >
-              <Heart className="w-7 h-7 text-white" strokeWidth={2.5} fill="white" />
-            </motion.div>
-            <div>
-              <div className="font-bold text-ink-black text-base tracking-tight">右滑 = 收藏</div>
-              <div className="text-sm text-slate-gray leading-tight mt-0.5">喜欢的航班加入收藏夹</div>
-            </div>
-          </motion.div>
-
-          {/* 左滑说明 */}
-          <motion.div
-            className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-rose-50 to-rose-50/30 border border-rose-200/50"
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <motion.div
-              className="w-14 h-14 rounded-full bg-gradient-to-br from-rose-400 to-rose-500 flex items-center justify-center shadow-md"
+              className="w-14 h-14 rounded-full bg-gradient-to-br from-rose-400 to-rose-500 flex items-center justify-center shadow-md mb-4"
               whileHover={{ scale: 1.05 }}
             >
               <X className="w-7 h-7 text-white" strokeWidth={2.5} />
             </motion.div>
-            <div>
-              <div className="font-bold text-ink-black text-base tracking-tight">左滑 = 下一个</div>
-              <div className="text-sm text-slate-gray leading-tight mt-0.5">跳过不感兴趣的选项</div>
+            <div className="text-center">
+              <div className="font-bold text-ink-black text-base tracking-tight mb-1">左滑 = 下一个</div>
+              <div className="text-sm text-slate-gray leading-tight">跳过不感兴趣的选项</div>
+            </div>
+          </motion.div>
+
+          {/* 右滑说明 - 右侧卡片 */}
+          <motion.div
+            className="flex-1 flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-electric-purple/5 border border-electric-purple/20"
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <motion.div
+              className="w-14 h-14 rounded-full gradient-electric flex items-center justify-center shadow-colored mb-4"
+              whileHover={{ scale: 1.05 }}
+            >
+              <Heart className="w-7 h-7 text-white" strokeWidth={2.5} fill="white" />
+            </motion.div>
+            <div className="text-center">
+              <div className="font-bold text-ink-black text-base tracking-tight mb-1">右滑 = 收藏</div>
+              <div className="text-sm text-slate-gray leading-tight">喜欢的航班加入收藏夹</div>
             </div>
           </motion.div>
         </div>
