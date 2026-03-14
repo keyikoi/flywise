@@ -625,7 +625,7 @@ function TutorialCard({ onComplete }) {
         <div className="flex gap-3 mb-7">
           {/* 左滑说明 - 左侧卡片 */}
           <motion.div
-            className="flex-1 flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-rose-50 to-rose-50/30 border border-rose-200/50"
+            className="flex-1 flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-rose-50 to-rose-50/30"
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -644,7 +644,7 @@ function TutorialCard({ onComplete }) {
 
           {/* 右滑说明 - 右侧卡片 */}
           <motion.div
-            className="flex-1 flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-electric-purple/5 border border-electric-purple/20"
+            className="flex-1 flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-electric-purple/5"
             initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
