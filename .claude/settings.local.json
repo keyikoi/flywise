@@ -11,7 +11,45 @@
       "Bash(node --check src/App.jsx 2>&1 || true)",
       "Bash(curl -s http://localhost:5173/__vite_error 2>&1 || echo \"No error endpoint\")",
       "Bash(curl -s http://localhost:5173/ 2>&1 | head -20)",
-      "Bash(curl -s http://localhost:5173/src/main.jsx 2>&1 | head -20)"
+      "Bash(curl -s http://localhost:5173/src/main.jsx 2>&1 | head -20)",
+      "Bash(for sound:*)",
+      "Bash(afplay *)",
+      "Bash(npx -y @anthropic-ai/skills add remotion-dev/skills)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(npx -y @anthropic/skills add remotion-dev/skills 2>&1 || echo \"尝试其他方式...\")",
+      "Bash(git clone:*)",
+      "WebFetch(domain:www.remotion.dev)",
+      "Bash(mv:*)",
+      "Bash(claude:*)",
+      "Bash(env | grep -i claude | head -20)",
+      "Bash(cat:*)",
+      "Bash(zsh -c 'afplay /System/Library/Sounds/Funk.aiff' 2>&1)",
+      "Bash(grep:*)"
+    ]
+  },
+  "hooks": {
+    "Elicitation": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Funk.aiff"
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Blow.aiff"
+          }
+        ]
+      }
     ]
   }
 }

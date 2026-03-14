@@ -800,18 +800,18 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
           </motion.h2>
           {/* 推荐语 */}
           <motion.div
-            className="flex items-center justify-center gap-2 mt-2"
+            className="flex items-start justify-center gap-1 mt-4 mb-6"
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <svg className={`w-4 h-4 flex-shrink-0 ${destination.textColor} opacity-50`} viewBox="0 0 24 24" fill="currentColor">
+            <svg className={`w-3 h-3 flex-shrink-0 ${destination.textColor} opacity-50 mt-0.5`} viewBox="0 0 24 24" fill="currentColor">
               <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/>
             </svg>
-            <p className={`text-sm px-6 text-center font-medium leading-relaxed ${destination.textColor}`}>
+            <p className={`text-sm px-2 text-center font-light leading-relaxed ${destination.textColor}`}>
               {destination.tagline}
             </p>
-            <svg className={`w-4 h-4 flex-shrink-0 ${destination.textColor} opacity-50 scale-x-[-1] scale-y-[-1]`} viewBox="0 0 24 24" fill="currentColor">
+            <svg className={`w-3 h-3 flex-shrink-0 ${destination.textColor} opacity-50 scale-x-[-1] scale-y-[-1] mt-0.5`} viewBox="0 0 24 24" fill="currentColor">
               <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/>
             </svg>
           </motion.div>
@@ -923,7 +923,7 @@ function DraggableCard({ flight, destination, onSwipe, isTopCard, cardId }) {
       </div>
 
       {/* 底部操作按钮 */}
-      <div className="px-5 pb-6 flex items-center justify-center gap-5">
+      <div className="px-5 pb-10 flex items-center justify-center gap-5">
         {/* 跳过按钮 */}
         <motion.button
           onClick={() => onSwipe('left')}
@@ -1076,7 +1076,7 @@ function SwipePage({ data, onBack }) {
       <div className="relative flex-1 p-4 overflow-hidden">
         <div className="h-full flex items-start justify-center">
           {/* 卡片容器 */}
-          <div className="relative w-full max-w-md h-[660px]">
+          <div className="relative w-full max-w-md h-[720px]">
             {/* 渲染顺序：先渲染下层卡片，再渲染顶层卡片 */}
             <AnimatePresence>
               {/* 下层卡片（在底层） */}
