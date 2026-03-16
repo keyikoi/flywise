@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Coding 分享 - 设计部如何用 AI Coding 实现构想</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;900&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        :root {
+            --title-size: clamp(1.5rem, 5vw, 4rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --slide-padding: clamp(1rem, 4vw, 4rem);
+            --content-gap: clamp(0.5rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.4;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        /* ===========================================
+           CUSTOM THEME: Bold Signal + Flight Tinder vibes
+           =========================================== */
+        :root {
+            --bg-primary: #0d1117;
+            --bg-gradient: linear-gradient(135deg, #0d1117 0%, #1a1f2e 50%, #0d1117 100%);
+            --card-bg: linear-gradient(135deg, #ff6b6b 0%, #f06595 100%);
+            --card-secondary: linear-gradient(135deg, #4ecdc4 0%, #45b7d1 100%);
+            --card-accent: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-on-card: #0d1117;
+            --accent-coral: #ff6b6b;
+            --accent-pink: #f06595;
+            --accent-teal: #4ecdc4;
+            --accent-purple: #a78bfa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* Typography */
+        h1 {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 900;
+            font-size: clamp(2rem, 6vw, 5rem);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 700;
+            font-size: var(--h3-size);
+        }
+
+        p {
+            font-size: var(--body-size);
+            color: var(--text-secondary);
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Code blocks */
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+            background: rgba(255,255,255,0.1);
+            padding: 0.2em 0.5em;
+            border-radius: 4px;
+            color: var(--accent-teal);
+        }
+
+        pre {
+            background: rgba(0,0,0,0.3);
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-coral);
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            color: var(--text-on-card);
+            padding: clamp(1.5rem, 3vw, 2.5rem);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(255, 107, 107, 0.3);
+        }
+
+        .card.teal {
+            background: var(--card-secondary);
+            box-shadow: 0 20px 60px rgba(78, 205, 196, 0.3);
+        }
+
+        .card.purple {
+            background: var(--card-accent);
+            box-shadow: 0 20px 60px rgba(167, 139, 250, 0.3);
+        }
+
+        /* Lists */
+        ul {
+            list-style: none;
+        }
+
+        ul.check-list li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            font-size: var(--body-size);
+        }
+
+        ul.check-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-coral);
+            font-weight: 700;
+        }
+
+        /* Comparison grid */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .comparison-item {
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .comparison-item.bad {
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+
+        .comparison-item.good {
+            border-color: rgba(78, 205, 196, 0.3);
+        }
+
+        .comparison-label {
+            font-size: var(--small-size);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            opacity: 0.7;
+        }
+
+        /* Navigation dots */
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: var(--accent-coral);
+            transform: scale(1.3);
+        }
+
+        .nav-dot:hover {
+            background: var(--accent-pink);
+        }
+
+        /* Keyboard hint */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            opacity: 0.6;
+            z-index: 1000;
+        }
+
+        /* Section number */
+        .section-number {
+            position: absolute;
+            top: var(--slide-padding);
+            left: var(--slide-padding);
+            font-family: 'Archivo', sans-serif;
+            font-weight: 900;
+            font-size: clamp(3rem, 8vw, 8rem);
+            opacity: 0.1;
+            line-height: 1;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* Gradient orbs */
+        .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-coral);
+            top: -200px;
+            right: -200px;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--accent-purple);
+            bottom: -150px;
+            left: -150px;
+        }
+
+        /* Responsive */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+            }
+            .gradient-orb { opacity: 0.2; }
+        }
+
+        @media (max-height: 600px) {
+            .nav-dots, .keyboard-hint { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .comparison { grid-template-columns: 1fr; }
+            .nav-dots {
+                right: 1rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+            html { scroll-behavior: auto; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Dots -->
+    <div class="nav-dots" id="navDots"></div>
+
+    <!-- Keyboard Hint -->
+    <div class="keyboard-hint">使用 ↓↑ 方向键或滚动切换幻灯片</div>
+
+    <!-- Slide 1: Title -->
+    <section class="slide" id="slide-1">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="slide-content">
+            <div class="section-number">00</div>
+            <div class="reveal reveal-delay-1">
+                <h1 style="background: linear-gradient(135deg, #ff6b6b, #f06595, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    Vibe Coding 分享
+                </h1>
+            </div>
+            <div class="reveal reveal-delay-2" style="margin-top: 1.5rem;">
+                <p class="subtitle">设计部如何用 AI Coding 实现构想</p>
+            </div>
+            <div class="reveal reveal-delay-3" style="margin-top: 3rem;">
+                <div class="card" style="display: inline-block; padding: 1rem 2rem;">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;">Project: Flight Tinder ✈️</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 2: 项目背景 -->
+    <section class="slide" id="slide-2">
+        <div class="slide-content">
+            <div class="section-number">01</div>
+            <div class="reveal reveal-delay-1">
+                <h2>项目背景</h2>
+            </div>
+            <div class="reveal reveal-delay-2" style="margin-top: 2rem;">
+                <div class="card">
+                    <h3 style="margin-bottom: 1rem;">想做什么？</h3>
+                    <p style="color: var(--text-on-card); font-size: 1.1rem; margin-bottom: 1.5rem;">
+                        航班 Tinder 应用 — 像刷 Tinder 一样选择旅行目的地
+                    </p>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <span style="background: rgba(0,0,0,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem;">✈️ 滑动选择</span>
+                        <span style="background: rgba(0,0,0,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem;">🌍 旅行目的地</span>
+                        <span style="background: rgba(0,0,0,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem;">💳 一键预订</span>
+                    </div>
+                </div>
+            </div>
+            <div class="reveal reveal-delay-3" style="margin-top: 2rem;">
+                <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="comparison-item">
+                        <div class="comparison-label">技术栈</div>
+                        <p style="margin: 0.5rem 0;">React + Vite</p>
+                        <p style="margin: 0.5rem 0;">Framer Motion</p>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="comparison-label">开发工具</div>
+                        <p style="margin: 0.5rem 0;">Claude Code</p>
+                        <p style="margin: 0.5rem 0;">VS Code</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 3: 效果展示 -->
+    <section class="slide" id="slide-3">
+        <div class="gradient-orb orb-1" style="background: var(--accent-teal);"></div>
+        <div class="slide-content">
+            <div class="section-number">02</div>
+            <div class="reveal reveal-delay-1">
+                <h2>效果展示</h2>
+            </div>
+            <div class="reveal reveal-delay-2" style="margin-top: 2rem;">
+                <div class="card teal" style="text-align: center;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🃏 ← → ❤️</div>
+                    <h3 style="margin-bottom: 1rem;">滑动卡片动画</h3>
+                    <ul class="check-list" style="text-align: left; display: inline-block;">
+                        <li>左滑拒绝 / 右滑喜欢</li>
+                        <li>流畅的物理动画效果</li>
+                        <li>弹性反馈 + 粒子效果</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="reveal reveal-delay-3" style="margin-top: 2rem;">
+                <p>（此处可嵌入 live demo 或录屏）</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 4: 核心痛点 -->
+    <section class="slide" id="slide-4">
+        <div class="slide-content">
+            <div class="section-number">03</div>
+            <div class="reveal reveal-delay-1">
+                <h2>核心痛点</h2>
+                <p class="subtitle" style="margin-top: 0.5rem;">自然语言的困境</p>
+            </div>
+            <div class="reveal reveal-delay-2" style="margin-top: 2rem;">
+                <div class="card" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">
+                    <h3 style="margin-bottom: 1rem;">❌ 问题</h3>
+                    <p style="color: var(--text-on-card); font-size: 1.1rem;">
+                        UI 调整时，自然语言不容易传达精确意图
+                    </p>
+                </div>
+            </div>
+            <div class="reveal reveal-delay-3" style="margin-top: 2rem;">
+                <div class="comparison">
+                    <div class="comparison-item bad">
+                        <div class="comparison-label" style="color: #ef4444;">例子 1</div>
+                        <code style="color: #ef4444;">"把卡片间距调大一点"</code>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">→ AI 可能改错地方<br>(margin? gap? 哪个组件？)</p>
+                    </div>
+                    <div class="comparison-item bad">
+                        <div class="comparison-label" style="color: #ef4444;">例子 2</div>
+                        <code style="color: #ef4444;">"弹窗居中"</code>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">→ 可能只水平居中<br>忘了垂直居中</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 5: 解决方案 -->
+    <section class="slide" id="slide-5">
+        <div class="slide-content">
+            <div class="section-number">04</div>
+            <div class="reveal reveal-delay-1">
+                <h2>解决方案</h2>
+                <p class="subtitle" style="margin-top: 0.5rem;">Figma MCP 联动</p>
+            </div>
+            <div class="reveal reveal-delay-2" style="margin-top: 2rem;">
+                <div class="card teal">
+                    <h3 style="margin-bottom: 1rem;">✅ 方法</h3>
+                    <p style="color: var(--text-on-card); font-size: 1.1rem; margin-bottom: 1rem;">
+                        直接给设计截图/节点，AI 看到 exact 样式
+                    </p>
+                </div>
+            </div>
+            <div class="reveal reveal-delay-3" style="margin-top: 2rem;">
+                <div class="comparison">
+                    <div class="comparison-item good">
+                        <div class="comparison-label" style="color: var(--accent-teal);">案例 1</div>
+                        <code style="color: var(--accent-teal);">gap-4 → gap-6</code>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">卡片间距调整</p>
+                    </div>
+                    <div class="comparison-item good">
+                        <div class="comparison-label" style="color: var(--accent-teal);">案例 2</div>
+                        <code style="color: var(--accent-teal);">top-4 → top-1/2 -translate-y-1/2</code>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">弹窗垂直居中</p>
+                    </div>
+                </div>
+            </div>
+            <div class="reveal reveal-delay-4" style="margin-top: 2rem;">
+                <div class="card purple" style="padding: 1rem 1.5rem;">
+                    <span style="font-weight: 700;">🎯 优势：</span>一次到位，避免多轮对话
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 6: 多 Agent 协作 -->
+    <section class="slide" id="slide-6">
+        <div class="slide-content">
+            <div class="section-number">05</div>
+            <div class="reveal reveal-delay-1">
+                <h2>AI 协作技巧 1</h2>
+                <p class="subtitle" style="margin-top: 0.5rem;">多 Agent 协作</p>
+            </div>
+            <div class="reveal reveal-delay-2" style="margin-top: 2rem;">
+                <div class="grid">
+                    <div class="card">
+                        <h3 style="margin-bottom: 0.5rem;">Claude Code</h3>
+                        <p style="color: var(--text-on-card);">写代码 / 改 UI / 重构</p>
+                    </div>
+                    <div class="card teal">
+                        <h3 style="margin-bottom: 0.5rem;">龙虾</h3>
+                        <p style="color: var(--text-on-card);">查真实航班数据</p>
+                    </div>
+                </div>
+            </div>
+            <div class="reveal reveal-delay-3" style="margin-top: 2rem;">
+                <div class="comparison-item">
+                    <div class="comparison-label">为什么？</div>
+                    <p style="margin: 0;">Claude Code 无法访问实时 API<br/>需要外部 Agent 获取真实数据</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 7: 改 Bug -->
+    <section class="slide" id="slide-7">
+        <div class="slide-content">
+            <div class="section-number">06</div>
+            <div class="reveal reveal-delay-1">
+                <h2>AI 协作技巧 2</h2>
+                <p class="subtitle" style="margin-top: 0.5rem;">改 Bug 的正确姿势</p>
+            </div>
+            <div class="reveal reveal-delay-2" style="margin-top: 2rem;">
+                <div class="card" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+                    <h3 style="margin-bottom: 1rem;">📸 截图大法</h3>
+                    <ul class="check-list" style="margin-top: 1rem;">
+                        <li>网页报错 → 截图保存</li>
+                        <li>丢给 AI 自己看错误信息</li>
+                        <li>比文字描述高效 10 倍</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="reveal reveal-delay-3" style="margin-top: 2rem;">
+                <p>AI 看图能力 > 听你描述能力</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 8: Git 版本管理 -->
+    <section class="slide" id="slide-8">
+        <div class="slide-content">
+            <div class="section-number">07</div>
+            <div class="reveal reveal-delay-1">
+                <h2>AI 协作技巧 3</h2>
+                <p class="subtitle" style="margin-top: 0.5rem;">Git 版本管理</p>
+            </div>
+            <div class="reveal reveal-delay-2" style="margin-top: 2rem;">
+                <div class="card teal">
+                    <h3 style="margin-bottom: 1rem;">📝 工作流</h3>
+                    <ul class="check-list" style="margin-top: 1rem;">
+                        <li>每次成功改动就 commit</li>
+                        <li>错了随时回滚</li>
+                        <li>commit message 作为"外部记忆"</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="reveal reveal-delay-3" style="margin-top: 2rem;">
+                <pre><code>git commit -m "feat: 添加滑动卡片动画"
+git commit -m "fix: 修复卡片间距问题"
+git commit -m "feat: 集成 Figma MCP"</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 9: Skill 推荐 -->
+    <section class="slide" id="slide-9">
+        <div class="slide-content">
+            <div class="section-number">08</div>
+            <div class="reveal reveal-delay-1">
+                <h2>AI 协作技巧 4</h2>
+                <p class="subtitle" style="margin-top: 0.5rem;">Skill 推荐</p>
+            </div>
+            <div class="reveal reveal-delay-2" style="margin-top: 2rem;">
+                <div class="grid">
+                    <div class="card">
+                        <h3 style="margin-bottom: 0.5rem;">🎬 skill-frontend/remotion</h3>
+                        <p style="color: var(--text-on-card);">做视频动画</p>
+                    </div>
+                    <div class="card purple">
+                        <h3 style="margin-bottom: 0.5rem;">🔊 音效彩蛋</h3>
+                        <p style="color: var(--text-on-card);">停止时让 Claude Code 播放音效</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 10: 心得总结 -->
+    <section class="slide" id="slide-10">
+        <div class="gradient-orb orb-1"></div>
+        <div class="slide-content">
+            <div class="section-number">09</div>
+            <div class="reveal reveal-delay-1">
+                <h2>心得总结</h2>
+            </div>
+            <div class="reveal reveal-delay-2" style="margin-top: 2rem;">
+                <div class="card" style="background: linear-gradient(135deg, #4ecdc4, #45b7d1);">
+                    <h3 style="margin-bottom: 1rem;">🎨 设计部的优势</h3>
+                    <ul class="check-list" style="margin-top: 1rem;">
+                        <li>视觉敏感 — 更容易发现 AI 生成的 UI 问题</li>
+                        <li>Figma 是共同语言 — 用设计稿跟 AI 沟通比文字更高效</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="reveal reveal-delay-3" style="margin-top: 2rem;">
+                <div class="card purple">
+                    <h3 style="margin-bottom: 1rem;">💡 核心心法</h3>
+                    <p style="color: var(--text-on-card); font-size: 1.1rem; margin-bottom: 0.5rem;">
+                        AI 是强大的，但需要明确的边界和持续的提醒
+                    </p>
+                </div>
+            </div>
+            <div class="reveal reveal-delay-4" style="margin-top: 2rem; text-align: center;">
+                <h3 style="font-size: 1.5rem;">Vibe Coding = 人机协作，不是机器替代</h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 11: Q&A -->
+    <section class="slide" id="slide-11">
+        <div class="gradient-orb orb-1" style="background: var(--accent-teal);"></div>
+        <div class="gradient-orb orb-2" style="background: var(--accent-coral);"></div>
+        <div class="slide-content" style="text-align: center;">
+            <div class="section-number">10</div>
+            <div class="reveal reveal-delay-1">
+                <h1 style="font-size: clamp(3rem, 10vw, 8rem); background: linear-gradient(135deg, #4ecdc4, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    Q&A
+                </h1>
+            </div>
+            <div class="reveal reveal-delay-2" style="margin-top: 2rem;">
+                <p class="subtitle">谢谢！</p>
+            </div>
+            <div class="reveal reveal-delay-3" style="margin-top: 3rem;">
+                <div class="card floating" style="display: inline-block;">
+                    <span style="font-size: 3rem;">✈️</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // ===========================================
+        // SLIDE NAVIGATION
+        // ===========================================
+        const slides = document.querySelectorAll('.slide');
+        const navDots = document.getElementById('navDots');
+        let currentSlide = 0;
+
+        // Create navigation dots
+        slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'nav-dot' + (index === 0 ? ' active' : '');
+            dot.addEventListener('click', () => goToSlide(index));
+            navDots.appendChild(dot);
+        });
+
+        const dots = document.querySelectorAll('.nav-dot');
+
+        function goToSlide(index) {
+            currentSlide = index;
+            slides[index].scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateActiveDot() {
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === ' ') {
+                e.preventDefault();
+                if (currentSlide < slides.length - 1) {
+                    goToSlide(currentSlide + 1);
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (currentSlide > 0) {
+                    goToSlide(currentSlide - 1);
+                }
+            }
+        });
+
+        // Scroll detection
+        let isScrolling = false;
+        document.addEventListener('scroll', () => {
+            if (isScrolling) return;
+            isScrolling = true;
+
+            setTimeout(() => {
+                const scrollPosition = window.scrollY;
+                const slideHeight = window.innerHeight;
+                const newSlideIndex = Math.round(scrollPosition / slideHeight);
+
+                if (newSlideIndex !== currentSlide && newSlideIndex >= 0 && newSlideIndex < slides.length) {
+                    currentSlide = newSlideIndex;
+                    updateActiveDot();
+                }
+                isScrolling = false;
+            }, 100);
+        }, { passive: true });
+
+        // ===========================================
+        // REVEAL ANIMATIONS ON SCROLL
+        // ===========================================
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '-50px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // Trigger animations for first slide on load
+        setTimeout(() => {
+            document.querySelectorAll('#slide-1 .reveal').forEach(el => {
+                el.classList.add('visible');
+            });
+        }, 100);
+    </script>
+</body>
+</html>
