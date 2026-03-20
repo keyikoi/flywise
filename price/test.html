@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - 航班预订助手</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <style>
+        body { background: #0a0a0f; color: white; margin: 0; padding: 2rem; font-family: sans-serif; }
+        .box { padding: 2rem; background: #6666FF; border-radius: 12px; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <h1>测试页面</h1>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        console.log('React version:', React.version);
+        console.log('Motion available:', typeof window.Motion !== 'undefined');
+
+        function TestApp() {
+            const [count, setCount] = React.useState(0);
+
+            return (
+                <div>
+                    <div className="box">
+                        <p>如果你看到这个蓝色盒子，说明 React 和 Babel 正常工作！</p>
+                        <p>计数：{count}</p>
+                        <button onClick={() => setCount(c => c + 1)} style={{marginTop: '1rem', padding: '0.5rem 1rem'}}>
+                            点击 +1
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<TestApp />);
+    </script>
+</body>
+</html>

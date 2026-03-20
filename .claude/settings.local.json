@@ -59,7 +59,17 @@
       "mcp__plugin_figma_figma__get_code_connect_suggestions",
       "Bash(npx remotion:*)",
       "Bash(which remotion:*)",
-      "Bash(./node_modules/.bin/remotion studio:*)"
+      "Bash(./node_modules/.bin/remotion studio:*)",
+      "Bash(npx skills:*)",
+      "Bash(kill 14537)",
+      "Bash(kill 14224)",
+      "Bash(python3 -c \":*)",
+      "Bash(xargs kill:*)",
+      "Bash(ls:*)",
+      "Bash(env)",
+      "Bash(kill:*)",
+      "Bash(ipconfig getifaddr:*)",
+      "Bash(python3:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

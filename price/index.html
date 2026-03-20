@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>机票低价顾问 - AI航班助手</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        :root {
+            --brand: #6666FF;
+            --brand-light: #8888FF;
+            --brand-bg: #F0EFFF;
+            --brand-border: #B3B3FF;
+
+            --price-low: #16A571;
+            --price-low-bg: #F0FAF6;
+            --price-mid: #666666;
+            --price-mid-bg: #F7F7F8;
+            --price-high: #E54D4D;
+            --price-high-bg: #FFF5F5;
+
+            --text-1: #1A1A1A;
+            --text-2: #333333;
+            --text-3: #666666;
+            --text-4: #999999;
+            --text-5: #CCCCCC;
+
+            --bg: #FFFFFF;
+            --white: #FFFFFF;
+            --border: #EEEEEE;
+            --border-light: #F5F5F5;
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 999px;
+
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+            --font-num: 'DM Sans', -apple-system, sans-serif;
+        }
+
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text-1);
+            -webkit-font-smoothing: antialiased;
+            font-size: 17px;
+        }
+        #root { height: 100%; }
+
+        /* ===== App Shell ===== */
+        .app {
+            max-width: 480px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #FFFFFF;
+            position: relative;
+        }
+
+        /* ===== Header ===== */
+        .header {
+            padding: calc(var(--safe-top) + 10px) 16px 10px;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+            border-bottom: 0.5px solid var(--border);
+        }
+        .header__left, .header__right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 60px;
+        }
+        .header__right { justify-content: flex-end; }
+        .header__center {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-1);
+        }
+        .header__btn {
+            width: 36px; height: 36px;
+            border: none;
+            background: none;
+            color: var(--text-2);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: var(--radius-sm);
+            transition: background 0.15s;
+        }
+        .header__btn:active { background: var(--border-light); }
+
+        /* ===== Messages ===== */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .messages::-webkit-scrollbar { width: 0; }
+
+        /* ===== Message blocks ===== */
+        .msg {
+            animation: msg-in 0.3s ease;
+        }
+        @keyframes msg-in {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* User message — right-aligned bubble */
+        .msg--user {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .msg--user-bubble {
+            max-width: 80%;
+            background: var(--brand);
+            color: var(--white);
+            padding: 14px 18px;
+            border-radius: 18px 18px 4px 18px;
+            font-size: 17px;
+            line-height: 1.65;
+            word-break: break-word;
+        }
+
+        /* AI message — full-width block, no avatar */
+        .msg--ai {
+            padding: 20px 16px;
+            background: var(--white);
+        }
+
+        .msg__text {
+            font-size: 17px;
+            line-height: 1.75;
+            color: var(--text-2);
+            white-space: pre-line;
+        }
+        .msg__text strong {
+            color: var(--text-1);
+            font-weight: 600;
+        }
+
+        /* ===== Typing ===== */
+        .typing-wrap {
+            padding: 20px 16px;
+            background: var(--white);
+        }
+        .typing-dots {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            height: 28px;
+        }
+        .typing-dots span {
+            width: 9px; height: 9px;
+            background: var(--text-5);
+            border-radius: 50%;
+            animation: t-bounce 1.2s ease-in-out infinite;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes t-bounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        /* ===== Flight Card (referencing the design) ===== */
+        .flight-cards { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+        .fcard {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Top section: title + price level badge */
+        .fcard__title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .fcard__airline-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-1);
+        }
+        .fcard__level-pill {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+        }
+        .fcard__level-pill--low { background: var(--price-low-bg); color: var(--price-low); }
+        .fcard__level-pill--mid { background: var(--price-mid-bg); color: var(--price-mid); }
+        .fcard__level-pill--high { background: var(--price-high-bg); color: var(--price-high); }
+
+        /* Route row: depart → arrive with timeline */
+        .fcard__route {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 12px;
+        }
+        .fcard__time-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 64px;
+        }
+        .fcard__time {
+            font-family: var(--font-num);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-1);
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+        .fcard__city-code {
+            font-size: 13px;
+            color: var(--text-4);
+            margin-top: 4px;
+        }
+
+        .fcard__timeline {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+            min-height: 44px;
+        }
+        .fcard__duration {
+            font-size: 12px;
+            color: var(--text-4);
+            margin-bottom: 6px;
+        }
+        .fcard__line-wrap {
+            width: 100%;
+            height: 1px;
+            background: var(--border);
+            position: relative;
+        }
+        .fcard__line-dot {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            border: 1.5px solid var(--text-5);
+            background: var(--white);
+        }
+        .fcard__line-dot--l { left: -3px; }
+        .fcard__line-dot--r { right: -3px; }
+        .fcard__line-plane {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            color: var(--brand);
+        }
+        .fcard__stops {
+            font-size: 12px;
+            color: var(--price-low);
+            font-weight: 500;
+            margin-top: 6px;
+        }
+
+        /* Bottom: meta + price */
+        .fcard__bottom {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 0.5px solid var(--border-light);
+        }
+        .fcard__meta {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .fcard__meta-item {
+            font-size: 13px;
+            color: var(--text-4);
+        }
+        .fcard__price-area {
+            text-align: right;
+        }
+        .fcard__price {
+            font-family: var(--font-num);
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.5px;
+            color: var(--text-1);
+        }
+        .fcard__price-unit {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .fcard__price-note {
+            font-size: 12px;
+            color: var(--text-4);
+            margin-top: 2px;
+        }
+
+        /* ===== Interactive Price Chart ===== */
+        .pchart {
+            margin-top: 16px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+        .pchart__title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+        .pchart__title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-1);
+        }
+        .pchart__cur-wrap {
+            text-align: right;
+        }
+        .pchart__cur-price {
+            font-family: var(--font-num);
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+        .pchart__cur-change {
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 3px;
+        }
+
+        .pchart__badges {
+            display: flex;
+            gap: 8px;
+            margin: 10px 0 16px;
+            flex-wrap: wrap;
+        }
+        .pchart__badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .pchart__badge--low { background: var(--price-low-bg); color: var(--price-low); }
+        .pchart__badge--mid { background: var(--price-mid-bg); color: var(--price-mid); }
+        .pchart__badge--high { background: var(--price-high-bg); color: var(--price-high); }
+        .pchart__badge--neutral { background: var(--border-light); color: var(--text-3); }
+
+        /* Canvas */
+        .pchart__canvas {
+            position: relative;
+            width: 100%;
+            height: 160px;
+            margin-bottom: 8px;
+            touch-action: none;
+            cursor: crosshair;
+        }
+        .pchart__canvas svg { width: 100%; height: 100%; }
+
+        .pchart__tooltip {
+            position: absolute;
+            top: -6px;
+            transform: translateX(-50%);
+            background: var(--text-1);
+            color: var(--white);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: var(--font-num);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .pchart__tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid var(--text-1);
+        }
+        .pchart__crosshair {
+            position: absolute;
+            top: 0; width: 1px; height: 100%;
+            background: var(--text-5);
+            pointer-events: none;
+            z-index: 5;
+        }
+        .pchart__dot {
+            position: absolute;
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--brand);
+            border: 2.5px solid var(--white);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 6;
+        }
+
+        /* Y-axis labels */
+        .pchart__y-labels {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 8px 0;
+            pointer-events: none;
+        }
+        .pchart__y-label {
+            font-family: var(--font-num);
+            font-size: 10px;
+            color: var(--text-5);
+            line-height: 1;
+        }
+
+        .pchart__footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-4);
+            padding-top: 4px;
+        }
+
+        .pchart__stats {
+            display: flex;
+            gap: 0;
+            margin-top: 14px;
+            border-top: 0.5px solid var(--border);
+        }
+        .pchart__stat {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0 4px;
+        }
+        .pchart__stat + .pchart__stat {
+            border-left: 0.5px solid var(--border);
+        }
+        .pchart__stat-label {
+            font-size: 12px;
+            color: var(--text-4);
+            margin-bottom: 4px;
+        }
+        .pchart__stat-val {
+            font-family: var(--font-num);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-1);
+        }
+
+        .pchart__hint {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-4);
+            margin-top: 10px;
+        }
+
+        /* Avg label on chart */
+        .pchart__avg-label {
+            position: absolute;
+            right: 4px;
+            transform: translateY(-50%);
+            background: var(--brand-bg);
+            color: var(--brand);
+            font-size: 11px;
+            font-weight: 600;
+            font-family: var(--font-num);
+            padding: 2px 6px;
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 4;
+            white-space: nowrap;
+        }
+
+        /* ===== Recommendation ===== */
+        .rec {
+            margin-top: 16px;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            border: 1px solid;
+        }
+        .rec--buy { background: var(--price-low-bg); border-color: #C8E6DC; }
+        .rec--wait { background: #FFF8F0; border-color: #F0DCC8; }
+
+        .rec__head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .rec__icon {
+            width: 40px; height: 40px;
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+        }
+        .rec--buy .rec__icon { background: rgba(22,165,113,0.12); }
+        .rec--wait .rec__icon { background: rgba(200,140,60,0.12); }
+        .rec__action {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .rec--buy .rec__action { color: var(--price-low); }
+        .rec--wait .rec__action { color: #B8860B; }
+        .rec__conf {
+            font-size: 13px;
+            color: var(--text-4);
+            margin-top: 1px;
+        }
+        .rec__reason {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-2);
+            margin-bottom: 12px;
+        }
+        .rec__grid {
+            display: flex;
+            gap: 8px;
+        }
+        .rec__cell {
+            flex: 1;
+            background: rgba(255,255,255,0.7);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+        }
+        .rec__cell-label {
+            font-size: 12px;
+            color: var(--text-4);
+            margin-bottom: 4px;
+        }
+        .rec__cell-val {
+            font-family: var(--font-num);
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .rec--buy .rec__cell-val { color: var(--price-low); }
+        .rec--wait .rec__cell-val { color: #B8860B; }
+
+        /* ===== Quick Actions ===== */
+        .quick-wrap {
+            display: flex;
+            gap: 8px;
+            padding: 10px 16px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            flex-shrink: 0;
+            background: var(--white);
+            border-top: 0.5px solid var(--border);
+        }
+        .quick-wrap::-webkit-scrollbar { display: none; }
+
+        .qchip {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 9px 14px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            font-size: 15px;
+            color: var(--text-2);
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            font-family: inherit;
+        }
+        .qchip:active {
+            transform: scale(0.96);
+            background: var(--brand-bg);
+            border-color: var(--brand-border);
+            color: var(--brand);
+        }
+
+        /* ===== Input Area ===== */
+        .input-area {
+            padding: 10px 16px calc(var(--safe-bottom) + 10px);
+            background: var(--white);
+            flex-shrink: 0;
+        }
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .input-field {
+            flex: 1;
+            background: #F7F7F8;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            padding: 13px 20px;
+            font-size: 17px;
+            font-family: inherit;
+            color: var(--text-1);
+            outline: none;
+            transition: all 0.2s;
+        }
+        .input-field:focus {
+            border-color: var(--brand);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(102,102,255,0.12);
+        }
+        .input-field::placeholder { color: var(--text-4); }
+
+        .send-btn {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: var(--brand);
+            color: var(--white);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+        .send-btn:active { transform: scale(0.92); }
+        .send-btn:disabled { background: var(--border); color: var(--text-5); cursor: default; transform: none; }
+        .send-btn svg { width: 20px; height: 20px; }
+
+        /* ===== Welcome ===== */
+        .welcome {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            text-align: center;
+            background: #FFFFFF;
+        }
+        .welcome__logo {
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, #6666FF 0%, #8888FF 100%);
+            border-radius: var(--radius-xl);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 36px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 24px rgba(102,102,255,0.25);
+        }
+        .welcome__title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-1);
+            margin-bottom: 8px;
+        }
+        .welcome__sub {
+            font-size: 16px;
+            color: var(--text-3);
+            line-height: 1.6;
+            margin-bottom: 36px;
+        }
+        .welcome__grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+        }
+        .welcome__card {
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 18px 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+        .welcome__card:active {
+            transform: scale(0.97);
+            border-color: var(--brand-border);
+            background: var(--brand-bg);
+        }
+        .welcome__card-icon { font-size: 28px; margin-bottom: 10px; }
+        .welcome__card-title { font-size: 16px; font-weight: 600; color: var(--text-1); margin-bottom: 4px; }
+        .welcome__card-desc { font-size: 14px; color: var(--text-4); line-height: 1.4; }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 480px) { .app { max-width: 100%; } }
+        @media (min-width: 481px) {
+            .app { border-left: 0.5px solid var(--border); border-right: 0.5px solid var(--border); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        /* ===== Mock API ===== */
+        window.flightApi = {
+            basePrices: {
+                'PVG-TYO': 2500, 'PVG-OSA': 2200, 'PVG-ICN': 1800,
+                'PVG-BKK': 2000, 'PVG-SIN': 2800, 'PVG-CDG': 5500,
+                'PVG-LHR': 6000, 'PVG-JFK': 7000, 'PVG-TPE': 1500, 'PVG-HKG': 1800,
+            },
+            /* Simple seeded random for deterministic price history */
+            _seedHash: function(str) {
+                var h = 0;
+                for (var i = 0; i < str.length; i++) {
+                    h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+                }
+                return Math.abs(h);
+            },
+            _seededRandom: function(seed) {
+                var s = seed;
+                return function() {
+                    s = (s * 16807 + 0) % 2147483647;
+                    return (s - 1) / 2147483646;
+                };
+            },
+            searchFlights: async function(params) {
+                await new Promise(r => setTimeout(r, 400 + Math.random() * 400));
+                const rk = (params.origin || 'PVG') + '-' + (params.destination || 'TYO');
+                const base = this.basePrices[rk] || 2500;
+                const airlines = [
+                    { name: '春秋航空', code: '9C' }, { name: '日本航空', code: 'JL' },
+                    { name: '全日空', code: 'NH' }, { name: '东方航空', code: 'MU' },
+                    { name: '国航', code: 'CA' }, { name: '南方航空', code: 'CZ' },
+                ];
+                const picked = airlines.sort(() => Math.random() - 0.5).slice(0, 3);
+                return picked.map((a, i) => {
+                    const price = Math.round(base * (0.7 + Math.random() * 0.6));
+                    const h = 6 + Math.floor(Math.random() * 14);
+                    const m = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55][Math.floor(Math.random() * 12)];
+                    const dH = 3 + Math.floor(Math.random() * 3);
+                    const dM = Math.floor(Math.random() * 60);
+                    return {
+                        id: 'f' + i, origin: params.origin || 'PVG', destination: params.destination || 'TYO',
+                        price, airline: a.name, airlineCode: a.code,
+                        departTime: String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'),
+                        arrivalTime: String((h + dH) % 24).padStart(2, '0') + ':' + String((m + dM) % 60).padStart(2, '0'),
+                        duration: dH + '小时' + String(dM).padStart(2, '0') + '分',
+                        stops: Math.random() > 0.55 ? 1 : 0,
+                        terminal: 'T' + (Math.random() > 0.5 ? '1' : '2'),
+                        cabin: '经济舱',
+                    };
+                }).sort((a, b) => a.price - b.price);
+            },
+            getPriceHistory: async function(origin, dest) {
+                await new Promise(r => setTimeout(r, 200 + Math.random() * 200));
+                const rk = origin + '-' + dest;
+                const base = this.basePrices[rk] || 2500;
+                const data = [];
+                const today = new Date();
+                var seed = this._seedHash(rk + '_session');
+                var rng = this._seededRandom(seed);
+                var trend = (rng() - 0.5) * 0.3;
+                var price = base * (0.85 + rng() * 0.25);
+                for (let i = 59; i >= 0; i--) {
+                    const date = new Date(today); date.setDate(date.getDate() - i);
+                    const wd = date.getDay();
+                    const wm = (wd === 0 || wd === 6) ? 1.06 : 1.0;
+                    price += (rng() - 0.5 + trend * 0.08) * base * 0.04;
+                    price = Math.max(base * 0.6, Math.min(base * 1.45, price));
+                    data.push({ date: date.toISOString().split('T')[0], price: Math.round(price * wm) });
+                }
+                const prices = data.map(d => d.price);
+                const avg = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
+                return { data, average: avg, min: Math.min(...prices), max: Math.max(...prices) };
+            },
+            getRecommendation: async function(params, currentPrice) {
+                const history = await this.getPriceHistory(params.origin, params.destination);
+                const avg = history.average;
+                const pct = Math.round(((currentPrice - avg) / avg) * 100);
+                if (currentPrice <= avg * 0.88) return {
+                    action: 'buy', confidence: Math.min(92, 75 + Math.abs(pct)),
+                    reason: '当前价格处于近期低位，比均价低 ' + Math.abs(pct) + '%。如果接受春秋航空，建议尽快锁定，低价航班可能不含免费托运行李，提前购买。',
+                    currentPrice, averagePrice: avg,
+                };
+                if (currentPrice >= avg * 1.12) return {
+                    action: 'wait', confidence: Math.min(88, 65 + pct),
+                    reason: '当前价格偏高，比历史均价高 ' + pct + '%。建议优先提前 2-3 个月购买，通常提前购买价格处于正常偏低区间。',
+                    waitUntil: '1-2 周', expectedDrop: Math.round(currentPrice * 0.12),
+                    currentPrice, averagePrice: avg,
+                };
+                return {
+                    action: 'buy', confidence: 62,
+                    reason: '当前价格处于合理区间。航线整体目前价格处于正常偏低区间，建议优先考虑该价格。',
+                    currentPrice, averagePrice: avg,
+                };
+            },
+            analyze: function(currentPrice, prices) {
+                const avg = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
+                const min = Math.min(...prices), max = Math.max(...prices);
+                const pct = Math.round(((currentPrice - avg) / avg) * 100);
+                let level = 'mid';
+                if (currentPrice <= avg * 0.88) level = 'low';
+                else if (currentPrice >= avg * 1.12) level = 'high';
+                const recent = prices.slice(-7);
+                const rAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
+                const older = prices.slice(-14, -7);
+                const oAvg = older.length ? older.reduce((a, b) => a + b, 0) / older.length : rAvg;
+                let trend = 'stable';
+                if (rAvg < oAvg * 0.97) trend = 'falling';
+                else if (rAvg > oAvg * 1.03) trend = 'rising';
+                return { currentPrice, average: avg, min, max, pctDiff: pct, level, trend };
+            }
+        };
+    </script>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+        const DESTS = [
+            { code: 'TYO', name: '东京', flag: '🇯🇵' },
+            { code: 'OSA', name: '大阪', flag: '🇯🇵' },
+            { code: 'ICN', name: '首尔', flag: '🇰🇷' },
+            { code: 'BKK', name: '曼谷', flag: '🇹🇭' },
+            { code: 'SIN', name: '新加坡', flag: '🇸🇬' },
+            { code: 'CDG', name: '巴黎', flag: '🇫🇷' },
+            { code: 'LHR', name: '伦敦', flag: '🇬🇧' },
+            { code: 'JFK', name: '纽约', flag: '🇺🇸' },
+            { code: 'TPE', name: '台北', flag: '🇹🇼' },
+            { code: 'HKG', name: '香港', flag: '🇭🇰' },
+        ];
+        const ALIAS = { '首尔':'ICN','SEL':'ICN','PAR':'CDG','LON':'LHR','NYC':'JFK' };
+
+        function findDest(t) {
+            for (const d of DESTS) if (t.includes(d.name) || t.toUpperCase().includes(d.code)) return d;
+            for (const [a, c] of Object.entries(ALIAS)) if (t.includes(a) || t.toUpperCase().includes(c)) return DESTS.find(d => d.code === c);
+            return null;
+        }
+        function detectIntent(t) {
+            const s = t.toLowerCase();
+            if (s.includes('走势') || s.includes('趋势') || s.includes('历史')) return 'trend';
+            if (s.includes('买') || s.includes('建议') || s.includes('等')) return 'recommend';
+            if (s.includes('价格') || s.includes('多少钱') || s.includes('便宜') || s.includes('贵')) return 'price';
+            if (s.includes('航班') || s.includes('查') || s.includes('飞') || s.includes('去') || s.includes('订') || s.includes('机票')) return 'search';
+            return 'general';
+        }
+
+        /* ===== Interactive Chart ===== */
+        function PriceChart({ data, currentPrice, analysis, destination }) {
+            const canvasRef = useRef(null);
+            const [hover, setHover] = useState(null);
+            const [dims, setDims] = useState({ w: 300, h: 160 });
+
+            useEffect(() => {
+                const el = canvasRef.current;
+                if (!el) return;
+                const ro = new ResizeObserver(entries => {
+                    const { width } = entries[0].contentRect;
+                    if (width > 0) setDims({ w: width, h: 160 });
+                });
+                ro.observe(el);
+                return () => ro.disconnect();
+            }, []);
+
+            const padL = 0, padR = 0, padT = 12, padB = 12;
+            const points = useMemo(() => {
+                const prices = data.map(d => d.price);
+                const minP = Math.min(...prices), maxP = Math.max(...prices);
+                const range = maxP - minP || 1;
+                const cW = dims.w - padL - padR, cH = dims.h - padT - padB;
+                return data.map((d, i) => ({
+                    x: padL + (i / (data.length - 1)) * cW,
+                    y: padT + cH - ((d.price - minP) / range) * cH,
+                    price: d.price, date: d.date, index: i,
+                }));
+            }, [data, dims]);
+
+            const linePath = useMemo(() => {
+                if (!points.length) return '';
+                let d = `M ${points[0].x} ${points[0].y}`;
+                for (let i = 1; i < points.length; i++) {
+                    const p0 = points[i - 1], p1 = points[i];
+                    const cpx = (p0.x + p1.x) / 2;
+                    d += ` C ${cpx} ${p0.y}, ${cpx} ${p1.y}, ${p1.x} ${p1.y}`;
+                }
+                return d;
+            }, [points]);
+
+            const areaPath = useMemo(() => {
+                if (!points.length) return '';
+                return linePath + ` L ${points[points.length - 1].x} ${dims.h} L ${points[0].x} ${dims.h} Z`;
+            }, [linePath, points, dims]);
+
+            const avgY = useMemo(() => {
+                const prices = data.map(d => d.price);
+                const minP = Math.min(...prices), maxP = Math.max(...prices);
+                const range = maxP - minP || 1;
+                const cH = dims.h - padT - padB;
+                return padT + cH - ((analysis.average - minP) / range) * cH;
+            }, [data, dims, analysis]);
+
+            const interact = useCallback((cx) => {
+                const el = canvasRef.current;
+                if (!el || !points.length) return;
+                const rect = el.getBoundingClientRect();
+                const x = cx - rect.left;
+                let near = points[0], md = Infinity;
+                for (const p of points) { const d = Math.abs(p.x - x); if (d < md) { md = d; near = p; } }
+                setHover(near);
+            }, [points]);
+
+            const fmtDate = (s) => { const d = new Date(s); return (d.getMonth() + 1) + '月' + d.getDate() + '日'; };
+            const fmtDateShort = (s) => { const d = new Date(s); return (d.getMonth() + 1) + '/' + d.getDate(); };
+
+            const lineColor = 'var(--brand)';
+            const gid = 'g-' + destination.code + '-' + Math.random().toString(36).slice(2, 6);
+            const levelText = { low: '低于均价', mid: '价格适中', high: '高于均价' };
+            const trendText = { falling: '📉 近期下降', rising: '📈 近期上涨', stable: '➡️ 走势平稳' };
+
+            /* Footer date labels: start and end month/day */
+            const footerStartLabel = data.length > 0 ? fmtDateShort(data[0].date) : '';
+            const footerEndLabel = data.length > 0 ? fmtDateShort(data[data.length - 1].date) : '';
+
+            return (
+                <div className="pchart">
+                    <div className="pchart__title-row">
+                        <div>
+                            <div className="pchart__title">近60天价格走势</div>
+                        </div>
+                        <div className="pchart__cur-wrap">
+                            <div className="pchart__cur-price" style={{ color: lineColor }}>
+                                ¥{(hover ? hover.price : currentPrice).toLocaleString()}
+                            </div>
+                            {hover ? (
+                                <div className="pchart__cur-change" style={{ color: 'var(--text-4)' }}>{fmtDate(hover.date)}</div>
+                            ) : (
+                                <div className="pchart__cur-change" style={{ color: lineColor }}>
+                                    {analysis.pctDiff > 0 ? '+' : ''}{analysis.pctDiff}% vs 均价
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="pchart__badges">
+                        <span className={`pchart__badge pchart__badge--${analysis.level}`}>
+                            {analysis.level === 'low' ? '↓' : analysis.level === 'high' ? '↑' : '→'} {levelText[analysis.level]}
+                        </span>
+                        <span className="pchart__badge pchart__badge--neutral">{trendText[analysis.trend]}</span>
+                    </div>
+
+                    <div
+                        className="pchart__canvas"
+                        ref={canvasRef}
+                        onMouseMove={(e) => interact(e.clientX)}
+                        onMouseLeave={() => setHover(null)}
+                        onTouchStart={(e) => interact(e.touches[0].clientX)}
+                        onTouchMove={(e) => { e.preventDefault(); interact(e.touches[0].clientX); }}
+                        onTouchEnd={() => setHover(null)}
+                    >
+                        <svg viewBox={`0 0 ${dims.w} ${dims.h}`} preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor="var(--brand)" stopOpacity="0.12" />
+                                    <stop offset="100%" stopColor="var(--brand)" stopOpacity="0.01" />
+                                </linearGradient>
+                            </defs>
+                            <path d={areaPath} fill={`url(#${gid})`} />
+                            <line x1={points[0]?.x || 0} y1={avgY} x2={points[points.length - 1]?.x || dims.w} y2={avgY}
+                                  stroke="var(--brand)" strokeWidth="1" strokeDasharray="4 3" opacity="0.5" />
+                            <path d={linePath} fill="none" stroke={lineColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                            {points.length > 0 && !hover && (
+                                <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y}
+                                        r="4.5" fill={lineColor} stroke="white" strokeWidth="2.5" />
+                            )}
+                        </svg>
+
+                        {/* Average label */}
+                        <div className="pchart__avg-label" style={{ top: avgY + 'px' }}>
+                            均价 ¥{analysis.average.toLocaleString()}
+                        </div>
+
+                        {hover && (
+                            <>
+                                <div className="pchart__crosshair" style={{ left: hover.x + 'px' }} />
+                                <div className="pchart__dot" style={{ left: hover.x + 'px', top: hover.y + 'px' }} />
+                                <div className="pchart__tooltip" style={{ left: Math.max(50, Math.min(dims.w - 50, hover.x)) + 'px' }}>
+                                    {fmtDateShort(hover.date)} · ¥{hover.price.toLocaleString()}
+                                </div>
+                            </>
+                        )}
+                    </div>
+
+                    <div className="pchart__footer">
+                        <span>{footerStartLabel}</span>
+                        <span>{footerEndLabel}</span>
+                    </div>
+
+                    <div className="pchart__stats">
+                        <div className="pchart__stat">
+                            <div className="pchart__stat-label">最低价</div>
+                            <div className="pchart__stat-val">¥{analysis.min.toLocaleString()}</div>
+                        </div>
+                        <div className="pchart__stat">
+                            <div className="pchart__stat-label">平均价</div>
+                            <div className="pchart__stat-val">¥{analysis.average.toLocaleString()}</div>
+                        </div>
+                        <div className="pchart__stat">
+                            <div className="pchart__stat-label">最高价</div>
+                            <div className="pchart__stat-val">¥{analysis.max.toLocaleString()}</div>
+                        </div>
+                    </div>
+
+                    <div className="pchart__hint">👆 滑动查看每日价格</div>
+                </div>
+            );
+        }
+
+        /* ===== Flight Card ===== */
+        function FlightCards({ flights, analysis }) {
+            const getLevel = (p) => {
+                if (!analysis) return 'mid';
+                if (p <= analysis.average * 0.88) return 'low';
+                if (p >= analysis.average * 1.12) return 'high';
+                return 'mid';
+            };
+            const levelLabel = { low: '低价', mid: '适中', high: '偏高' };
+
+            return (
+                <div className="flight-cards">
+                    {flights.map((f) => {
+                        const lv = getLevel(f.price);
+                        return (
+                            <div key={f.id} className="fcard">
+                                <div className="fcard__title-row">
+                                    <span className="fcard__airline-name">{f.airline}</span>
+                                    <span className={`fcard__level-pill fcard__level-pill--${lv}`}>
+                                        {levelLabel[lv]}
+                                    </span>
+                                </div>
+                                <div className="fcard__route">
+                                    <div className="fcard__time-col">
+                                        <span className="fcard__time">{f.departTime}</span>
+                                        <span className="fcard__city-code">{f.origin}</span>
+                                    </div>
+                                    <div className="fcard__timeline">
+                                        <span className="fcard__duration">{f.duration}</span>
+                                        <div className="fcard__line-wrap">
+                                            <span className="fcard__line-dot fcard__line-dot--l" />
+                                            <span className="fcard__line-plane">✈</span>
+                                            <span className="fcard__line-dot fcard__line-dot--r" />
+                                        </div>
+                                        <span className="fcard__stops">{f.stops === 0 ? '直飞' : f.stops + '次经停'}</span>
+                                    </div>
+                                    <div className="fcard__time-col">
+                                        <span className="fcard__time">{f.arrivalTime}</span>
+                                        <span className="fcard__city-code">{f.destination}</span>
+                                    </div>
+                                </div>
+                                <div className="fcard__bottom">
+                                    <div className="fcard__meta">
+                                        <span className="fcard__meta-item">{f.cabin} · {f.terminal}</span>
+                                    </div>
+                                    <div className="fcard__price-area">
+                                        <div className="fcard__price">
+                                            <span className="fcard__price-unit">¥</span>{f.price.toLocaleString()}
+                                        </div>
+                                        <div className="fcard__price-note">起</div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        }
+
+        /* ===== Recommendation ===== */
+        function RecCard({ rec }) {
+            const isBuy = rec.action === 'buy';
+            return (
+                <div className={`rec rec--${isBuy ? 'buy' : 'wait'}`}>
+                    <div className="rec__head">
+                        <div className="rec__icon">{isBuy ? '✅' : '⏳'}</div>
+                        <div>
+                            <div className="rec__action">{isBuy ? '建议现在购买' : '建议继续观望'}</div>
+                            <div className="rec__conf">置信度 {rec.confidence}%</div>
+                        </div>
+                    </div>
+                    <div className="rec__reason">{rec.reason}</div>
+                    <div className="rec__grid">
+                        <div className="rec__cell">
+                            <div className="rec__cell-label">当前价格</div>
+                            <div className="rec__cell-val">¥{rec.currentPrice?.toLocaleString()}</div>
+                        </div>
+                        <div className="rec__cell">
+                            <div className="rec__cell-label">{isBuy ? '历史均价' : '预计降幅'}</div>
+                            <div className="rec__cell-val">
+                                {isBuy ? '¥' + (rec.averagePrice?.toLocaleString() || '--') : '¥' + (rec.expectedDrop?.toLocaleString() || '--')}
+                            </div>
+                        </div>
+                        {!isBuy && rec.waitUntil && (
+                            <div className="rec__cell">
+                                <div className="rec__cell-label">预计等待</div>
+                                <div className="rec__cell-val">{rec.waitUntil}</div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        /* ===== App ===== */
+        function App() {
+            const [messages, setMessages] = useState([]);
+            const [input, setInput] = useState('');
+            const [typing, setTyping] = useState(false);
+            const [started, setStarted] = useState(false);
+            const bottomRef = useRef(null);
+
+            const scroll = useCallback(() => {
+                setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 60);
+            }, []);
+            useEffect(scroll, [messages, typing]);
+
+            const addMsg = useCallback((type, content, data = null) => {
+                setMessages(prev => [...prev, { id: Date.now() + Math.random(), type, content, data, time: new Date() }]);
+            }, []);
+
+            const newChat = useCallback(() => {
+                setMessages([]);
+                setStarted(false);
+                setInput('');
+            }, []);
+
+            const send = useCallback(async (text) => {
+                if (!text.trim() || typing) return;
+                const trimmed = text.trim();
+                setInput('');
+                setStarted(true);
+                addMsg('user', trimmed);
+                setTyping(true);
+
+                try {
+                    const intent = detectIntent(trimmed);
+                    const dest = findDest(trimmed);
+
+                    if (intent === 'search') {
+                        if (!dest) {
+                            addMsg('ai', '想去哪里呢？告诉我目的地，我帮你查航班和价格\n\n支持城市：东京、大阪、首尔、曼谷、新加坡、巴黎、伦敦、纽约、台北、香港');
+                        } else {
+                            const [flights, history] = await Promise.all([
+                                window.flightApi.searchFlights({ origin: 'PVG', destination: dest.code }),
+                                window.flightApi.getPriceHistory('PVG', dest.code),
+                            ]);
+                            const prices = history.data.map(d => d.price);
+                            const cp = flights[0]?.price || prices[prices.length - 1];
+                            const analysis = window.flightApi.analyze(cp, prices);
+                            const minPrice = Math.min(...flights.map(f => f.price));
+                            const rec = await window.flightApi.getRecommendation({ origin: 'PVG', destination: dest.code }, cp);
+                            const levelWord = { low: '低于均价', mid: '接近均价', high: '高于均价' };
+                            addMsg('ai',
+                                `为您找到 ${flights.length} 个前往${dest.name}的机票方案，其中${flights[0].airline}的直飞机票价格最低，性价比最高。\n\n以下是为您整理的方案：`,
+                                { type: 'flights', flights, destination: dest, history, analysis, currentPrice: cp, recommendation: rec }
+                            );
+                        }
+                    } else if (intent === 'price' || intent === 'trend') {
+                        const d = dest || DESTS[0];
+                        const history = await window.flightApi.getPriceHistory('PVG', d.code);
+                        const prices = history.data.map(x => x.price);
+                        const cp = prices[prices.length - 1];
+                        const analysis = window.flightApi.analyze(cp, prices);
+                        const levelWord = { low: '处于低位', mid: '处于正常水平', high: '偏高' };
+                        addMsg('ai',
+                            `${d.flag} ${d.name}航线当前价格 ${levelWord[analysis.level]}，多数航线中位价格在 ¥${analysis.min.toLocaleString()}~¥${analysis.max.toLocaleString()} 之间，平均价格约 ¥${analysis.average.toLocaleString()}。\n\n以下是近60天价格走势图：`,
+                            { type: 'chart', destination: d, history, currentPrice: cp, analysis }
+                        );
+                    } else if (intent === 'recommend') {
+                        const d = dest || null;
+                        if (!d) {
+                            addMsg('ai', '你想了解哪条航线的购买建议？比如「东京现在买还是等等」');
+                        } else {
+                            const history = await window.flightApi.getPriceHistory('PVG', d.code);
+                            const prices = history.data.map(x => x.price);
+                            const cp = prices[prices.length - 1];
+                            const analysis = window.flightApi.analyze(cp, prices);
+                            const rec = await window.flightApi.getRecommendation({ origin: 'PVG', destination: d.code }, cp);
+                            addMsg('ai', `${d.flag} 关于上海→${d.name}航线的购买建议：`, { type: 'recommend', recommendation: rec, destination: d, history, currentPrice: cp, analysis });
+                        }
+                    } else {
+                        addMsg('ai', '你好！我是 AI 航班助手，可以帮你：\n\n• 搜航班 — 「帮我查去东京的机票」\n• 看价格走势 — 「东京价格趋势」\n• 购买建议 — 「东京现在买合适吗」\n\n告诉我你想去哪里吧 ✈️');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    addMsg('ai', '抱歉，遇到了一点问题，请稍后再试 🙏');
+                } finally {
+                    setTyping(false);
+                }
+            }, [typing, addMsg]);
+
+            const handleKey = useCallback((e) => {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(input); }
+            }, [input, send]);
+
+            const quickActions = [
+                { label: '查看更多航班', text: '查询东京航班' },
+                { label: '看价格走势', text: '东京价格走势' },
+                { label: '现在买还是等等', text: '东京现在买还是等等' },
+                { label: '查曼谷机票', text: '去曼谷多少钱' },
+            ];
+
+            /* ===== Welcome ===== */
+            if (!started) {
+                return (
+                    <div className="app">
+                        <header className="header">
+                            <div className="header__left">
+                                <button className="header__btn">☰</button>
+                            </div>
+                            <div className="header__center">机票低价顾问</div>
+                            <div className="header__right">
+                                <button className="header__btn" title="新对话" onClick={newChat}>
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                                </button>
+                            </div>
+                        </header>
+                        <div className="welcome">
+                            <div className="welcome__logo">✈️</div>
+                            <h2 className="welcome__title">找到最划算的机票</h2>
+                            <p className="welcome__sub">AI 帮你分析价格走势、判断买入时机<br/>告诉我你想去哪里</p>
+                            <div className="welcome__grid">
+                                {[
+                                    { icon: '🔍', title: '搜索航班', desc: '查询航班和实时价格', action: '帮我查去东京的机票' },
+                                    { icon: '📊', title: '价格走势', desc: '近期价格趋势图', action: '东京价格走势' },
+                                    { icon: '💰', title: '价格水位', desc: '当前价格贵不贵', action: '去曼谷多少钱' },
+                                    { icon: '💡', title: '买入建议', desc: '现在买还是再等等', action: '东京现在买还是等等' },
+                                ].map(c => (
+                                    <div key={c.title} className="welcome__card" onClick={() => send(c.action)}>
+                                        <div className="welcome__card-icon">{c.icon}</div>
+                                        <div className="welcome__card-title">{c.title}</div>
+                                        <div className="welcome__card-desc">{c.desc}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="input-area">
+                            <div className="input-row">
+                                <input className="input-field" placeholder="发消息或者按住说话..." value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKey} />
+                                <button className="send-btn" disabled={!input.trim()} onClick={() => send(input)}>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            /* ===== Chat ===== */
+            return (
+                <div className="app">
+                    <header className="header">
+                        <div className="header__left">
+                            <button className="header__btn">☰</button>
+                        </div>
+                        <div className="header__center">机票低价顾问</div>
+                        <div className="header__right">
+                            <button className="header__btn" title="新对话" onClick={newChat}>
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                            </button>
+                        </div>
+                    </header>
+
+                    <div className="messages">
+                        {messages.map((m) => (
+                            m.type === 'user' ? (
+                                <div key={m.id} className="msg msg--user">
+                                    <div className="msg--user-bubble">{m.content}</div>
+                                </div>
+                            ) : (
+                                <div key={m.id} className="msg msg--ai">
+                                    <div className="msg__text">{m.content}</div>
+
+                                    {m.data?.type === 'flights' && (
+                                        <>
+                                            <FlightCards flights={m.data.flights} analysis={m.data.analysis} />
+                                            <PriceChart data={m.data.history.data} currentPrice={m.data.currentPrice} analysis={m.data.analysis} destination={m.data.destination} />
+                                        </>
+                                    )}
+                                    {m.data?.type === 'chart' && (
+                                        <PriceChart data={m.data.history.data} currentPrice={m.data.currentPrice} analysis={m.data.analysis} destination={m.data.destination} />
+                                    )}
+                                    {m.data?.type === 'recommend' && (
+                                        <>
+                                            <RecCard rec={m.data.recommendation} />
+                                            <PriceChart data={m.data.history.data} currentPrice={m.data.currentPrice} analysis={m.data.analysis} destination={m.data.destination} />
+                                        </>
+                                    )}
+                                </div>
+                            )
+                        ))}
+                        {typing && (
+                            <div className="typing-wrap">
+                                <div className="typing-dots"><span /><span /><span /></div>
+                            </div>
+                        )}
+                        <div ref={bottomRef} />
+                    </div>
+
+                    <div className="quick-wrap">
+                        {quickActions.map(a => (
+                            <button key={a.label} className="qchip" onClick={() => send(a.text)} disabled={typing}>{a.label}</button>
+                        ))}
+                    </div>
+
+                    <div className="input-area">
+                        <div className="input-row">
+                            <input className="input-field" placeholder="发消息或者按住说话..." value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKey} />
+                            <button className="send-btn" disabled={!input.trim() || typing} onClick={() => send(input)}>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
