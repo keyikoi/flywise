@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Float to Mkt Transition Animation</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    /* 容器 */
+    .container {
+      position: relative;
+      width: 714px;
+      display: flex;
+      justify-content: center;
+      padding: 50px;
+    }
+
+    /* 动态条容器 */
+    .bar {
+      position: relative;
+      width: 714px;
+      height: 130px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0px 12px 40px rgba(0, 0, 0, 0.16);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 18px;
+      overflow: hidden;
+      transition: height 0.8s cubic-bezier(0.65, 0, 0.35, 1),
+                  border-radius 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    .bar.transitioning {
+      height: 72px;
+      border-radius: 12px;
+    }
+
+    /* 左侧图标区域 */
+    .icon-wrapper {
+      position: relative;
+      width: 82px;
+      height: 82px;
+      flex-shrink: 0;
+      transition: width 0.8s cubic-bezier(0.65, 0, 0.35, 1),
+                  height 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    .bar.transitioning .icon-wrapper {
+      width: 40px;
+      height: 40px;
+    }
+
+    /* 红包图标 */
+    .red-packet {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+      border-radius: 15%;
+      overflow: hidden;
+      transition: opacity 0.3s ease;
+    }
+
+    .red-packet::before {
+      content: '';
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40%;
+      height: 40%;
+      background: radial-gradient(circle, #ffd700 0%, #ffb700 70%);
+      border-radius: 50%;
+    }
+
+    .red-packet::after {
+      content: '福';
+      position: absolute;
+      bottom: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 25%;
+      color: #ffd700;
+      font-weight: bold;
+    }
+
+    .bar.transitioning .red-packet {
+      opacity: 0;
+    }
+
+    /* 小图标 */
+    .small-icon {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+      border-radius: 20%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 50%;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .bar.transitioning .small-icon {
+      opacity: 1;
+    }
+
+    /* 中间文字区域 */
+    .text-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* 标题 */
+    .title-wrapper {
+      position: relative;
+      height: 45px;
+    }
+
+    .title {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-size: 32px;
+      font-weight: 500;
+      line-height: 1.4;
+      white-space: nowrap;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .title.float {
+      color: #0f131a;
+    }
+
+    .title.mkt {
+      color: #149aa8;
+      font-size: 28px;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .bar.transitioning .title.float {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    .bar.transitioning .title.mkt {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 副标题 */
+    .subtitle-wrapper {
+      position: relative;
+      height: 34px;
+    }
+
+    .subtitle {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-size: 24px;
+      font-weight: 400;
+      line-height: 1.4;
+      white-space: nowrap;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .subtitle.float {
+      color: #5c5f66;
+    }
+
+    .subtitle.mkt {
+      color: #0f131a;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .bar.transitioning .subtitle.float {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    .bar.transitioning .subtitle.mkt {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 右侧按钮区域 */
+    .action-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* 黄色按钮 */
+    .yellow-btn {
+      height: 60px;
+      padding: 0 24px;
+      background: #ffe033;
+      border-radius: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .yellow-btn span {
+      font-size: 28px;
+      font-weight: 500;
+      color: #0f131a;
+      white-space: nowrap;
+    }
+
+    .bar.transitioning .yellow-btn {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    /* 箭头图标 */
+    .arrow-icon {
+      width: 24px;
+      height: 24px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .bar.transitioning .arrow-icon {
+      opacity: 1;
+    }
+
+    /* 关闭按钮 */
+    .close-btn {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease;
+    }
+
+    .close-btn svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .close-btn path {
+      stroke: #5c5f66;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    .bar.transitioning .close-btn {
+      opacity: 0;
+    }
+
+    /* 控制按钮 */
+    .controls {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 100;
+    }
+
+    .controls button {
+      padding: 12px 24px;
+      font-size: 16px;
+      font-family: inherit;
+      background: #6666ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .controls button:hover {
+      background: #5555ee;
+    }
+
+    .controls button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* 状态显示 */
+    .status {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px 20px;
+      border-radius: 10px;
+      font-family: monospace;
+      font-size: 14px;
+      color: #333;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .status div {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="bar" id="bar">
+      <!-- 左侧图标 -->
+      <div class="icon-wrapper">
+        <div class="red-packet"></div>
+        <div class="small-icon">💰</div>
+      </div>
+
+      <!-- 中间文字 -->
+      <div class="text-area">
+        <div class="title-wrapper">
+          <div class="title float">航班历史低价</div>
+          <div class="title mkt">历史低价</div>
+        </div>
+        <div class="subtitle-wrapper">
+          <div class="subtitle float">当前为价格低点 建议尽快预订</div>
+          <div class="subtitle mkt">当前价格是该航班近期低价，建议尽快预订</div>
+        </div>
+      </div>
+
+      <!-- 右侧操作区 -->
+      <div class="action-area">
+        <div class="yellow-btn">
+          <span>看趋势</span>
+        </div>
+        <svg class="arrow-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M9 18l6-6-6-6" stroke="#0f131a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="close-btn">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 状态显示 -->
+  <div class="status">
+    <div>状态：<span id="statusText">保持中</span></div>
+    <div>时间：<span id="timer">0.00</span>s</div>
+    <div>高度：<span id="height">130</span>px</div>
+  </div>
+
+  <!-- 控制按钮 -->
+  <div class="controls">
+    <button id="startBtn" onclick="startAnimation()">开始动画</button>
+    <button id="resetBtn" onclick="resetAnimation()">重置</button>
+    <button id="loopBtn" onclick="toggleLoop()">循环：关</button>
+  </div>
+
+  <script>
+    let isTransitioning = false;
+    let hasTransitioned = false;
+    let startTime = null;
+    let animationFrame = null;
+    let isLooping = false;
+    let holdTimer = null;
+
+    const bar = document.getElementById('bar');
+    const statusText = document.getElementById('statusText');
+    const timerDisplay = document.getElementById('timer');
+    const heightDisplay = document.getElementById('height');
+    const startBtn = document.getElementById('startBtn');
+    const loopBtn = document.getElementById('loopBtn');
+
+    const HOLD_DURATION = 3000; // 3 秒
+    const TRANSITION_DURATION = 800; // 0.8 秒
+
+    function updateStatus() {
+      if (!startTime) return;
+
+      const elapsed = (Date.now() - startTime) / 1000;
+      timerDisplay.textContent = elapsed.toFixed(2);
+
+      if (isTransitioning) {
+        statusText.textContent = '过渡中...';
+        heightDisplay.textContent = '130 → 72';
+      } else if (hasTransitioned) {
+        statusText.textContent = '已完成';
+        heightDisplay.textContent = '72';
+      } else {
+        statusText.textContent = '保持中';
+        heightDisplay.textContent = '130';
+      }
+
+      animationFrame = requestAnimationFrame(updateStatus);
+    }
+
+    function startAnimation() {
+      if (isTransitioning || hasTransitioned) return;
+
+      startTime = Date.now();
+      isTransitioning = true;
+      startBtn.disabled = true;
+
+      updateStatus();
+
+      // 3 秒后开始过渡
+      holdTimer = setTimeout(() => {
+        bar.classList.add('transitioning');
+        isTransitioning = false;
+        hasTransitioned = true;
+
+        setTimeout(() => {
+          if (animationFrame) {
+            cancelAnimationFrame(animationFrame);
+          }
+        }, 500);
+      }, HOLD_DURATION);
+    }
+
+    function resetAnimation() {
+      // 清除所有定时器
+      if (holdTimer) clearTimeout(holdTimer);
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+
+      // 重置状态
+      bar.classList.remove('transitioning');
+      isTransitioning = false;
+      hasTransitioned = false;
+      startTime = null;
+
+      // 更新 UI
+      startBtn.disabled = false;
+      statusText.textContent = '保持中';
+      timerDisplay.textContent = '0.00';
+      heightDisplay.textContent = '130';
+    }
+
+    function toggleLoop() {
+      isLooping = !isLooping;
+      loopBtn.textContent = '循环：' + (isLooping ? '开' : '关');
+
+      if (isLooping) {
+        startLoop();
+      }
+    }
+
+    function startLoop() {
+      if (!isLooping) return;
+
+      resetAnimation();
+
+      setTimeout(() => {
+        if (isLooping) {
+          startAnimation();
+
+          setTimeout(() => {
+            if (isLooping) {
+              setTimeout(startLoop, 2000);
+            }
+          }, HOLD_DURATION + TRANSITION_DURATION);
+        }
+      }, 500);
+    }
+
+    // 自动开始
+    setTimeout(startAnimation, 500);
+  </script>
+</body>
+</html>
