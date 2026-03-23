@@ -148,19 +148,71 @@
 
         /* AI message — full-width block, no avatar */
         .msg--ai {
-            padding: 20px 16px;
+            padding: 24px 16px;
             background: var(--white);
         }
 
         .msg__text {
-            font-size: 17px;
-            line-height: 1.75;
+            font-size: 15px;
+            line-height: 1.7;
             color: var(--text-2);
-            white-space: pre-line;
+            font-family: 'PingFang SC', sans-serif;
         }
         .msg__text strong {
             color: var(--text-1);
-            font-weight: 600;
+            font-weight: 500;
+        }
+        .msg__text h2 {
+            font-size: 21px;
+            font-weight: 500;
+            color: var(--text-1);
+            margin: 21px 0 12px;
+            line-height: 1.4;
+        }
+        .msg__text h2:first-child {
+            margin-top: 0;
+        }
+        .msg__text h3 {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-1);
+            margin: 21px 0 12px;
+            line-height: 1.4;
+        }
+        .msg__text h3:first-child {
+            margin-top: 0;
+        }
+        .msg__text h4 {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-1);
+            margin: 12px 0 8px;
+            line-height: 1.4;
+        }
+        .msg__text blockquote {
+            margin: 12px 0;
+            padding: 8px 10px;
+            background: #F5F5F7;
+            border-radius: 6px;
+            color: var(--text-3);
+            font-size: 15px;
+            line-height: 1.7;
+            border-left: 2px solid var(--brand);
+        }
+        .msg__text ul {
+            margin: 12px 0;
+            padding-left: 22px;
+            color: var(--text-2);
+        }
+        .msg__text li {
+            margin: 6px 0;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+        .msg__divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 12px 0;
         }
 
         /* ===== Typing ===== */
@@ -188,55 +240,59 @@
         }
 
         /* ===== Flight Card (referencing the design) ===== */
-        .flight-cards { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .flight-cards { margin-top: 12px; display: flex; flex-direction: column; gap: 12px; }
 
         .fcard {
             background: var(--white);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            padding: 16px;
+            padding: 12px 14px;
             position: relative;
             overflow: hidden;
         }
 
-        /* Top section: title + price level badge */
-        .fcard__title-row {
+        /* Top row: airline + badge */
+        .fcard__top {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 14px;
+            margin-bottom: 8px;
+        }
+        .fcard__airline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .fcard__logo {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
         }
         .fcard__airline-name {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             color: var(--text-1);
         }
         .fcard__level-pill {
-            font-size: 12px;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: 4px;
         }
         .fcard__level-pill--low { background: var(--price-low-bg); color: var(--price-low); }
         .fcard__level-pill--mid { background: var(--price-mid-bg); color: var(--price-mid); }
         .fcard__level-pill--high { background: var(--price-high-bg); color: var(--price-high); }
 
-        /* Route row: depart → arrive with timeline */
+        /* Route row: time range on one line */
         .fcard__route {
             display: flex;
-            align-items: center;
-            gap: 0;
-            margin-bottom: 12px;
-        }
-        .fcard__time-col {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 64px;
+            align-items: baseline;
+            gap: 4px;
+            margin-bottom: 4px;
         }
         .fcard__time {
             font-family: var(--font-num);
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 700;
             color: var(--text-1);
             letter-spacing: -0.5px;
@@ -245,96 +301,65 @@
         .fcard__city-code {
             font-size: 13px;
             color: var(--text-4);
-            margin-top: 4px;
+            font-weight: 500;
+        }
+        .fcard__sep {
+            font-size: 14px;
+            color: var(--text-3);
+            font-weight: 500;
         }
 
-        .fcard__timeline {
-            flex: 1;
+        /* Duration and stops row */
+        .fcard__info {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 0 12px;
-            min-height: 44px;
+            gap: 6px;
+            margin-bottom: 8px;
         }
         .fcard__duration {
-            font-size: 12px;
-            color: var(--text-4);
-            margin-bottom: 6px;
-        }
-        .fcard__line-wrap {
-            width: 100%;
-            height: 1px;
-            background: var(--border);
-            position: relative;
-        }
-        .fcard__line-dot {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            border: 1.5px solid var(--text-5);
-            background: var(--white);
-        }
-        .fcard__line-dot--l { left: -3px; }
-        .fcard__line-dot--r { right: -3px; }
-        .fcard__line-plane {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 12px;
-            color: var(--brand);
+            font-size: 13px;
+            color: var(--text-2);
+            font-weight: 500;
         }
         .fcard__stops {
-            font-size: 12px;
-            color: var(--price-low);
-            font-weight: 500;
-            margin-top: 6px;
+            font-size: 13px;
+            color: var(--text-3);
         }
 
-        /* Bottom: meta + price */
+        /* Bottom: price area */
         .fcard__bottom {
             display: flex;
             align-items: baseline;
-            justify-content: space-between;
-            padding-top: 12px;
-            border-top: 0.5px solid var(--border-light);
-        }
-        .fcard__meta {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .fcard__meta-item {
-            font-size: 13px;
-            color: var(--text-4);
-        }
-        .fcard__price-area {
-            text-align: right;
+            justify-content: flex-end;
+            gap: 4px;
         }
         .fcard__price {
             font-family: var(--font-num);
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 700;
             line-height: 1;
             letter-spacing: -0.5px;
             color: var(--text-1);
         }
         .fcard__price-unit {
-            font-size: 16px;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 600;
         }
         .fcard__price-note {
             font-size: 12px;
             color: var(--text-4);
-            margin-top: 2px;
         }
 
         /* ===== Interactive Price Chart ===== */
+        .price-summary-simple {
+            margin-top: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-3);
+        }
+
         .pchart {
-            margin-top: 16px;
+            margin-top: 12px;
             background: var(--white);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
@@ -881,6 +906,167 @@
             return 'general';
         }
 
+        /**
+         * 解析出发日期
+         * 支持："明天"、"下周一"、"3 月 25 日"、"2024-03-25" 等
+         * 默认返回今天起 7 天内的日期
+         */
+        function parseDepartDate(text) {
+            const today = new Date();
+            const s = text.toLowerCase();
+
+            // "明天"
+            if (s.includes('明天')) {
+                const d = new Date(today);
+                d.setDate(d.getDate() + 1);
+                return formatDate(d);
+            }
+
+            // "后天"
+            if (s.includes('后天')) {
+                const d = new Date(today);
+                d.setDate(d.getDate() + 2);
+                return formatDate(d);
+            }
+
+            // "下周一" ~ "下周日"
+            const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            for (let i = 0; i < 7; i++) {
+                if (s.includes('下周' + weekDays[i])) {
+                    const d = new Date(today);
+                    const currentDay = d.getDay();
+                    const targetDay = i;
+                    const daysUntil = (targetDay - currentDay + 7) % 7 + 7;
+                    d.setDate(d.getDate() + daysUntil);
+                    return formatDate(d);
+                }
+            }
+
+            // "X 月 X 日" 或 "X 月 X 号"
+            const dateMatch = text.match(/(\d{1,2}) 月 (\d{1,2})[日号]/);
+            if (dateMatch) {
+                const month = parseInt(dateMatch[1]) - 1;
+                const day = parseInt(dateMatch[2]);
+                const year = today.getFullYear();
+                const d = new Date(year, month, day);
+                return formatDate(d);
+            }
+
+            // "YYYY-MM-DD" 或 "YYYY/MM/DD"
+            const isoMatch = text.match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+            if (isoMatch) {
+                const d = new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2]) - 1, parseInt(isoMatch[3]));
+                return formatDate(d);
+            }
+
+            // 默认：今天 +7 天（SerpApi 需要未来日期）
+            const defaultDate = new Date(today);
+            defaultDate.setDate(defaultDate.getDate() + 7);
+            return formatDate(defaultDate);
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        /**
+         * 简单的 markdown 转 HTML 函数
+         */
+        function renderMarkdown(text) {
+            if (!text) return '';
+
+            let html = text;
+
+            // 转义 HTML 标签
+            html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            // 加粗 **text**
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+            // 标题 ##
+            html = html.replace(/^## (.+)$/gm, '<h2 class="msg__heading">$1</h2>');
+            // 标题 ###
+            html = html.replace(/^### (.+)$/gm, '<h3 class="msg__subheading">$1</h3>');
+
+            // 引用 >
+            html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+
+            // 分隔线 ---
+            html = html.replace(/^---$/gm, '<hr class="msg__divider"/>');
+
+            // 列表项 -
+            html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+
+            // 换行
+            html = html.replace(/\n/g, '<br/>');
+
+            return html;
+        }
+
+        /**
+         * 生成航班搜索总结（简洁版本）
+         */
+        function generateFlightSummary(flights, cheapestFlight, directCount, destName, dateStr, weekday) {
+            const lines = [];
+            const cheapestDirect = flights.find(f => f.stops === 0);
+
+            // 开头总结
+            lines.push(`为您找到 ${flights.length} 个 ${dateStr} 从上海飞往${destName}的航班方案，其中${directCount}个直飞航班。`);
+            lines.push('');
+
+            // 推荐建议
+            if (cheapestDirect && cheapestDirect.id === flights[0]?.id) {
+                lines.push(`**推荐 ${cheapestDirect.airline}**：直飞航班中价格最低（¥${cheapestDirect.price.toLocaleString()} 起），无需中转，省时省力，性价比首选。`);
+            } else if (cheapestDirect) {
+                lines.push(`**推荐 ${flights[0].airline}**：全场最低价（¥${flights[0].price.toLocaleString()} 起），适合预算有限的旅客。如追求舒适体验，可选择 ${cheapestDirect.airline} 的直飞航班（¥${cheapestDirect.price.toLocaleString()} 起）。`);
+            } else {
+                lines.push(`**推荐 ${flights[0].airline}**：价格最低（¥${flights[0].price.toLocaleString()} 起），但需要中转。直飞航班价格相对较高。`);
+            }
+            lines.push('');
+            lines.push(`温馨提示：低价航班可能不包含免费托运行李额，建议提前确认。`);
+
+            return lines.join('\n');
+        }
+
+        /**
+         * 生成单个航班的推荐理由
+         */
+        function generateFlightReason(flight, index, cheapestPrice) {
+            const isCheapest = flight.price === cheapestPrice;
+            const isDirect = flight.stops === 0;
+
+            if (isCheapest && isDirect) {
+                return '直飞航班中价格最低，无需中转，省时省力，性价比首选';
+            } else if (isCheapest) {
+                return '全场最低价，适合预算有限的旅客';
+            } else if (isDirect) {
+                return '直飞航班，节省时间，适合商务出行或带行李的旅客';
+            } else {
+                return '价格适中，中转时间合理，可作为备选方案';
+            }
+        }
+
+        /**
+         * 生成价格模块的总结（一段话）
+         */
+        function generatePriceSummaryJSX(analysis, destName) {
+            const levelText = analysis.level === 'low' ? '处于低位' : analysis.level === 'high' ? '偏高' : '适中';
+            const advice = analysis.level === 'low'
+                ? '是入手的好时机'
+                : analysis.level === 'high'
+                ? '建议谨慎决策或等待降价'
+                : '如有出行计划可以考虑入手';
+
+            return (
+                <div className="price-summary-simple">
+                    {destName}航线当前价格{levelText}，{advice}。历史最低价 ¥{analysis.min.toLocaleString()}，均价 ¥{analysis.average.toLocaleString()}，最高价 ¥{analysis.max.toLocaleString()}。
+                </div>
+            );
+        }
+
         /* ===== Interactive Chart ===== */
         function PriceChart({ data, currentPrice, analysis, destination }) {
             const canvasRef = useRef(null);
@@ -1052,7 +1238,7 @@
         }
 
         /* ===== Flight Card ===== */
-        function FlightCards({ flights, analysis }) {
+        function FlightCards({ flights, analysis, destination }) {
             const getLevel = (p) => {
                 if (!analysis) return 'mid';
                 if (p <= analysis.average * 0.88) return 'low';
@@ -1060,47 +1246,51 @@
                 return 'mid';
             };
             const levelLabel = { low: '低价', mid: '适中', high: '偏高' };
+            const airlineLogos = {
+                '春秋航空': 'icon/春秋航空.png',
+                '东方航空': 'icon/东方航空.png',
+                '全日空': 'icon/全日空.png',
+                '日本航空': 'icon/日本航空.png',
+                '国航': 'icon/国航.png',
+                '南方航空': 'icon/南方航空.png',
+            };
+            const cheapestPrice = Math.min(...flights.map(f => f.price));
 
             return (
                 <div className="flight-cards">
-                    {flights.map((f) => {
+                    {flights.map((f, index) => {
                         const lv = getLevel(f.price);
+                        const reason = generateFlightReason(f, index, cheapestPrice);
                         return (
-                            <div key={f.id} className="fcard">
-                                <div className="fcard__title-row">
-                                    <span className="fcard__airline-name">{f.airline}</span>
-                                    <span className={`fcard__level-pill fcard__level-pill--${lv}`}>
-                                        {levelLabel[lv]}
-                                    </span>
-                                </div>
-                                <div className="fcard__route">
-                                    <div className="fcard__time-col">
+                            <div key={f.id}>
+                                <div className="fcard">
+                                    <div className="fcard__top">
+                                        <div className="fcard__airline">
+                                            <img className="fcard__logo" src={airlineLogos[f.airline] || 'icon/春秋航空.png'} alt={f.airline} />
+                                            <span className="fcard__airline-name">{f.airline}</span>
+                                        </div>
+                                        <span className={`fcard__level-pill fcard__level-pill--${lv}`}>
+                                            {levelLabel[lv]}
+                                        </span>
+                                    </div>
+                                    <div className="fcard__route">
                                         <span className="fcard__time">{f.departTime}</span>
                                         <span className="fcard__city-code">{f.origin}</span>
-                                    </div>
-                                    <div className="fcard__timeline">
-                                        <span className="fcard__duration">{f.duration}</span>
-                                        <div className="fcard__line-wrap">
-                                            <span className="fcard__line-dot fcard__line-dot--l" />
-                                            <span className="fcard__line-plane">✈</span>
-                                            <span className="fcard__line-dot fcard__line-dot--r" />
-                                        </div>
-                                        <span className="fcard__stops">{f.stops === 0 ? '直飞' : f.stops + '次经停'}</span>
-                                    </div>
-                                    <div className="fcard__time-col">
+                                        <span className="fcard__sep">-</span>
                                         <span className="fcard__time">{f.arrivalTime}</span>
                                         <span className="fcard__city-code">{f.destination}</span>
                                     </div>
-                                </div>
-                                <div className="fcard__bottom">
-                                    <div className="fcard__meta">
-                                        <span className="fcard__meta-item">{f.cabin} · {f.terminal}</span>
+                                    <div className="fcard__info">
+                                        <span className="fcard__duration">{f.durationFormatted || f.duration}</span>
+                                        <span className="fcard__stops">
+                                            {f.stops === 0 ? '直飞' : `中转${f.stop_cities?.[0] || ''} ${f.layoverDurationFormatted || f.layoverDuration || '1-2h'}`}
+                                        </span>
                                     </div>
-                                    <div className="fcard__price-area">
-                                        <div className="fcard__price">
+                                    <div className="fcard__bottom">
+                                        <span className="fcard__price">
                                             <span className="fcard__price-unit">¥</span>{f.price.toLocaleString()}
-                                        </div>
-                                        <div className="fcard__price-note">起</div>
+                                        </span>
+                                        <span className="fcard__price-note">起</span>
                                     </div>
                                 </div>
                             </div>
@@ -1184,8 +1374,10 @@
                         if (!dest) {
                             addMsg('ai', '想去哪里呢？告诉我目的地，我帮你查航班和价格\n\n支持城市：东京、大阪、首尔、曼谷、新加坡、巴黎、伦敦、纽约、台北、香港');
                         } else {
+                            // 检测用户是否指定了日期（如"明天"、"下周一"、"3 月 25 日"）
+                            const departDate = parseDepartDate(trimmed);
                             const [flights, history] = await Promise.all([
-                                window.flightApi.searchFlights({ origin: 'PVG', destination: dest.code }),
+                                window.flightApi.searchFlights({ origin: 'PVG', destination: dest.code, departDate }),
                                 window.flightApi.getPriceHistory('PVG', dest.code),
                             ]);
                             const prices = history.data.map(d => d.price);
@@ -1194,9 +1386,18 @@
                             const minPrice = Math.min(...flights.map(f => f.price));
                             const rec = await window.flightApi.getRecommendation({ origin: 'PVG', destination: dest.code }, cp);
                             const levelWord = { low: '低于均价', mid: '接近均价', high: '高于均价' };
-                            addMsg('ai',
-                                `为您找到 ${flights.length} 个前往${dest.name}的机票方案，其中${flights[0].airline}的直飞机票价格最低，性价比最高。\n\n以下是为您整理的方案：`,
-                                { type: 'flights', flights, destination: dest, history, analysis, currentPrice: cp, recommendation: rec }
+                            // 格式化显示日期
+                            const displayDate = departDate ? new Date(departDate + 'T00:00:00') : new Date();
+                            const dateStr = displayDate.getMonth() + 1 + '月' + displayDate.getDate() + '日';
+                            const weekday = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][displayDate.getDay()];
+
+                            // 生成航班总结
+                            const directFlights = flights.filter(f => f.stops === 0);
+                            const cheapestFlight = flights[0];
+                            const summary = generateFlightSummary(flights, cheapestFlight, directFlights.length, dest.name, dateStr, weekday);
+
+                            addMsg('ai', summary,
+                                { type: 'flights', flights, destination: dest, history, analysis, currentPrice: cp, recommendation: rec, searchDate: departDate }
                             );
                         }
                     } else if (intent === 'price' || intent === 'trend') {
@@ -1252,7 +1453,7 @@
                             <div className="header__left">
                                 <button className="header__btn">☰</button>
                             </div>
-                            <div className="header__center">机票低价顾问</div>
+                            <div className="header__center">FlyWise</div>
                             <div className="header__right">
                                 <button className="header__btn" title="新对话" onClick={newChat}>
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -1297,7 +1498,7 @@
                         <div className="header__left">
                             <button className="header__btn">☰</button>
                         </div>
-                        <div className="header__center">机票低价顾问</div>
+                        <div className="header__center">FlyWise</div>
                         <div className="header__right">
                             <button className="header__btn" title="新对话" onClick={newChat}>
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -1313,11 +1514,12 @@
                                 </div>
                             ) : (
                                 <div key={m.id} className="msg msg--ai">
-                                    <div className="msg__text">{m.content}</div>
+                                    <div className="msg__text" dangerouslySetInnerHTML={{ __html: renderMarkdown(m.content) }} />
 
                                     {m.data?.type === 'flights' && (
                                         <>
-                                            <FlightCards flights={m.data.flights} analysis={m.data.analysis} />
+                                            <FlightCards flights={m.data.flights} analysis={m.data.analysis} searchDate={m.data.searchDate} destination={m.data.destination} />
+                                            {generatePriceSummaryJSX(m.data.analysis, m.data.destination.name)}
                                             <PriceChart data={m.data.history.data} currentPrice={m.data.currentPrice} analysis={m.data.analysis} destination={m.data.destination} />
                                         </>
                                     )}

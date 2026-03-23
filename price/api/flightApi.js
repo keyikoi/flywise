@@ -70,11 +70,17 @@ class FlightApi {
             // 将城市名转换为机场代码
             const airportParams = await this.resolveAirports(params);
 
+            // 处理出发日期（支持 params.departDate 字符串）
+            let outboundDate = airportParams.outbound_date;
+            if (params.departDate && typeof params.departDate === 'string') {
+                outboundDate = params.departDate;
+            }
+
             // 调用 SerpAPI 客户端
             const flights = await this.client.searchFlights({
                 departure_id: airportParams.departure_id,
                 arrival_id: airportParams.arrival_id,
-                outbound_date: airportParams.outbound_date,
+                outbound_date: outboundDate,
                 return_date: airportParams.return_date,
                 travel_class: params.class || 'economy',
             });
