@@ -1,0 +1,23 @@
+{
+  "name": "flywise-backend",
+  "version": "1.0.0",
+  "description": "FlyWise 航班助手后端代理服务器",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "flights",
+    "serpapi",
+    "openai",
+    "proxy"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "openai": "^4.20.0"
+  }
+}

@@ -7,11 +7,11 @@
 
 // SerpAPI 配置
 const SERPAPI_CONFIG = {
-    baseUrl: 'https://serpapi.com/search.json',
+    // 使用后端代理服务器，解决 CORS 问题且保护 API Key
+    baseUrl: '/api/flights/search',
     engine: 'google_flights',
-    // ⚠️ 注意：直接在前端配置 API Key 会暴露密钥，仅限本地开发测试
-    // 生产环境请使用后端代理（见 CONFIG.md）
-    apiKey: '971d8a3a79327c795ccc3d0c9a574f69ee2010eeef4e8a2f7ae9f6f35070f6cf', // TODO: 填入你的 SerpApi API Key
+    // API Key 已由后端管理，前端不再需要配置
+    apiKey: '', // 保留字段以兼容旧代码
 };
 
 /**
@@ -48,7 +48,7 @@ const SERPAPI_CONFIG = {
  * SerpAPI 客户端类
  */
 class SerpApiClient {
-    constructor(apiKey = '') {
+    constructor(apiKey = SERPAPI_CONFIG.apiKey || '') {
         this.apiKey = apiKey;
         this.baseUrl = SERPAPI_CONFIG.baseUrl;
     }
@@ -99,17 +99,23 @@ class SerpApiClient {
      * @returns {Promise<Array<Flight>>}
      */
     async searchFlights(params) {
-        if (!this.apiKey) {
-            console.warn('SerpAPI Key 未配置，返回模拟数据');
-            return this.getMockFlights(params);
-        }
-
         try {
-            const url = this.buildUrl(params);
-            const response = await fetch(url);
+            // 使用 POST 请求发送到后端代理
+            const response = await fetch(this.baseUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    departure_id: params.departure_id,
+                    arrival_id: params.arrival_id,
+                    outbound_date: params.outbound_date,
+                    return_date: params.return_date,
+                    currency: params.currency || 'CNY',
+                    travel_class: params.travel_class ? this.getTravelClassCode(params.travel_class) : 1,
+                }),
+            });
 
             if (!response.ok) {
-                throw new Error(`SerpAPI 请求失败：${response.status}`);
+                throw new Error(`后端代理请求失败：${response.status}`);
             }
 
             const data = await response.json();
@@ -122,6 +128,21 @@ class SerpApiClient {
     }
 
     /**
+     * 将舱位等级转换为数字代码
+     * @param {string} travelClass - economy/business/first
+     * @returns {number} 1: 经济舱, 2: 高端经济舱, 3: 商务舱, 4: 头等舱
+     */
+    getTravelClassCode(travelClass) {
+        const classMap = {
+            'economy': 1,
+            'premium_economy': 2,
+            'business': 3,
+            'first': 4,
+        };
+        return classMap[travelClass] || 1;
+    }
+
+    /**
      * 解析 SerpAPI 响应数据
      * @param {Object} data - SerpAPI 原始响应
      * @returns {Array<Flight>}
@@ -129,40 +150,167 @@ class SerpApiClient {
     parseFlights(data) {
         const flights = [];
 
-        if (!data || !data.flights || !Array.isArray(data.flights)) {
+        if (!data) {
             return flights;
         }
 
-        data.flights.forEach((flight, index) => {
-            try {
-                const parsedFlight = {
-                    id: flight.flight_id || `flight-${index}-${Date.now()}`,
-                    airline: flight.airline?.name || '未知航空',
-                    airline_code: flight.airline?.code || '',
-                    flight_number: flight.flight_number || '',
-                    origin: flight.departure_airport?.airport_code || '',
-                    origin_name: flight.departure_airport?.name || '',
-                    destination: flight.arrival_airport?.airport_code || '',
-                    destination_name: flight.arrival_airport?.name || '',
-                    depart_time: this.formatTime(flight.departure_time),
-                    arrive_time: this.formatTime(flight.arrival_time),
-                    duration: this.formatDurationHM(flight.duration),
-                    durationMinutes: this.parseDuration(flight.duration),
-                    price: flight.price?.value || 0,
-                    currency: flight.price?.currency || 'CNY',
-                    stops: flight.stops || 0,
-                    stop_cities: flight.layover_airports?.map(apt => apt.name) || [],
-                    layoverDuration: this.formatLayoverDuration(flight.layover_airports, flight.departure_time, flight.arrival_time, flight.duration),
-                    layoverDurationFormatted: this.formatLayoverDurationHM(flight.layover_airports, flight.departure_time, flight.arrival_time, flight.duration),
-                };
+        // 真实 SerpAPI 响应结构：best_flights 和 other_flights
+        const bestFlights = data.best_flights || [];
+        const otherFlights = data.other_flights || [];
+        const realApiFlights = [...bestFlights, ...otherFlights];
 
-                flights.push(parsedFlight);
-            } catch (e) {
-                console.error('解析单个航班数据失败:', e, flight);
-            }
-        });
+        // 如果有真实 API 数据，使用真实 API 解析
+        if (realApiFlights.length > 0) {
+            realApiFlights.forEach((flightGroup, index) => {
+                try {
+                    const parsedFlight = this.parseRealApiFlight(flightGroup, index);
+                    if (parsedFlight) {
+                        flights.push(parsedFlight);
+                    }
+                } catch (e) {
+                    console.error('解析真实 API 航班数据失败:', e, flightGroup);
+                }
+            });
+            return flights;
+        }
+
+        // Fallback: 兼容旧的 data.flights 格式（模拟数据）
+        if (data.flights && Array.isArray(data.flights)) {
+            data.flights.forEach((flight, index) => {
+                try {
+                    const parsedFlight = this.parseLegacyFlight(flight, index);
+                    if (parsedFlight) {
+                        flights.push(parsedFlight);
+                    }
+                } catch (e) {
+                    console.error('解析模拟航班数据失败:', e, flight);
+                }
+            });
+        }
 
         return flights;
+    }
+
+    /**
+     * 解析真实 SerpAPI 航班数据（best_flights/other_flights 格式）
+     * @param {Object} flightGroup - 航班组数据
+     * @param {number} index - 索引
+     * @returns {Flight}
+     */
+    parseRealApiFlight(flightGroup, index) {
+        // 获取航段信息（flights 数组中的第一个航段为出发信息，最后一个为到达信息）
+        const segments = flightGroup.flights || [];
+        if (segments.length === 0) return null;
+
+        const firstSegment = segments[0];
+        const lastSegment = segments[segments.length - 1];
+
+        // 解析起降时间（格式："2024-01-15 08:00"）
+        const departTime = this.parseFlightTime(firstSegment.departure_airport?.time);
+        const arriveTime = this.parseFlightTime(lastSegment.arrival_airport?.time);
+
+        // 解析中转信息
+        const layovers = flightGroup.layovers || [];
+        const stopCities = layovers.map(l => l.name);
+        const totalLayoverMinutes = layovers.reduce((sum, l) => sum + (l.duration || 0), 0);
+
+        // 计算总飞行时长（分钟）
+        const totalDuration = flightGroup.total_duration || 
+            segments.reduce((sum, seg) => sum + (seg.duration || 0), 0);
+
+        return {
+            id: `flight-${index}-${Date.now()}`,
+            airline: firstSegment.airline || '未知航空',
+            airline_code: firstSegment.airline_logo ? '' : '',
+            flight_number: segments.map(s => s.flight_number).filter(Boolean).join('/') || '',
+            origin: firstSegment.departure_airport?.id || '',
+            origin_name: firstSegment.departure_airport?.name || '',
+            destination: lastSegment.arrival_airport?.id || '',
+            destination_name: lastSegment.arrival_airport?.name || '',
+            depart_time: departTime,
+            arrive_time: arriveTime,
+            duration: this.formatMinutesToHM(totalDuration),
+            durationFormatted: this.formatMinutesToChinese(totalDuration),
+            durationMinutes: totalDuration,
+            price: flightGroup.price || 0,
+            currency: 'CNY',
+            stops: layovers.length,
+            stop_cities: stopCities,
+            layoverDuration: totalLayoverMinutes > 0 ? this.formatMinutesToChinese(totalLayoverMinutes) : null,
+            layoverDurationFormatted: totalLayoverMinutes > 0 ? this.formatMinutesToHM(totalLayoverMinutes) : null,
+        };
+    }
+
+    /**
+     * 解析旧格式航班数据（兼容模拟数据）
+     * @param {Object} flight - 航班数据
+     * @param {number} index - 索引
+     * @returns {Flight}
+     */
+    parseLegacyFlight(flight, index) {
+        return {
+            id: flight.flight_id || `flight-${index}-${Date.now()}`,
+            airline: flight.airline?.name || '未知航空',
+            airline_code: flight.airline?.code || '',
+            flight_number: flight.flight_number || '',
+            origin: flight.departure_airport?.airport_code || '',
+            origin_name: flight.departure_airport?.name || '',
+            destination: flight.arrival_airport?.airport_code || '',
+            destination_name: flight.arrival_airport?.name || '',
+            depart_time: this.formatTime(flight.departure_time),
+            arrive_time: this.formatTime(flight.arrival_time),
+            duration: this.formatDurationHM(flight.duration),
+            durationMinutes: this.parseDuration(flight.duration),
+            price: flight.price?.value || 0,
+            currency: flight.price?.currency || 'CNY',
+            stops: flight.stops || 0,
+            stop_cities: flight.layover_airports?.map(apt => apt.name) || [],
+            layoverDuration: this.formatLayoverDuration(flight.layover_airports, flight.departure_time, flight.arrival_time, flight.duration),
+            layoverDurationFormatted: this.formatLayoverDurationHM(flight.layover_airports, flight.departure_time, flight.arrival_time, flight.duration),
+        };
+    }
+
+    /**
+     * 解析航班时间字符串（格式："2024-01-15 08:00"）
+     * @param {string} timeStr - 时间字符串
+     * @returns {string} HH:mm 格式
+     */
+    parseFlightTime(timeStr) {
+        if (!timeStr) return '';
+        // 提取时间部分 "HH:mm"
+        const match = timeStr.match(/(\d{2}):(\d{2})/);
+        if (match) {
+            return `${match[1]}:${match[2]}`;
+        }
+        return '';
+    }
+
+    /**
+     * 将分钟数格式化为 XhYm 格式
+     * @param {number} minutes - 分钟数
+     * @returns {string} XhYm 格式
+     */
+    formatMinutesToHM(minutes) {
+        if (!minutes || minutes <= 0) return '';
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        if (h > 0 && m > 0) return `${h}h${m}m`;
+        if (h > 0) return `${h}h`;
+        return `${m}m`;
+    }
+
+    /**
+     * 将分钟数格式化为中文格式
+     * @param {number} minutes - 分钟数
+     * @returns {string} X小时Y分 格式
+     */
+    formatMinutesToChinese(minutes) {
+        if (!minutes || minutes <= 0) return '';
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        if (h > 0 && m > 0) return `${h}小时${m}分`;
+        if (h > 0) return `${h}小时`;
+        return `${m}分`;
     }
 
     /**
@@ -278,36 +426,6 @@ class SerpApiClient {
         const h = Math.floor(layoverMins / 60);
         const m = layoverMins % 60;
         return h > 0 ? `${h}h${m}m` : `${m}m`;
-    }
-
-    /**
-     * 获取模拟航班数据（用于开发和降级）
-     * @param {Array} layoverAirports - 中转机场列表
-     * @param {string} departTime - 出发时间 ISO 字符串
-     * @param {string} arriveTime - 到达时间 ISO 字符串
-     * @param {string} duration - 飞行时长 (如 "2h 30m")
-     * @returns {string} 中转时长 (如 "1 小时 30 分")
-     */
-    formatLayoverDuration(layoverAirports, departTime, arriveTime, duration) {
-        if (!layoverAirports || layoverAirports.length === 0) return null;
-
-        const flightMins = this.parseDuration(duration);
-
-        // 计算总行程时间
-        const departDate = new Date(departTime);
-        const arriveDate = new Date(arriveTime);
-        let totalMins = (arriveDate - departDate) / 1000 / 60;
-
-        // 跨天处理
-        if (totalMins < 0) totalMins += 24 * 60;
-
-        // 中转时长 = 总时长 - 飞行时长
-        const layoverMins = totalMins - flightMins;
-        if (layoverMins <= 0) return '1-2 小时';
-
-        const h = Math.floor(layoverMins / 60);
-        const m = layoverMins % 60;
-        return h > 0 ? `${h}小时${m}分` : `${m}分`;
     }
 
     /**

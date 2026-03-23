@@ -257,7 +257,7 @@ class FlightApi {
      * @returns {Recommendation}
      */
     generateRecommendation(priceLevel, history, currentPrice) {
-        const { level, percentBelowAverage } = priceLevel;
+        const { level, percentBelowAverage, average } = priceLevel;
 
         if (level === 'low') {
             return {
@@ -266,6 +266,8 @@ class FlightApi {
                 reason: `当前价格处于低位，${Math.abs(Math.round(percentBelowAverage))}% 低于历史均价`,
                 waitUntil: null,
                 expectedDrop: 0,
+                currentPrice: currentPrice,
+                averagePrice: average,
             };
         } else if (level === 'high') {
             // 预测降价时间（简单规则）
@@ -277,6 +279,8 @@ class FlightApi {
                 reason: `当前价格较高，建议等待降价`,
                 waitUntil: daysUntilDrop,
                 expectedDrop: Math.round(currentPrice * 0.15),
+                currentPrice: currentPrice,
+                averagePrice: average,
             };
         }
 
@@ -287,6 +291,8 @@ class FlightApi {
             reason: '当前价格合理，如有出行计划可入手',
             waitUntil: null,
             expectedDrop: 0,
+            currentPrice: currentPrice,
+            averagePrice: average,
         };
     }
 

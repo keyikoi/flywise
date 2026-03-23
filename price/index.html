@@ -148,13 +148,13 @@
 
         /* AI message — full-width block, no avatar */
         .msg--ai {
-            padding: 24px 16px;
+            padding: 24px 18px;
             background: var(--white);
         }
 
         .msg__text {
-            font-size: 15px;
-            line-height: 1.7;
+            font-size: 16px;
+            line-height: 1.75;
             color: var(--text-2);
             font-family: 'PingFang SC', sans-serif;
         }
@@ -163,7 +163,7 @@
             font-weight: 500;
         }
         .msg__text h2 {
-            font-size: 21px;
+            font-size: 22px;
             font-weight: 500;
             color: var(--text-1);
             margin: 21px 0 12px;
@@ -173,7 +173,7 @@
             margin-top: 0;
         }
         .msg__text h3 {
-            font-size: 18px;
+            font-size: 19px;
             font-weight: 500;
             color: var(--text-1);
             margin: 21px 0 12px;
@@ -324,6 +324,19 @@
         .fcard__stops {
             font-size: 13px;
             color: var(--text-3);
+        }
+        .fcard__stops--transit {
+            color: var(--brand);
+            font-weight: 500;
+        }
+        .fcard__transit-dot {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: var(--brand);
+            border-radius: 50%;
+            margin: 0 6px;
+            vertical-align: middle;
         }
 
         /* Bottom: price area */
@@ -758,219 +771,13 @@
             .app { border-left: 0.5px solid var(--border); border-right: 0.5px solid var(--border); }
         }
     </style>
+    <!-- API 调用已统一通过后端 /api/chat 处理，无需前端 API 文件 -->
 </head>
 <body>
     <div id="root"></div>
 
-    <script>
-        /* ===== Mock API ===== */
-        window.flightApi = {
-            basePrices: {
-                'PVG-TYO': 2500, 'PVG-OSA': 2200, 'PVG-ICN': 1800,
-                'PVG-BKK': 2000, 'PVG-SIN': 2800, 'PVG-CDG': 5500,
-                'PVG-LHR': 6000, 'PVG-JFK': 7000, 'PVG-TPE': 1500, 'PVG-HKG': 1800,
-            },
-            /* Simple seeded random for deterministic price history */
-            _seedHash: function(str) {
-                var h = 0;
-                for (var i = 0; i < str.length; i++) {
-                    h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-                }
-                return Math.abs(h);
-            },
-            _seededRandom: function(seed) {
-                var s = seed;
-                return function() {
-                    s = (s * 16807 + 0) % 2147483647;
-                    return (s - 1) / 2147483646;
-                };
-            },
-            searchFlights: async function(params) {
-                await new Promise(r => setTimeout(r, 400 + Math.random() * 400));
-                const rk = (params.origin || 'PVG') + '-' + (params.destination || 'TYO');
-                const base = this.basePrices[rk] || 2500;
-                const airlines = [
-                    { name: '春秋航空', code: '9C' }, { name: '日本航空', code: 'JL' },
-                    { name: '全日空', code: 'NH' }, { name: '东方航空', code: 'MU' },
-                    { name: '国航', code: 'CA' }, { name: '南方航空', code: 'CZ' },
-                ];
-                const picked = airlines.sort(() => Math.random() - 0.5).slice(0, 3);
-                return picked.map((a, i) => {
-                    const price = Math.round(base * (0.7 + Math.random() * 0.6));
-                    const h = 6 + Math.floor(Math.random() * 14);
-                    const m = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55][Math.floor(Math.random() * 12)];
-                    const dH = 3 + Math.floor(Math.random() * 3);
-                    const dM = Math.floor(Math.random() * 60);
-                    return {
-                        id: 'f' + i, origin: params.origin || 'PVG', destination: params.destination || 'TYO',
-                        price, airline: a.name, airlineCode: a.code,
-                        departTime: String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'),
-                        arrivalTime: String((h + dH) % 24).padStart(2, '0') + ':' + String((m + dM) % 60).padStart(2, '0'),
-                        duration: dH + '小时' + String(dM).padStart(2, '0') + '分',
-                        stops: Math.random() > 0.55 ? 1 : 0,
-                        terminal: 'T' + (Math.random() > 0.5 ? '1' : '2'),
-                        cabin: '经济舱',
-                    };
-                }).sort((a, b) => a.price - b.price);
-            },
-            getPriceHistory: async function(origin, dest) {
-                await new Promise(r => setTimeout(r, 200 + Math.random() * 200));
-                const rk = origin + '-' + dest;
-                const base = this.basePrices[rk] || 2500;
-                const data = [];
-                const today = new Date();
-                var seed = this._seedHash(rk + '_session');
-                var rng = this._seededRandom(seed);
-                var trend = (rng() - 0.5) * 0.3;
-                var price = base * (0.85 + rng() * 0.25);
-                for (let i = 59; i >= 0; i--) {
-                    const date = new Date(today); date.setDate(date.getDate() - i);
-                    const wd = date.getDay();
-                    const wm = (wd === 0 || wd === 6) ? 1.06 : 1.0;
-                    price += (rng() - 0.5 + trend * 0.08) * base * 0.04;
-                    price = Math.max(base * 0.6, Math.min(base * 1.45, price));
-                    data.push({ date: date.toISOString().split('T')[0], price: Math.round(price * wm) });
-                }
-                const prices = data.map(d => d.price);
-                const avg = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
-                return { data, average: avg, min: Math.min(...prices), max: Math.max(...prices) };
-            },
-            getRecommendation: async function(params, currentPrice) {
-                const history = await this.getPriceHistory(params.origin, params.destination);
-                const avg = history.average;
-                const pct = Math.round(((currentPrice - avg) / avg) * 100);
-                if (currentPrice <= avg * 0.88) return {
-                    action: 'buy', confidence: Math.min(92, 75 + Math.abs(pct)),
-                    reason: '当前价格处于近期低位，比均价低 ' + Math.abs(pct) + '%。如果接受春秋航空，建议尽快锁定，低价航班可能不含免费托运行李，提前购买。',
-                    currentPrice, averagePrice: avg,
-                };
-                if (currentPrice >= avg * 1.12) return {
-                    action: 'wait', confidence: Math.min(88, 65 + pct),
-                    reason: '当前价格偏高，比历史均价高 ' + pct + '%。建议优先提前 2-3 个月购买，通常提前购买价格处于正常偏低区间。',
-                    waitUntil: '1-2 周', expectedDrop: Math.round(currentPrice * 0.12),
-                    currentPrice, averagePrice: avg,
-                };
-                return {
-                    action: 'buy', confidence: 62,
-                    reason: '当前价格处于合理区间。航线整体目前价格处于正常偏低区间，建议优先考虑该价格。',
-                    currentPrice, averagePrice: avg,
-                };
-            },
-            analyze: function(currentPrice, prices) {
-                const avg = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
-                const min = Math.min(...prices), max = Math.max(...prices);
-                const pct = Math.round(((currentPrice - avg) / avg) * 100);
-                let level = 'mid';
-                if (currentPrice <= avg * 0.88) level = 'low';
-                else if (currentPrice >= avg * 1.12) level = 'high';
-                const recent = prices.slice(-7);
-                const rAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
-                const older = prices.slice(-14, -7);
-                const oAvg = older.length ? older.reduce((a, b) => a + b, 0) / older.length : rAvg;
-                let trend = 'stable';
-                if (rAvg < oAvg * 0.97) trend = 'falling';
-                else if (rAvg > oAvg * 1.03) trend = 'rising';
-                return { currentPrice, average: avg, min, max, pctDiff: pct, level, trend };
-            }
-        };
-    </script>
-
     <script type="text/babel">
         const { useState, useEffect, useRef, useCallback, useMemo } = React;
-
-        const DESTS = [
-            { code: 'TYO', name: '东京', flag: '🇯🇵' },
-            { code: 'OSA', name: '大阪', flag: '🇯🇵' },
-            { code: 'ICN', name: '首尔', flag: '🇰🇷' },
-            { code: 'BKK', name: '曼谷', flag: '🇹🇭' },
-            { code: 'SIN', name: '新加坡', flag: '🇸🇬' },
-            { code: 'CDG', name: '巴黎', flag: '🇫🇷' },
-            { code: 'LHR', name: '伦敦', flag: '🇬🇧' },
-            { code: 'JFK', name: '纽约', flag: '🇺🇸' },
-            { code: 'TPE', name: '台北', flag: '🇹🇼' },
-            { code: 'HKG', name: '香港', flag: '🇭🇰' },
-        ];
-        const ALIAS = { '首尔':'ICN','SEL':'ICN','PAR':'CDG','LON':'LHR','NYC':'JFK' };
-
-        function findDest(t) {
-            for (const d of DESTS) if (t.includes(d.name) || t.toUpperCase().includes(d.code)) return d;
-            for (const [a, c] of Object.entries(ALIAS)) if (t.includes(a) || t.toUpperCase().includes(c)) return DESTS.find(d => d.code === c);
-            return null;
-        }
-        function detectIntent(t) {
-            const s = t.toLowerCase();
-            if (s.includes('走势') || s.includes('趋势') || s.includes('历史')) return 'trend';
-            if (s.includes('买') || s.includes('建议') || s.includes('等')) return 'recommend';
-            if (s.includes('价格') || s.includes('多少钱') || s.includes('便宜') || s.includes('贵')) return 'price';
-            if (s.includes('航班') || s.includes('查') || s.includes('飞') || s.includes('去') || s.includes('订') || s.includes('机票')) return 'search';
-            return 'general';
-        }
-
-        /**
-         * 解析出发日期
-         * 支持："明天"、"下周一"、"3 月 25 日"、"2024-03-25" 等
-         * 默认返回今天起 7 天内的日期
-         */
-        function parseDepartDate(text) {
-            const today = new Date();
-            const s = text.toLowerCase();
-
-            // "明天"
-            if (s.includes('明天')) {
-                const d = new Date(today);
-                d.setDate(d.getDate() + 1);
-                return formatDate(d);
-            }
-
-            // "后天"
-            if (s.includes('后天')) {
-                const d = new Date(today);
-                d.setDate(d.getDate() + 2);
-                return formatDate(d);
-            }
-
-            // "下周一" ~ "下周日"
-            const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-            for (let i = 0; i < 7; i++) {
-                if (s.includes('下周' + weekDays[i])) {
-                    const d = new Date(today);
-                    const currentDay = d.getDay();
-                    const targetDay = i;
-                    const daysUntil = (targetDay - currentDay + 7) % 7 + 7;
-                    d.setDate(d.getDate() + daysUntil);
-                    return formatDate(d);
-                }
-            }
-
-            // "X 月 X 日" 或 "X 月 X 号"
-            const dateMatch = text.match(/(\d{1,2}) 月 (\d{1,2})[日号]/);
-            if (dateMatch) {
-                const month = parseInt(dateMatch[1]) - 1;
-                const day = parseInt(dateMatch[2]);
-                const year = today.getFullYear();
-                const d = new Date(year, month, day);
-                return formatDate(d);
-            }
-
-            // "YYYY-MM-DD" 或 "YYYY/MM/DD"
-            const isoMatch = text.match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
-            if (isoMatch) {
-                const d = new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2]) - 1, parseInt(isoMatch[3]));
-                return formatDate(d);
-            }
-
-            // 默认：今天 +7 天（SerpApi 需要未来日期）
-            const defaultDate = new Date(today);
-            defaultDate.setDate(defaultDate.getDate() + 7);
-            return formatDate(defaultDate);
-        }
-
-        function formatDate(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
 
         /**
          * 简单的 markdown 转 HTML 函数
@@ -1004,67 +811,6 @@
             html = html.replace(/\n/g, '<br/>');
 
             return html;
-        }
-
-        /**
-         * 生成航班搜索总结（简洁版本）
-         */
-        function generateFlightSummary(flights, cheapestFlight, directCount, destName, dateStr, weekday) {
-            const lines = [];
-            const cheapestDirect = flights.find(f => f.stops === 0);
-
-            // 开头总结
-            lines.push(`为您找到 ${flights.length} 个 ${dateStr} 从上海飞往${destName}的航班方案，其中${directCount}个直飞航班。`);
-            lines.push('');
-
-            // 推荐建议
-            if (cheapestDirect && cheapestDirect.id === flights[0]?.id) {
-                lines.push(`**推荐 ${cheapestDirect.airline}**：直飞航班中价格最低（¥${cheapestDirect.price.toLocaleString()} 起），无需中转，省时省力，性价比首选。`);
-            } else if (cheapestDirect) {
-                lines.push(`**推荐 ${flights[0].airline}**：全场最低价（¥${flights[0].price.toLocaleString()} 起），适合预算有限的旅客。如追求舒适体验，可选择 ${cheapestDirect.airline} 的直飞航班（¥${cheapestDirect.price.toLocaleString()} 起）。`);
-            } else {
-                lines.push(`**推荐 ${flights[0].airline}**：价格最低（¥${flights[0].price.toLocaleString()} 起），但需要中转。直飞航班价格相对较高。`);
-            }
-            lines.push('');
-            lines.push(`温馨提示：低价航班可能不包含免费托运行李额，建议提前确认。`);
-
-            return lines.join('\n');
-        }
-
-        /**
-         * 生成单个航班的推荐理由
-         */
-        function generateFlightReason(flight, index, cheapestPrice) {
-            const isCheapest = flight.price === cheapestPrice;
-            const isDirect = flight.stops === 0;
-
-            if (isCheapest && isDirect) {
-                return '直飞航班中价格最低，无需中转，省时省力，性价比首选';
-            } else if (isCheapest) {
-                return '全场最低价，适合预算有限的旅客';
-            } else if (isDirect) {
-                return '直飞航班，节省时间，适合商务出行或带行李的旅客';
-            } else {
-                return '价格适中，中转时间合理，可作为备选方案';
-            }
-        }
-
-        /**
-         * 生成价格模块的总结（一段话）
-         */
-        function generatePriceSummaryJSX(analysis, destName) {
-            const levelText = analysis.level === 'low' ? '处于低位' : analysis.level === 'high' ? '偏高' : '适中';
-            const advice = analysis.level === 'low'
-                ? '是入手的好时机'
-                : analysis.level === 'high'
-                ? '建议谨慎决策或等待降价'
-                : '如有出行计划可以考虑入手';
-
-            return (
-                <div className="price-summary-simple">
-                    {destName}航线当前价格{levelText}，{advice}。历史最低价 ¥{analysis.min.toLocaleString()}，均价 ¥{analysis.average.toLocaleString()}，最高价 ¥{analysis.max.toLocaleString()}。
-                </div>
-            );
         }
 
         /* ===== Interactive Chart ===== */
@@ -1238,11 +984,16 @@
         }
 
         /* ===== Flight Card ===== */
-        function FlightCards({ flights, analysis, destination }) {
+        function FlightCards({ flights }) {
+            // 简化的价格水平判断：基于航班列表中的最低价和最高价
+            const prices = flights.map(f => f.price);
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            const priceRange = maxPrice - minPrice || 1;
+            
             const getLevel = (p) => {
-                if (!analysis) return 'mid';
-                if (p <= analysis.average * 0.88) return 'low';
-                if (p >= analysis.average * 1.12) return 'high';
+                if (p === minPrice) return 'low';
+                if (p >= minPrice + priceRange * 0.6) return 'high';
                 return 'mid';
             };
             const levelLabel = { low: '低价', mid: '适中', high: '偏高' };
@@ -1254,15 +1005,13 @@
                 '国航': 'icon/国航.png',
                 '南方航空': 'icon/南方航空.png',
             };
-            const cheapestPrice = Math.min(...flights.map(f => f.price));
 
             return (
                 <div className="flight-cards">
                     {flights.map((f, index) => {
                         const lv = getLevel(f.price);
-                        const reason = generateFlightReason(f, index, cheapestPrice);
                         return (
-                            <div key={f.id}>
+                            <div key={f.id || index}>
                                 <div className="fcard">
                                     <div className="fcard__top">
                                         <div className="fcard__airline">
@@ -1274,17 +1023,23 @@
                                         </span>
                                     </div>
                                     <div className="fcard__route">
-                                        <span className="fcard__time">{f.departTime}</span>
+                                        <span className="fcard__time">{f.depart_time || f.departTime}</span>
                                         <span className="fcard__city-code">{f.origin}</span>
                                         <span className="fcard__sep">-</span>
-                                        <span className="fcard__time">{f.arrivalTime}</span>
+                                        <span className="fcard__time">{f.arrive_time || f.arrivalTime}</span>
                                         <span className="fcard__city-code">{f.destination}</span>
                                     </div>
                                     <div className="fcard__info">
                                         <span className="fcard__duration">{f.durationFormatted || f.duration}</span>
-                                        <span className="fcard__stops">
-                                            {f.stops === 0 ? '直飞' : `中转${f.stop_cities?.[0] || ''} ${f.layoverDurationFormatted || f.layoverDuration || '1-2h'}`}
-                                        </span>
+                                        {f.stops === 0 ? (
+                                            <span className="fcard__stops">直飞</span>
+                                        ) : (
+                                            <span className="fcard__stops fcard__stops--transit">
+                                                经停{f.stop_cities?.[0] || '中转'}
+                                                <span className="fcard__transit-dot"></span>
+                                                {f.layoverDurationFormatted || f.layoverDuration || ''}
+                                            </span>
+                                        )}
                                     </div>
                                     <div className="fcard__bottom">
                                         <span className="fcard__price">
@@ -1367,68 +1122,37 @@
                 setTyping(true);
 
                 try {
-                    const intent = detectIntent(trimmed);
-                    const dest = findDest(trimmed);
+                    // 统一调用后端 /api/chat API
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: trimmed }),
+                    });
 
-                    if (intent === 'search') {
-                        if (!dest) {
-                            addMsg('ai', '想去哪里呢？告诉我目的地，我帮你查航班和价格\n\n支持城市：东京、大阪、首尔、曼谷、新加坡、巴黎、伦敦、纽约、台北、香港');
-                        } else {
-                            // 检测用户是否指定了日期（如"明天"、"下周一"、"3 月 25 日"）
-                            const departDate = parseDepartDate(trimmed);
-                            const [flights, history] = await Promise.all([
-                                window.flightApi.searchFlights({ origin: 'PVG', destination: dest.code, departDate }),
-                                window.flightApi.getPriceHistory('PVG', dest.code),
-                            ]);
-                            const prices = history.data.map(d => d.price);
-                            const cp = flights[0]?.price || prices[prices.length - 1];
-                            const analysis = window.flightApi.analyze(cp, prices);
-                            const minPrice = Math.min(...flights.map(f => f.price));
-                            const rec = await window.flightApi.getRecommendation({ origin: 'PVG', destination: dest.code }, cp);
-                            const levelWord = { low: '低于均价', mid: '接近均价', high: '高于均价' };
-                            // 格式化显示日期
-                            const displayDate = departDate ? new Date(departDate + 'T00:00:00') : new Date();
-                            const dateStr = displayDate.getMonth() + 1 + '月' + displayDate.getDate() + '日';
-                            const weekday = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][displayDate.getDay()];
+                    if (!response.ok) {
+                        const errData = await response.json().catch(() => ({}));
+                        console.error('API 请求失败:', errData);
+                        throw new Error(errData.error || '服务暂时不可用');
+                    }
 
-                            // 生成航班总结
-                            const directFlights = flights.filter(f => f.stops === 0);
-                            const cheapestFlight = flights[0];
-                            const summary = generateFlightSummary(flights, cheapestFlight, directFlights.length, dest.name, dateStr, weekday);
+                    const result = await response.json();
+                    const { reply, data } = result;
 
-                            addMsg('ai', summary,
-                                { type: 'flights', flights, destination: dest, history, analysis, currentPrice: cp, recommendation: rec, searchDate: departDate }
-                            );
-                        }
-                    } else if (intent === 'price' || intent === 'trend') {
-                        const d = dest || DESTS[0];
-                        const history = await window.flightApi.getPriceHistory('PVG', d.code);
-                        const prices = history.data.map(x => x.price);
-                        const cp = prices[prices.length - 1];
-                        const analysis = window.flightApi.analyze(cp, prices);
-                        const levelWord = { low: '处于低位', mid: '处于正常水平', high: '偏高' };
-                        addMsg('ai',
-                            `${d.flag} ${d.name}航线当前价格 ${levelWord[analysis.level]}，多数航线中位价格在 ¥${analysis.min.toLocaleString()}~¥${analysis.max.toLocaleString()} 之间，平均价格约 ¥${analysis.average.toLocaleString()}。\n\n以下是近60天价格走势图：`,
-                            { type: 'chart', destination: d, history, currentPrice: cp, analysis }
-                        );
-                    } else if (intent === 'recommend') {
-                        const d = dest || null;
-                        if (!d) {
-                            addMsg('ai', '你想了解哪条航线的购买建议？比如「东京现在买还是等等」');
-                        } else {
-                            const history = await window.flightApi.getPriceHistory('PVG', d.code);
-                            const prices = history.data.map(x => x.price);
-                            const cp = prices[prices.length - 1];
-                            const analysis = window.flightApi.analyze(cp, prices);
-                            const rec = await window.flightApi.getRecommendation({ origin: 'PVG', destination: d.code }, cp);
-                            addMsg('ai', `${d.flag} 关于上海→${d.name}航线的购买建议：`, { type: 'recommend', recommendation: rec, destination: d, history, currentPrice: cp, analysis });
-                        }
+                    // 根据返回的数据类型创建消息
+                    if (data?.type === 'flights' && data.flights?.length > 0) {
+                        // 航班搜索结果
+                        addMsg('ai', reply, {
+                            type: 'flights',
+                            flights: data.flights,
+                            searchParams: data.searchParams,
+                        });
                     } else {
-                        addMsg('ai', '你好！我是 AI 航班助手，可以帮你：\n\n• 搜航班 — 「帮我查去东京的机票」\n• 看价格走势 — 「东京价格趋势」\n• 购买建议 — 「东京现在买合适吗」\n\n告诉我你想去哪里吧 ✈️');
+                        // 普通对话或无航班数据
+                        addMsg('ai', reply);
                     }
                 } catch (err) {
-                    console.error(err);
-                    addMsg('ai', '抱歉，遇到了一点问题，请稍后再试 🙏');
+                    console.error('发送消息失败:', err);
+                    addMsg('ai', '服务暂时不可用，请稍后再试 🙏\n\n请确保后端服务已启动（运行 `node server.js`）');
                 } finally {
                     setTyping(false);
                 }
@@ -1516,21 +1240,9 @@
                                 <div key={m.id} className="msg msg--ai">
                                     <div className="msg__text" dangerouslySetInnerHTML={{ __html: renderMarkdown(m.content) }} />
 
-                                    {m.data?.type === 'flights' && (
-                                        <>
-                                            <FlightCards flights={m.data.flights} analysis={m.data.analysis} searchDate={m.data.searchDate} destination={m.data.destination} />
-                                            {generatePriceSummaryJSX(m.data.analysis, m.data.destination.name)}
-                                            <PriceChart data={m.data.history.data} currentPrice={m.data.currentPrice} analysis={m.data.analysis} destination={m.data.destination} />
-                                        </>
-                                    )}
-                                    {m.data?.type === 'chart' && (
-                                        <PriceChart data={m.data.history.data} currentPrice={m.data.currentPrice} analysis={m.data.analysis} destination={m.data.destination} />
-                                    )}
-                                    {m.data?.type === 'recommend' && (
-                                        <>
-                                            <RecCard rec={m.data.recommendation} />
-                                            <PriceChart data={m.data.history.data} currentPrice={m.data.currentPrice} analysis={m.data.analysis} destination={m.data.destination} />
-                                        </>
+                                    {/* 渲染航班卡片 */}
+                                    {m.data?.type === 'flights' && m.data.flights?.length > 0 && (
+                                        <FlightCards flights={m.data.flights} />
                                     )}
                                 </div>
                             )
