@@ -13,6 +13,8 @@ const express = require('express');
 const cors = require('cors');
 const OpenAI = require('openai');
 const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
 
 // 读取配置文件
 const config = require('./config.json');
@@ -28,6 +30,74 @@ const openai = new OpenAI({
   apiKey: config.openai.apiKey,
   baseURL: config.openai.baseURL,
 });
+
+// ========== 会话持久化配置 ==========
+const DATA_DIR = path.join(__dirname, 'data');
+const SESSIONS_FILE = path.join(DATA_DIR, 'sessions.json');
+
+/**
+ * 确保 data 目录存在
+ */
+function ensureDataDir() {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+    console.log('[Session] 创建 data 目录');
+  }
+}
+
+/**
+ * 从文件读取会话数据
+ */
+function loadSessions() {
+  try {
+    ensureDataDir();
+    if (!fs.existsSync(SESSIONS_FILE)) {
+      // 文件不存在，返回空数组
+      return [];
+    }
+    const data = fs.readFileSync(SESSIONS_FILE, 'utf-8');
+    const parsed = JSON.parse(data);
+    return parsed.sessions || [];
+  } catch (error) {
+    console.error('[Session] 读取会话失败:', error.message);
+    return [];
+  }
+}
+
+/**
+ * 将会话数据写入文件
+ */
+function saveSessions(sessions) {
+  try {
+    ensureDataDir();
+    const data = { sessions };
+    fs.writeFileSync(SESSIONS_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    console.log(`[Session] 保存成功，共 ${sessions.length} 个会话`);
+    return true;
+  } catch (error) {
+    console.error('[Session] 保存会话失败:', error.message);
+    return false;
+  }
+}
+
+/**
+ * 生成 UUID
+ */
+function generateUUID() {
+  return crypto.randomUUID();
+}
+
+/**
+ * 根据用户消息或意图生成会话标题
+ */
+function generateSessionTitle(userMessage, extraction) {
+  // 如果有航班搜索意图，使用意图信息生成标题
+  if (extraction && extraction.intent === 'flight_search' && extraction.originCity && extraction.destinationCity) {
+    return `${extraction.originCity}→${extraction.destinationCity}航班查询`;
+  }
+  // 否则使用用户消息前20个字
+  return userMessage.substring(0, 20) + (userMessage.length > 20 ? '...' : '');
+}
 
 // 中间件
 app.use(cors());
@@ -69,20 +139,15 @@ function getExtractionPrompt(userMessage) {
 用户消息：${userMessage}`;
 }
 
-// 航班总结 prompt 模板
-function getFlightSummaryPrompt(originCity, destinationCity, departDate, flights) {
+// 航班总结 prompt 模板（简洁版，只展示3个推荐航班）
+function getFlightSummaryPrompt(originCity, destinationCity, departDate, totalCount, recommendedFlights) {
   return `你是 FlyWise 航班助手，专业、友好、简洁。
 用户搜索了从 ${originCity} 到 ${destinationCity} ${departDate} 的航班。
-以下是搜索到的航班数据：
-${JSON.stringify(flights, null, 2)}
+共找到 ${totalCount} 个航班，为用户精选了 ${recommendedFlights.length} 个推荐：
+${JSON.stringify(recommendedFlights, null, 2)}
 
-请用中文生成简洁的航班总结，包括：
-1. 搜索概览（找到几个航班、价格区间）
-2. 简要亮点（最便宜的、最快的等）
-3. 购买建议
-
-注意：不需要列出每个航班的详细信息（前端会用卡片展示），只需要总结和分析。
-使用 markdown 格式，适当使用加粗和 emoji。控制在 200 字以内。`;
+请用中文生成简洁的搜索总结（100字内），不需要列出航班详情（前端会用卡片展示推荐航班）。
+可以简要提及价格区间和推荐亮点。使用 markdown 格式，适当使用加粗和 emoji。`;
 }
 
 // 通用对话 prompt 模板
@@ -107,6 +172,7 @@ function parseFlights(data) {
     const lastLeg = group.flights?.[group.flights.length - 1];
     if (!firstLeg) return;
 
+    const totalDurationMinutes = group.total_duration || 0;
     flights.push({
       id: index + 1,
       airline: firstLeg.airline,
@@ -118,11 +184,27 @@ function parseFlights(data) {
       destination_name: lastLeg.arrival_airport?.name,
       depart_time: firstLeg.departure_airport?.time?.split(' ')[1] || '',
       arrive_time: lastLeg.arrival_airport?.time?.split(' ')[1] || '',
-      duration: `${Math.floor(group.total_duration / 60)}h${group.total_duration % 60}m`,
+      duration: `${Math.floor(totalDurationMinutes / 60)}h${totalDurationMinutes % 60}m`,
+      total_duration_minutes: totalDurationMinutes, // 用于筛选
       price: group.price,
       currency: 'CNY',
       stops: group.flights.length - 1,
-      stop_cities: (group.layovers || []).map((l) => l.name),
+      // 提取中转城市名：优先使用 city 字段，否则从机场全名中提取城市名
+      stop_cities: (group.layovers || []).map((l) => {
+        // 如果有 city 字段，直接使用
+        if (l.city) return l.city;
+        // 否则从机场名中提取城市名：去掉"国际机场"、"机场"等后缀
+        const name = l.name || '';
+        return name
+          .replace(/白云国际机场$/, '')
+          .replace(/首都国际机场$/, '')
+          .replace(/大兴国际机场$/, '')
+          .replace(/浦东国际机场$/, '')
+          .replace(/虹桥国际机场$/, '')
+          .replace(/国际机场$/, '')
+          .replace(/机场$/, '')
+          .trim() || name;
+      }),
       layoverDurationFormatted: (group.layovers || [])
         .map((l) => `${Math.floor(l.duration / 60)}h${l.duration % 60}m`)
         .join(', '),
@@ -130,6 +212,136 @@ function parseFlights(data) {
   });
 
   return flights;
+}
+
+/**
+ * 提取 SerpAPI 的 price_insights 数据
+ */
+function extractPriceInsights(data) {
+  const insights = data.price_insights;
+  if (!insights) return null;
+
+  return {
+    lowestPrice: insights.lowest_price || null,
+    priceLevel: insights.price_level || null,
+    typicalPriceRange: insights.typical_price_range || null,
+    priceHistory: insights.price_history || null,
+  };
+}
+
+/**
+ * 筛选3个推荐航班：价格最低、耗时最短、综合最优
+ */
+function selectRecommendedFlights(flights) {
+  if (!flights || flights.length === 0) return [];
+  if (flights.length <= 3) {
+    // 航班不足3个，为每个航班添加标签
+    return flights.map((f, i) => ({
+      ...f,
+      tag: i === 0 ? 'cheapest' : i === 1 ? 'fastest' : 'best',
+      tagLabel: i === 0 ? '价格最低' : i === 1 ? '耗时最短' : '综合最优',
+      recommendation: i === 0 ? `¥${f.price}，最优惠选择` : i === 1 ? `${f.duration}，快速到达` : '综合推荐',
+    }));
+  }
+
+  // 计算价格和时长的最小最大值用于归一化
+  const prices = flights.map(f => f.price).filter(p => p != null);
+  const durations = flights.map(f => f.total_duration_minutes).filter(d => d != null && d > 0);
+  
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+  const minDuration = Math.min(...durations);
+  const maxDuration = Math.max(...durations);
+
+  // 计算均价
+  const avgPrice = prices.length > 0 ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length) : 0;
+
+  // 归一化函数（越低越好，所以结果是 1 - normalized）
+  const normalizePrice = (price) => {
+    if (maxPrice === minPrice) return 0.5;
+    return (price - minPrice) / (maxPrice - minPrice);
+  };
+  const normalizeDuration = (duration) => {
+    if (maxDuration === minDuration) return 0.5;
+    return (duration - minDuration) / (maxDuration - minDuration);
+  };
+
+  // 计算综合评分（越低越好）
+  const getScore = (flight) => {
+    const priceScore = normalizePrice(flight.price || maxPrice);
+    const durationScore = normalizeDuration(flight.total_duration_minutes || maxDuration);
+    return priceScore * 0.6 + durationScore * 0.4;
+  };
+
+  // 排序找出各类最优
+  const sortedByPrice = [...flights].sort((a, b) => (a.price || Infinity) - (b.price || Infinity));
+  const sortedByDuration = [...flights].sort((a, b) => (a.total_duration_minutes || Infinity) - (b.total_duration_minutes || Infinity));
+  const sortedByScore = [...flights].sort((a, b) => getScore(a) - getScore(b));
+
+  const recommended = [];
+  const usedIds = new Set();
+
+  // 1. 价格最低
+  const cheapest = sortedByPrice[0];
+  if (cheapest) {
+    const priceDiff = avgPrice - cheapest.price;
+    recommended.push({
+      ...cheapest,
+      tag: 'cheapest',
+      tagLabel: '价格最低',
+      recommendation: priceDiff > 0 
+        ? `¥${cheapest.price}，比均价低¥${priceDiff}` 
+        : `¥${cheapest.price}，最优惠选择`,
+    });
+    usedIds.add(cheapest.id);
+  }
+
+  // 2. 耗时最短（避免重复）
+  for (const flight of sortedByDuration) {
+    if (!usedIds.has(flight.id)) {
+      const stops = flight.stops === 0 ? '直达' : `${flight.stops}次转机`;
+      recommended.push({
+        ...flight,
+        tag: 'fastest',
+        tagLabel: '耗时最短',
+        recommendation: `${flight.duration}${stops}，最快到达`,
+      });
+      usedIds.add(flight.id);
+      break;
+    }
+  }
+
+  // 3. 综合最优（避免重复）
+  for (const flight of sortedByScore) {
+    if (!usedIds.has(flight.id)) {
+      recommended.push({
+        ...flight,
+        tag: 'best',
+        tagLabel: '综合最优',
+        recommendation: '价格适中、时间合理，综合推荐',
+      });
+      usedIds.add(flight.id);
+      break;
+    }
+  }
+
+  // 如果因为重复导致不足3个，从剩余航班中补充
+  if (recommended.length < 3) {
+    for (const flight of sortedByScore) {
+      if (!usedIds.has(flight.id)) {
+        recommended.push({
+          ...flight,
+          tag: 'best',
+          tagLabel: '综合最优',
+          recommendation: '性价比之选',
+        });
+        usedIds.add(flight.id);
+        if (recommended.length >= 3) break;
+      }
+    }
+  }
+
+  return recommended;
 }
 
 /**
@@ -179,8 +391,9 @@ async function searchFlights(origin, destination, departDate) {
   }
 
   const flights = parseFlights(data);
+  const priceInsights = extractPriceInsights(data);
   console.log(`[Step 2] 搜索成功，找到 ${flights.length} 个航班`);
-  return { flights, rawData: data };
+  return { flights, priceInsights, rawData: data };
 }
 
 /**
@@ -203,13 +416,125 @@ async function generateReply(prompt) {
   return reply;
 }
 
+// ========== 会话管理 API 端点 ==========
+
+/**
+ * GET /api/sessions
+ * 返回会话列表（不包含完整消息，只有预览）
+ * 按 updatedAt 倒序排列
+ */
+app.get('/api/sessions', (req, res) => {
+  try {
+    const sessions = loadSessions();
+    
+    // 按 updatedAt 倒序排列
+    const sortedSessions = sessions.sort((a, b) => 
+      new Date(b.updatedAt) - new Date(a.updatedAt)
+    );
+    
+    // 返回列表，不包含完整消息
+    const sessionList = sortedSessions.map(session => ({
+      id: session.id,
+      title: session.title,
+      createdAt: session.createdAt,
+      updatedAt: session.updatedAt,
+      messageCount: session.messages?.length || 0,
+      preview: session.messages?.[0]?.content?.substring(0, 50) || ''
+    }));
+    
+    console.log(`[GET /api/sessions] 返回 ${sessionList.length} 个会话`);
+    res.json(sessionList);
+  } catch (error) {
+    console.error('[GET /api/sessions] 错误:', error.message);
+    res.status(500).json({ error: '获取会话列表失败', message: error.message });
+  }
+});
+
+/**
+ * GET /api/sessions/:id
+ * 返回完整会话（包含所有消息）
+ */
+app.get('/api/sessions/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const sessions = loadSessions();
+    const session = sessions.find(s => s.id === id);
+    
+    if (!session) {
+      return res.status(404).json({ error: '会话不存在' });
+    }
+    
+    console.log(`[GET /api/sessions/:id] 返回会话: ${session.title}`);
+    res.json(session);
+  } catch (error) {
+    console.error('[GET /api/sessions/:id] 错误:', error.message);
+    res.status(500).json({ error: '获取会话失败', message: error.message });
+  }
+});
+
+/**
+ * POST /api/sessions
+ * 创建新会话
+ */
+app.post('/api/sessions', (req, res) => {
+  try {
+    const { title } = req.body;
+    const now = new Date().toISOString();
+    
+    const newSession = {
+      id: generateUUID(),
+      title: title || '新会话',
+      createdAt: now,
+      updatedAt: now,
+      messages: []
+    };
+    
+    const sessions = loadSessions();
+    sessions.push(newSession);
+    saveSessions(sessions);
+    
+    console.log(`[POST /api/sessions] 创建会话: ${newSession.title}`);
+    res.status(201).json(newSession);
+  } catch (error) {
+    console.error('[POST /api/sessions] 错误:', error.message);
+    res.status(500).json({ error: '创建会话失败', message: error.message });
+  }
+});
+
+/**
+ * DELETE /api/sessions/:id
+ * 删除指定会话
+ */
+app.delete('/api/sessions/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    let sessions = loadSessions();
+    const index = sessions.findIndex(s => s.id === id);
+    
+    if (index === -1) {
+      return res.status(404).json({ error: '会话不存在' });
+    }
+    
+    const deletedSession = sessions[index];
+    sessions.splice(index, 1);
+    saveSessions(sessions);
+    
+    console.log(`[DELETE /api/sessions/:id] 删除会话: ${deletedSession.title}`);
+    res.json({ success: true, message: '会话已删除' });
+  } catch (error) {
+    console.error('[DELETE /api/sessions/:id] 错误:', error.message);
+    res.status(500).json({ error: '删除会话失败', message: error.message });
+  }
+});
+
 /**
  * POST /api/chat
  * 完整的单轮对话编排流程
+ * 支持会话持久化：传入 sessionId 则保存到对应会话，否则创建新会话
  */
 app.post('/api/chat', async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, sessionId } = req.body;
 
     if (!message) {
       return res.status(400).json({
@@ -239,10 +564,47 @@ app.post('/api/chat', async (req, res) => {
       });
     }
 
+    // ========== 会话管理：获取或创建会话 ==========
+    let sessions = loadSessions();
+    let currentSession = null;
+    let currentSessionId = sessionId;
+    const now = new Date().toISOString();
+
+    if (sessionId) {
+      // 使用现有会话
+      currentSession = sessions.find(s => s.id === sessionId);
+      if (!currentSession) {
+        return res.status(404).json({ error: '会话不存在' });
+      }
+      console.log(`[Session] 使用现有会话: ${currentSession.title}`);
+    } else {
+      // 创建新会话
+      const title = generateSessionTitle(message, extraction);
+      currentSession = {
+        id: generateUUID(),
+        title,
+        createdAt: now,
+        updatedAt: now,
+        messages: []
+      };
+      currentSessionId = currentSession.id;
+      sessions.push(currentSession);
+      console.log(`[Session] 创建新会话: ${title}`);
+    }
+
+    // 添加用户消息到会话
+    currentSession.messages.push({
+      role: 'user',
+      content: message
+    });
+    currentSession.updatedAt = now;
+
     // ========== Step 2 & 3: 根据意图行动 ==========
     if (extraction.intent === 'flight_search') {
       // 意图是航班搜索
       let flights = [];
+      let recommendedFlights = [];
+      let priceInsights = null;
       let searchParams = {
         origin: extraction.origin,
         originCity: extraction.originCity,
@@ -262,34 +624,52 @@ app.post('/api/chat', async (req, res) => {
           extraction.departDate
         );
         flights = searchResult.flights;
+        priceInsights = searchResult.priceInsights;
+        // 筛选3个推荐航班
+        recommendedFlights = selectRecommendedFlights(flights);
+        console.log(`[Step 2] 筛选出 ${recommendedFlights.length} 个推荐航班`);
+        console.log(`[Step 2] 价格走势结果： ${priceInsights}`);
       } catch (error) {
         console.error('[Step 2] 航班搜索失败:', error.message);
         // 搜索失败时，仍然生成一个友好的回复
         const errorReply = await generateReply(
           `用户想搜索从 ${extraction.originCity} 到 ${extraction.destinationCity} ${extraction.departDate} 的航班，但搜索失败了。请友好地告知用户，并建议稍后重试。`
         );
+        
+        // 保存 AI 回复到会话
+        currentSession.messages.push({
+          role: 'assistant',
+          content: errorReply,
+          data: { type: 'flights', error: '航班搜索暂时不可用' }
+        });
+        currentSession.updatedAt = new Date().toISOString();
+        saveSessions(sessions);
+        
         return res.json({
           reply: errorReply,
           data: {
             type: 'flights',
             extraction: searchParams,
             flights: [],
+            priceInsights: null,
             searchParams,
             error: '航班搜索暂时不可用',
           },
+          sessionId: currentSessionId,
         });
       }
 
       // Step 3: LLM 生成航班总结
       let reply;
       try {
-        if (flights.length > 0) {
+        if (recommendedFlights.length > 0) {
           reply = await generateReply(
             getFlightSummaryPrompt(
               extraction.originCity,
               extraction.destinationCity,
               extraction.departDate,
-              flights.slice(0, 10) // 只传前 10 个航班给 LLM
+              flights.length,
+              recommendedFlights
             )
           );
         } else {
@@ -299,18 +679,31 @@ app.post('/api/chat', async (req, res) => {
         }
       } catch (error) {
         console.error('[Step 3] 回复生成失败:', error.message);
-        reply = `找到了 ${flights.length} 个从 ${extraction.originCity} 到 ${extraction.destinationCity} 的航班。`;
+        reply = `找到了 ${flights.length} 个从 ${extraction.originCity} 到 ${extraction.destinationCity} 的航班，为您精选了 ${recommendedFlights.length} 个推荐。`;
       }
+
+      // 保存 AI 回复到会话
+      const responseData = {
+        type: 'flights',
+        extraction: searchParams,
+        flights: recommendedFlights,
+        priceInsights,
+        searchParams,
+        totalFlightsFound: flights.length,
+      };
+      currentSession.messages.push({
+        role: 'assistant',
+        content: reply,
+        data: responseData
+      });
+      currentSession.updatedAt = new Date().toISOString();
+      saveSessions(sessions);
 
       // Step 4: 返回结构化响应
       return res.json({
         reply,
-        data: {
-          type: 'flights',
-          extraction: searchParams,
-          flights,
-          searchParams,
-        },
+        data: responseData,
+        sessionId: currentSessionId,
       });
     } else {
       // 意图是通用对话
@@ -322,11 +715,21 @@ app.post('/api/chat', async (req, res) => {
         reply = '抱歉，我暂时无法回复。请稍后再试。';
       }
 
+      // 保存 AI 回复到会话
+      currentSession.messages.push({
+        role: 'assistant',
+        content: reply,
+        data: { type: 'chat' }
+      });
+      currentSession.updatedAt = new Date().toISOString();
+      saveSessions(sessions);
+
       return res.json({
         reply,
         data: {
           type: 'chat',
         },
+        sessionId: currentSessionId,
       });
     }
   } catch (error) {
@@ -449,10 +852,15 @@ app.listen(PORT, () => {
   console.log('📡 API 端点:');
   console.log(`   POST /api/flights/search - 搜索航班（向后兼容）`);
   console.log(`   POST /api/chat          - AI 对话（完整编排流程）`);
+  console.log(`   GET  /api/sessions      - 获取会话列表`);
+  console.log(`   GET  /api/sessions/:id  - 获取单个会话`);
+  console.log(`   POST /api/sessions      - 创建新会话`);
+  console.log(`   DELETE /api/sessions/:id - 删除会话`);
   console.log('─'.repeat(40));
   console.log(`🔑 SerpAPI Key: 已配置`);
   console.log(`🔑 OpenAI Key: ${config.openai.apiKey && config.openai.apiKey !== 'your-openai-api-key' ? '已配置' : '⚠️ 未配置 (请在 config.json 中设置)'}`);
   console.log(`🤖 OpenAI Model: ${config.openai.model}`);
   console.log(`🌐 OpenAI BaseURL: ${config.openai.baseURL}`);
+  console.log(`💾 会话存储: ${SESSIONS_FILE}`);
   console.log('');
 });
