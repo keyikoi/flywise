@@ -118,7 +118,7 @@ function getExtractionPrompt(userMessage) {
 
 请以 JSON 格式返回，不要包含其他内容：
 {
-  "intent": "flight_search" | "general_chat",
+  "intent": "flight_search" | "price_recommendation" | "general_chat",
   "origin": "出发城市的 IATA 机场代码（如 PVG、SHA、PEK）",
   "originCity": "出发城市中文名",
   "destination": "目的地的 IATA 机场代码",
@@ -134,6 +134,7 @@ function getExtractionPrompt(userMessage) {
 - 如果用户没有明确日期，使用最近合理的日期
 - 今天是 ${getCurrentDate()}
 - 常见城市代码：上海浦东PVG、上海虹桥SHA、北京首都PEK、北京大兴PKX、广州CAN、深圳SZX、东京成田NRT、东京羽田HND、大阪KIX、首尔ICN、曼谷BKK、新加坡SIN、香港HKG、台北TPE、纽约JFK、伦敦LHR、巴黎CDG
+- 如果用户询问是否该购买、现在买还是等等、价格走势建议、该不该入手、价格会降吗等，intent 设为 "price_recommendation"
 - 如果用户消息与航班搜索无关，intent 设为 "general_chat"，其他字段可为 null
 
 用户消息：${userMessage}`;
@@ -155,6 +156,86 @@ function getGeneralChatPrompt(userMessage) {
   return `你是 FlyWise 航班助手。请友好地回复用户的消息。如果用户想搜索航班，引导他们提供目的地和出发日期。
 
 用户消息：${userMessage}`;
+}
+
+/**
+ * 生成购买建议
+ */
+function generateRecommendation(flights, priceInsights) {
+    if (!flights || flights.length === 0) return null;
+    
+    // 获取最低价航班的价格作为 currentPrice
+    const cheapestFlight = flights.reduce((min, f) => f.price < min.price ? f : min, flights[0]);
+    const currentPrice = cheapestFlight.price;
+    
+    // 如果有 priceInsights，基于它生成建议
+    if (priceInsights) {
+        const { lowestPrice, typicalPriceRange, priceLevel } = priceInsights;
+        const [typicalLow, typicalHigh] = typicalPriceRange || [0, 0];
+        const average = typicalLow && typicalHigh ? Math.round((typicalLow + typicalHigh) / 2) : currentPrice;
+        
+        if (priceLevel === 'low' || currentPrice <= typicalLow) {
+            // 低价 → 建议购买
+            const discount = average > 0 ? Math.round((1 - currentPrice / average) * 100) : 0;
+            return {
+                action: 'buy',
+                confidence: Math.min(95, 70 + Math.abs(discount)),
+                reason: `当前价格 ¥${currentPrice.toLocaleString()} 处于低位，比历史均价低约 ${discount}%，是近期的好价格。`,
+                currentPrice,
+                averagePrice: average,
+                expectedDrop: 0,
+                waitUntil: null
+            };
+        } else if (priceLevel === 'high' || currentPrice >= typicalHigh) {
+            // 高价 → 建议等待
+            const expectedDrop = Math.round(currentPrice * 0.12);
+            return {
+                action: 'wait',
+                confidence: Math.min(90, 65 + Math.round((currentPrice - average) / average * 50)),
+                reason: `当前价格偏高，高于典型价格区间。建议关注价格变化，等待降价后再入手。`,
+                currentPrice,
+                averagePrice: average,
+                expectedDrop,
+                waitUntil: '1-2 周'
+            };
+        } else {
+            // 中等 → 建议购买（价格合理）
+            return {
+                action: 'buy',
+                confidence: 65,
+                reason: `当前价格处于合理区间，如果行程已确定，建议尽早锁定。`,
+                currentPrice,
+                averagePrice: average,
+                expectedDrop: 0,
+                waitUntil: null
+            };
+        }
+    }
+    
+    // 没有 priceInsights 时的 fallback
+    return {
+        action: 'buy',
+        confidence: 55,
+        reason: `基于当前搜索到的航班价格，建议确认行程后尽早预订。`,
+        currentPrice,
+        averagePrice: null,
+        expectedDrop: 0,
+        waitUntil: null
+    };
+}
+
+/**
+ * 生成购买建议的 AI 回复 prompt
+ */
+function getRecommendationPrompt(recommendation) {
+    return `你是 FlyWise 航班助手。用户询问是否应该现在购买机票。
+分析结果：${recommendation.action === 'buy' ? '建议现在购买' : '建议继续观望'}
+置信度：${recommendation.confidence}%
+原因：${recommendation.reason}
+当前最低价：¥${recommendation.currentPrice}
+${recommendation.averagePrice ? '历史均价：¥' + recommendation.averagePrice : ''}
+
+请用简洁友好的中文（50字以内）给出建议。不要重复详细数据（前端会展示卡片）。用 markdown 格式。`;
 }
 
 /**
@@ -705,6 +786,72 @@ app.post('/api/chat', async (req, res) => {
         data: responseData,
         sessionId: currentSessionId,
       });
+    } else if (extraction.intent === 'price_recommendation') {
+      // ========== 意图是购买建议 ==========
+      // 从会话历史获取上次搜索数据
+      let lastFlights = null;
+      let lastPriceInsights = null;
+      
+      if (currentSession) {
+        // 倒序查找最近的航班搜索结果
+        for (let i = currentSession.messages.length - 1; i >= 0; i--) {
+          const msg = currentSession.messages[i];
+          if (msg.data && msg.data.type === 'flights' && msg.data.flights && msg.data.flights.length > 0) {
+            lastFlights = msg.data.flights;
+            lastPriceInsights = msg.data.priceInsights;
+            break;
+          }
+        }
+      }
+      
+      if (lastFlights && lastFlights.length > 0) {
+        const recommendation = generateRecommendation(lastFlights, lastPriceInsights);
+        
+        // 生成 AI 回复
+        let aiReply;
+        try {
+          aiReply = await generateReply(getRecommendationPrompt(recommendation));
+        } catch (error) {
+          console.error('[Step 3] 推荐回复生成失败:', error.message);
+          aiReply = recommendation.reason;
+        }
+        
+        // 保存并返回
+        const responseData = {
+          type: 'recommendation',
+          recommendation: recommendation
+        };
+        currentSession.messages.push({
+          role: 'assistant',
+          content: aiReply,
+          data: responseData
+        });
+        currentSession.updatedAt = new Date().toISOString();
+        saveSessions(sessions);
+        
+        return res.json({
+          reply: aiReply,
+          data: responseData,
+          sessionId: currentSessionId,
+        });
+      } else {
+        // 没有找到历史航班数据
+        const noDataReply = '请先搜索航班，我才能给出购买建议哦～比如告诉我"我想从上海飞东京"';
+        
+        currentSession.messages.push({
+          role: 'assistant',
+          content: noDataReply,
+          data: { type: 'chat' }
+        });
+        currentSession.updatedAt = new Date().toISOString();
+        saveSessions(sessions);
+        
+        return res.json({
+          reply: noDataReply,
+          data: { type: 'chat' },
+          sessionId: currentSessionId,
+        });
+      }
     } else {
       // 意图是通用对话
       let reply;

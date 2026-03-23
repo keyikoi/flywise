@@ -1587,6 +1587,12 @@
                             searchParams: data.searchParams,
                             priceInsights: data.priceInsights, // 传递价格洞察数据
                         });
+                    } else if (data?.type === 'recommendation' && data.recommendation) {
+                        // 购买建议结果
+                        addMsg('ai', reply, {
+                            type: 'recommendation',
+                            recommendation: data.recommendation,
+                        });
                     } else {
                         // 普通对话或无航班数据
                         addMsg('ai', reply);
@@ -1716,6 +1722,11 @@
                                             />
                                         ) : null;
                                     })()}
+
+                                    {/* 渲染购买建议卡片 */}
+                                    {m.data?.type === 'recommendation' && m.data.recommendation && (
+                                        <RecCard rec={m.data.recommendation} />
+                                    )}
                                 </div>
                             )
                         ))}
