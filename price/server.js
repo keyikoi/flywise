@@ -142,12 +142,24 @@ function getExtractionPrompt(userMessage) {
 
 // 航班总结 prompt 模板（简洁版，只展示3个推荐航班）
 function getFlightSummaryPrompt(originCity, destinationCity, departDate, totalCount, recommendedFlights) {
+  // 格式化日期为更友好的格式（如 "3月28日"）
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return `${date.getMonth() + 1}月${date.getDate()}日`;
+  };
+  const formattedDate = formatDate(departDate);
+  
   return `你是 FlyWise 航班助手，专业、友好、简洁。
 用户搜索了从 ${originCity} 到 ${destinationCity} ${departDate} 的航班。
 共找到 ${totalCount} 个航班，为用户精选了 ${recommendedFlights.length} 个推荐：
 ${JSON.stringify(recommendedFlights, null, 2)}
 
 请用中文生成简洁的搜索总结（100字内），不需要列出航班详情（前端会用卡片展示推荐航班）。
+
+【重要】回复开头必须包含出发日期，格式示例：
+- "${originCity}→${destinationCity} **${formattedDate}** 航班精选"
+- "为您精选 **${formattedDate}** ${originCity}飞${destinationCity}的航班"
+
 可以简要提及价格区间和推荐亮点。使用 markdown 格式，适当使用加粗和 emoji。`;
 }
 
@@ -257,6 +269,7 @@ function parseFlights(data) {
     flights.push({
       id: index + 1,
       airline: firstLeg.airline,
+      airline_logo: firstLeg.airline_logo || '',
       airline_code: firstLeg.airline?.substring(0, 2),
       flight_number: firstLeg.flight_number,
       origin: firstLeg.departure_airport?.id,

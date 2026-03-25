@@ -1039,9 +1039,6 @@
 
             const padL = 0, padR = 0, padT = 12, padB = 12;
             const points = useMemo(() => {
-                // 空数据防护
-                if (!Array.isArray(data) || data.length === 0) return [];
-                
                 const prices = data.map(d => d.price);
                 const minP = Math.min(...prices), maxP = Math.max(...prices);
                 const range = maxP - minP || 1;
@@ -1197,8 +1194,7 @@
          * 将后端 priceInsights 转换为 PriceChart 需要的格式
          */
         function convertPriceInsights(priceInsights, searchParams) {
-            // 安全检查：确保 priceInsights 存在且 priceHistory 是有效数组
-            if (!priceInsights || !Array.isArray(priceInsights.priceHistory) || priceInsights.priceHistory.length === 0) {
+            if (!priceInsights || !priceInsights.priceHistory || priceInsights.priceHistory.length === 0) {
                 return null;
             }
 
@@ -1241,17 +1237,8 @@
 
         /* ===== Flight Card ===== */
         function FlightCards({ flights }) {
-            // 空数组/无效数据防护
-            if (!Array.isArray(flights) || flights.length === 0) {
-                return null;
-            }
-            // 过滤有效航班
-            const validFlights = flights.filter(f => f && typeof f === 'object' && typeof f.price === 'number');
-            if (validFlights.length === 0) return null;
-            
             // 简化的价格水平判断：基于航班列表中的最低价和最高价
-            const prices = validFlights.map(f => f.price).filter(p => isFinite(p));
-            if (prices.length === 0) return null;
+            const prices = flights.map(f => f.price);
             const minPrice = Math.min(...prices);
             const maxPrice = Math.max(...prices);
             const priceRange = maxPrice - minPrice || 1;
@@ -1273,7 +1260,7 @@
 
             return (
                 <div className="flight-cards">
-                    {validFlights.map((f, index) => {
+                    {flights.map((f, index) => {
                         const lv = getLevel(f.price);
                         return (
                             <div key={f.id || index}>
@@ -1287,22 +1274,22 @@
                                 <div className="fcard">
                                     <div className="fcard__top">
                                         <div className="fcard__airline">
-                                            <img className="fcard__logo" src={f.airline_logo || airlineLogos[f.airline] || 'icon/春秋航空.png'} alt={f.airline || '航空公司'} />
-                                            <span className="fcard__airline-name">{f.airline || '未知航空'}</span>
+                                            <img className="fcard__logo" src={airlineLogos[f.airline] || 'icon/春秋航空.png'} alt={f.airline} />
+                                            <span className="fcard__airline-name">{f.airline}</span>
                                         </div>
                                         <span className={`fcard__level-pill fcard__level-pill--${lv}`}>
                                             {levelLabel[lv]}
                                         </span>
                                     </div>
                                     <div className="fcard__route">
-                                        <span className="fcard__time">{f.depart_time || f.departTime || '--'}</span>
-                                        <span className="fcard__city-code">{f.origin || '--'}</span>
+                                        <span className="fcard__time">{f.depart_time || f.departTime}</span>
+                                        <span className="fcard__city-code">{f.origin}</span>
                                         <span className="fcard__sep">-</span>
-                                        <span className="fcard__time">{f.arrive_time || f.arrivalTime || '--'}</span>
-                                        <span className="fcard__city-code">{f.destination || '--'}</span>
+                                        <span className="fcard__time">{f.arrive_time || f.arrivalTime}</span>
+                                        <span className="fcard__city-code">{f.destination}</span>
                                     </div>
                                     <div className="fcard__info">
-                                        <span className="fcard__duration">{f.durationFormatted || f.duration || '--'}</span>
+                                        <span className="fcard__duration">{f.durationFormatted || f.duration}</span>
                                         {f.stops === 0 ? (
                                             <span className="fcard__stops">直飞</span>
                                         ) : (
@@ -1315,7 +1302,7 @@
                                     </div>
                                     <div className="fcard__bottom">
                                         <span className="fcard__price">
-                                            <span className="fcard__price-unit">¥</span>{typeof f.price === 'number' ? f.price.toLocaleString() : '--'}
+                                            <span className="fcard__price-unit">¥</span>{f.price.toLocaleString()}
                                         </span>
                                         <span className="fcard__price-note">起</span>
                                     </div>
@@ -1329,9 +1316,6 @@
 
         /* ===== Recommendation ===== */
         function RecCard({ rec }) {
-            // 空值防护
-            if (!rec || typeof rec !== 'object') return null;
-            
             const isBuy = rec.action === 'buy';
             return (
                 <div className={`rec rec--${isBuy ? 'buy' : 'wait'}`}>
@@ -1395,9 +1379,7 @@
          * 将后端消息格式转换为前端渲染格式
          */
         function convertSessionMessages(sessionMessages) {
-            // 安全检查：确保 sessionMessages 是有效数组
-            if (!Array.isArray(sessionMessages)) return [];
-            return sessionMessages.filter(msg => msg && typeof msg === 'object').map(msg => ({
+            return sessionMessages.map(msg => ({
                 id: Date.now() + Math.random(),
                 type: msg.role === 'user' ? 'user' : 'ai',
                 content: msg.content,
@@ -1476,34 +1458,6 @@
             );
         }
 
-        /* ===== ErrorBoundary ===== */
-        class ErrorBoundary extends React.Component {
-            constructor(props) {
-                super(props);
-                this.state = { hasError: false, error: null };
-            }
-            static getDerivedStateFromError(error) {
-                return { hasError: true, error };
-            }
-            componentDidCatch(error, errorInfo) {
-                console.error('React 渲染错误:', error, errorInfo);
-            }
-            render() {
-                if (this.state.hasError) {
-                    return React.createElement('div', { 
-                        style: { padding: '40px 20px', textAlign: 'center', fontFamily: 'system-ui' } 
-                    },
-                        React.createElement('p', { style: { color: '#999', fontSize: '16px' } }, '页面出现问题，请刷新重试'),
-                        React.createElement('button', { 
-                            onClick: () => window.location.reload(),
-                            style: { marginTop: '16px', padding: '10px 24px', border: '1px solid #ddd', borderRadius: '8px', background: '#fff', cursor: 'pointer', fontSize: '14px' }
-                        }, '刷新页面')
-                    );
-                }
-                return this.props.children;
-            }
-        }
-
         /* ===== App ===== */
         function App() {
             const [messages, setMessages] = useState([]);
@@ -1527,30 +1481,15 @@
             // 加载会话列表
             const loadSessions = useCallback(async () => {
                 try {
-                    console.log('[loadSessions] 开始加载会话列表...');
                     const response = await fetch('/api/sessions');
-                    console.log('[loadSessions] API 响应状态:', response.status);
                     if (response.ok) {
                         const data = await response.json();
-                        console.log('[loadSessions] 获取到会话数量:', Array.isArray(data) ? data.length : 'data不是数组');
-                        if (Array.isArray(data)) {
-                            setSessions(data);
-                        } else {
-                            console.error('[loadSessions] API 返回的数据格式不正确:', data);
-                            setSessions([]);
-                        }
-                    } else {
-                        console.error('[loadSessions] API 请求失败:', response.status, response.statusText);
+                        setSessions(data);
                     }
                 } catch (error) {
-                    console.error('[loadSessions] 加载会话列表失败:', error);
+                    console.error('加载会话列表失败:', error);
                 }
             }, []);
-
-            // 应用初始化时预加载会话列表
-            useEffect(() => {
-                loadSessions();
-            }, [loadSessions]);
 
             // 加载指定会话
             const loadSession = useCallback(async (sessionId) => {
@@ -1593,9 +1532,9 @@
             }, [currentSessionId]);
 
             // 打开历史面板时加载会话列表
-            const openHistory = useCallback(async () => {
-                setHistoryOpen(true);  // 先打开面板，显示加载状态
-                await loadSessions();  // 然后加载最新数据
+            const openHistory = useCallback(() => {
+                loadSessions();
+                setHistoryOpen(true);
             }, [loadSessions]);
 
             const newChat = useCallback(() => {
@@ -1632,10 +1571,7 @@
                     }
 
                     const result = await response.json();
-                    const { reply: rawReply, data, sessionId } = result;
-                    
-                    // 数据验证：reply 不存在时用空字符串兜底
-                    const reply = rawReply || '';
+                    const { reply, data, sessionId } = result;
 
                     // 保存后端返回的 sessionId（首次发消息时创建）
                     if (sessionId && sessionId !== currentSessionId) {
@@ -1643,7 +1579,7 @@
                     }
 
                     // 根据返回的数据类型创建消息
-                    if (data?.type === 'flights' && Array.isArray(data.flights) && data.flights.length > 0) {
+                    if (data?.type === 'flights' && data.flights?.length > 0) {
                         // 航班搜索结果
                         addMsg('ai', reply, {
                             type: 'flights',
@@ -1820,9 +1756,7 @@
             );
         }
 
-        ReactDOM.createRoot(document.getElementById('root')).render(
-            React.createElement(ErrorBoundary, null, React.createElement(App))
-        );
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
 </html>
