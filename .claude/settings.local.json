@@ -69,7 +69,14 @@
       "Bash(env)",
       "Bash(kill:*)",
       "Bash(ipconfig getifaddr:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(clawhub install:*)",
+      "Bash(npx flyai:*)",
+      "Bash(flyai fliggy-fast-search:*)",
+      "Bash(flyai search-flight:*)",
+      "Bash(cd:*)",
+      "Bash(node:*)",
+      "WebFetch(domain:serpapi.com)"
     ]
   },
   "enableAllProjectMcpServers": true,

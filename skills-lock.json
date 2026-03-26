@@ -56,6 +56,16 @@
       "sourceType": "github",
       "computedHash": "02321408deab942e102bd825d76c4cd6b5a5b0e6adb1060805327536995183f8"
     },
+    "figma-code-optimization": {
+      "source": "mengyue.zmy/figma-to-code",
+      "sourceType": "internal",
+      "computedHash": "7478e219372a558dffe205685bd772e5a0273a341c4d9952a50a7ae912d51022"
+    },
+    "flyai": {
+      "source": "alibaba-flyai/flyai-skill",
+      "sourceType": "github",
+      "computedHash": "fdfd0faac8927ecfc1bb6a51dbdc5c979e0ea968e0e85676065010d6cb8ad8b3"
+    },
     "frontend-design": {
       "source": "pbakaus/impeccable",
       "sourceType": "github",

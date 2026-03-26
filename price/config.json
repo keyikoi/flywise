@@ -6,5 +6,8 @@
   },
   "serpapi": {
     "apiKey": "971d8a3a79327c795ccc3d0c9a574f69ee2010eeef4e8a2f7ae9f6f35070f6cf"
+  },
+  "flyai": {
+    "apiKey": ""
   }
 }

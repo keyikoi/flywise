@@ -464,80 +464,12 @@ async function extractIntent(userMessage) {
   return result;
 }
 
-
 /**
- * Step 2: 调用航班服务搜索航班（使用 flightService 统一接口）
- * 国内航线使用 FlyAI，国际航线使用 SerpAPI
+ * Step 2: 调用 SerpAPI 搜索航班
  */
-async function searchFlights(origin, destination, departDate, returnDate = null) {
-  console.log(`[Step 2] 搜索航班：${origin} -> ${destination}, ${departDate}`);
+async function searchFlights(origin, destination, departDate) {
+  console.log(`[Step 2] 搜索航班: ${origin} -> ${destination}, ${departDate}`);
 
-  try {
-    // 使用 flightService 统一接口（自动选择数据源）
-    const result = await flightService.searchFlights({
-      origin,
-      destination,
-      departDate,
-      returnDate,
-      dataSource: 'auto', // 自动选择：国内用 FlyAI，国际用 SerpAPI
-    });
-
-    if (result.success && result.flights && result.flights.length > 0) {
-      console.log(`[Step 2] 搜索成功，找到 ${result.flights.length} 个航班，数据源：${result.source}`);
-
-      // 构建 priceInsights（兼容前端格式）
-      let priceInsights = null;
-      const priceHistory = await flightService.getPriceHistory({
-        origin,
-        destination,
-        date: departDate,
-      });
-
-      if (priceHistory && priceHistory.priceHistory) {
-        // 将自有数据转换为 SerpAPI 格式 [[timestamp, price], ...]
-        const formattedHistory = priceHistory.priceHistory.map(item => {
-          const timestamp = Math.floor(new Date(item.date).getTime() / 1000);
-          return [timestamp, item.price];
-        });
-
-        // 添加当前价格到图表末尾（如果当前价格不在历史数据中）
-        if (priceHistory.currentPrice) {
-          const today = Math.floor(Date.now() / 1000);
-          const lastPrice = formattedHistory.length > 0 ? formattedHistory[formattedHistory.length - 1][1] : null;
-          // 如果当前价格与最后一条记录不同，添加到末尾
-          if (lastPrice !== priceHistory.currentPrice) {
-            formattedHistory.push([today, priceHistory.currentPrice]);
-          }
-        }
-
-        priceInsights = {
-          lowestPrice: priceHistory.currentPrice || priceHistory.minPrice, // 当前价格
-          priceLevel: priceHistory.priceLevel === 'low' ? 'low' : priceHistory.priceLevel === 'high' ? 'high' : 'typical',
-          typicalPriceRange: [priceHistory.minPrice, priceHistory.maxPrice],
-          priceHistory: formattedHistory,
-          dataSource: priceHistory.dataSource,
-          currentPrice: priceHistory.currentPrice, // 明确传递当前价格
-        };
-      }
-
-      // 给每个航班添加 source 标记
-      const flightsWithSource = (result.flights || []).map(f => ({
-        ...f,
-        source: f.source || result.source || 'unknown',
-      }));
-
-      return {
-        flights: flightsWithSource,
-        priceInsights,
-        rawData: result,
-      };
-    }
-  } catch (error) {
-    console.error('[Step 2] flightService 搜索失败:', error.message);
-  }
-
-  // Fallback: 降级到 SerpAPI
-  console.log('[Step 2] 降级到 SerpAPI 搜索');
   const params = new URLSearchParams({
     engine: 'google_flights',
     api_key: SERPAPI_KEY,
@@ -546,29 +478,22 @@ async function searchFlights(origin, destination, departDate, returnDate = null)
     outbound_date: departDate,
     currency: 'CNY',
     hl: 'zh-cn',
-    type: '2',
+    type: '2', // 单程
   });
 
   const serpApiUrl = `https://serpapi.com/search.json?${params.toString()}`;
   const response = await fetch(serpApiUrl);
   const data = await response.json();
 
-  if (!response.ok || !data.best_flights) {
+  if (!response.ok) {
     console.error('[Step 2] SerpAPI 请求失败:', data);
-    throw new Error('航班搜索失败');
+    throw new Error('SerpAPI 请求失败');
   }
 
   const flights = parseFlights(data);
   const priceInsights = extractPriceInsights(data);
-
-  // 给每个航班添加 source 标记
-  const flightsWithSource = flights.map(f => ({
-    ...f,
-    source: f.source || 'serpapi',
-  }));
-
-  console.log(`[Step 2] SerpAPI 搜索成功，找到 ${flights.length} 个航班`);
-  return { flights: flightsWithSource, priceInsights, rawData: data };
+  console.log(`[Step 2] 搜索成功，找到 ${flights.length} 个航班`);
+  return { flights, priceInsights, rawData: data };
 }
 
 /**
@@ -850,61 +775,17 @@ app.post('/api/chat', async (req, res) => {
             return [timestamp, item.price];
           });
 
-          // 添加当前价格到图表末尾
-          if (priceHistory.currentPrice) {
-            const today = Math.floor(Date.now() / 1000);
-            const lastPrice = formattedHistory.length > 0 ? formattedHistory[formattedHistory.length - 1][1] : null;
-            if (lastPrice !== priceHistory.currentPrice) {
-              formattedHistory.push([today, priceHistory.currentPrice]);
-            }
-          }
-
           finalPriceInsights = {
-            lowestPrice: priceHistory.currentPrice || priceHistory.minPrice, // 当前价格
+            lowestPrice: priceHistory.minPrice,
             priceLevel: priceHistory.priceLevel === 'low' ? 'low' : priceHistory.priceLevel === 'high' ? 'high' : 'typical',
             typicalPriceRange: [priceHistory.minPrice, priceHistory.maxPrice],
             priceHistory: formattedHistory,
             dataSource: priceHistory.dataSource,
-            currentPrice: priceHistory.currentPrice,
           };
           console.log(`[Step 3] 价格历史已加载：${priceHistory.dataSource}, ${priceHistory.priceHistory.length} 条记录`);
         }
       } catch (error) {
         console.error('[Step 3] 加载价格历史失败:', error.message);
-      }
-
-      // 如果还是没有价格历史，尝试从 SerpAPI 获取（国际航线）
-      if (!finalPriceInsights && extraction.destination) {
-        try {
-          console.log('[Step 3] 尝试从 SerpAPI 获取价格历史...');
-          const params = new URLSearchParams({
-            engine: 'google_flights',
-            api_key: SERPAPI_KEY,
-            departure_id: extraction.origin,
-            arrival_id: extraction.destination,
-            outbound_date: extraction.departDate,
-            currency: 'CNY',
-            hl: 'zh-cn',
-            type: '2',
-          });
-
-          const serpApiUrl = `https://serpapi.com/search.json?${params.toString()}`;
-          const response = await fetch(serpApiUrl);
-          const data = await response.json();
-
-          if (data.price_insights && data.price_insights.price_history) {
-            finalPriceInsights = {
-              lowestPrice: data.price_insights.lowest_price,
-              priceLevel: data.price_insights.price_level === 'low' ? 'low' : data.price_insights.price_level === 'high' ? 'high' : 'typical',
-              typicalPriceRange: data.price_insights.typical_price_range,
-              priceHistory: data.price_insights.price_history,
-              dataSource: 'SerpAPI',
-            };
-            console.log(`[Step 3] SerpAPI 价格历史已加载：${finalPriceInsights.priceHistory.length} 条记录`);
-          }
-        } catch (error) {
-          console.error('[Step 3] SerpAPI 价格历史获取失败:', error.message);
-        }
       }
 
       // Step 4: LLM 生成航班总结

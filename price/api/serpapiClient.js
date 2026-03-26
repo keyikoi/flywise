@@ -522,15 +522,20 @@ class SerpApiClient {
     }
 }
 
-// 导出单例（避免重复声明）
-if (!window.serpApiClient) {
-    window.serpApiClient = new SerpApiClient();
-}
-if (!window.SerpApiClient) {
-    window.SerpApiClient = SerpApiClient;
+// 导出单例（支持浏览器和 Node.js 环境）
+const isBrowser = typeof window !== 'undefined';
+
+if (isBrowser) {
+    if (!window.serpApiClient) {
+        window.serpApiClient = new SerpApiClient();
+    }
+    if (!window.SerpApiClient) {
+        window.SerpApiClient = SerpApiClient;
+    }
 }
 
 // 支持模块化和全局使用
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { SerpApiClient, serpApiClient: window.serpApiClient };
+    const instance = isBrowser ? window.serpApiClient : new SerpApiClient();
+    module.exports = { SerpApiClient, serpApiClient: instance };
 }
