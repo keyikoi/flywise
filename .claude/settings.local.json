@@ -76,7 +76,12 @@
       "Bash(flyai search-flight:*)",
       "Bash(cd:*)",
       "Bash(node:*)",
-      "WebFetch(domain:serpapi.com)"
+      "WebFetch(domain:serpapi.com)",
+      "Bash(mkdir -p ~/.claude/plugins/cache/figma-design-system-to-design-md)",
+      "Bash(cp -r /Users/keyi/work/claude-code-test/figma-design-system-to-design-md/skills/* ~/.claude/plugins/cache/figma-design-system-to-design-md/)",
+      "Bash(find /Users/keyi/work/claude-code-test -name *fliggy* -o -name *sans*)",
+      "mcp__plugin_figma_figma__get_screenshot",
+      "Bash(ln -s ../.agents/skills/price-trend price-trend)"
     ]
   },
   "enableAllProjectMcpServers": true,
