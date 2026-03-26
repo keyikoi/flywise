@@ -21,6 +21,8 @@ const config = require('./config.json');
 
 // 引入航班服务（整合 SerpAPI 和 FlyAI）
 const { flightService, DataSource } = require('./api/flightService');
+// 引入图表生成器
+const { generatePriceChartWithStats } = require('./utils/chartGenerator');
 
 const app = express();
 const PORT = 3001;
@@ -1334,6 +1336,61 @@ app.post('/api/price-history', async (req, res) => {
     console.error('[Price History] 服务器错误:', error.message);
     res.status(500).json({
       error: '服务器内部错误',
+      message: error.message,
+    });
+  }
+});
+
+/**
+ * GET /api/chart/price-trend/:route.png
+ * 生成价格趋势图表（PNG 图片）
+ */
+app.get('/api/chart/price-trend/:route.png', async (req, res) => {
+  try {
+    const { route } = req.params;
+    const { origin, destination } = req.query;
+
+    // 获取价格历史数据
+    let priceHistory;
+    if (origin && destination) {
+      const history = await flightService.getPriceHistory({ origin, destination });
+      priceHistory = history?.priceHistory || [];
+    } else {
+      // 从 route 解析（如 HGH-PEK）
+      const [originFromRoute, destinationFromRoute] = route.split('-');
+      const history = await flightService.getPriceHistory({
+        origin: originFromRoute,
+        destination: destinationFromRoute,
+      });
+      priceHistory = history?.priceHistory || [];
+    }
+
+    if (!priceHistory || priceHistory.length === 0) {
+      return res.status(404).json({ error: '暂无价格历史数据' });
+    }
+
+    // 计算统计数据
+    const prices = priceHistory.map(p => p.price);
+    const currentPrice = prices[prices.length - 1];
+    const averagePrice = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+
+    // 生成图表
+    const chartBuffer = await generatePriceChartWithStats(priceHistory, {
+      currentPrice,
+      averagePrice,
+      minPrice,
+      maxPrice,
+    });
+
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=3600'); // 缓存 1 小时
+    res.send(chartBuffer);
+  } catch (error) {
+    console.error('[Chart API] 生成图表失败:', error.message);
+    res.status(500).json({
+      error: '图表生成失败',
       message: error.message,
     });
   }
