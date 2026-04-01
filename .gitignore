@@ -14,3 +14,33 @@ price/config.json
 vibe-coding-presentation.html
 vibe-coding-slides-content.md
 机票低价顾问 - AI航班助手.html
+
+# 不需要上传的 skills（只保留 price-summary 和 price-trend）
+.agents/skills/adapt/
+.agents/skills/animate/
+.agents/skills/arrange/
+.agents/skills/audit/
+.agents/skills/bolder/
+.agents/skills/clarify/
+.agents/skills/colorize/
+.agents/skills/critique/
+.agents/skills/delight/
+.agents/skills/distill/
+.agents/skills/extract/
+.agents/skills/flyai/
+.agents/skills/frontend-design/
+.agents/skills/harden/
+.agents/skills/normalize/
+.agents/skills/onboard/
+.agents/skills/optimize/
+.agents/skills/overdrive/
+.agents/skills/polish/
+.agents/skills/quieter/
+.agents/skills/teach-impeccable/
+.agents/skills/typeset/
+
+# 不需要上传的配置目录
+.claude/
+.qoder/
+.impeccable.md
+.mcp.json
