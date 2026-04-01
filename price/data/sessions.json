@@ -16562,6 +16562,2765 @@
           }
         }
       ]
+    },
+    {
+      "id": "2b34f842-9023-4621-867b-638e6f42b648",
+      "title": "杭州→曼谷航班查询",
+      "createdAt": "2026-03-27T02:14:48.136Z",
+      "updatedAt": "2026-03-27T02:19:38.629Z",
+      "messages": [
+        {
+          "role": "user",
+          "content": "5.5杭州去曼谷的机票"
+        },
+        {
+          "role": "assistant",
+          "content": "您好！感谢您的咨询～  \n\n目前系统暂未能查询到从杭州到曼谷、出发日期为2026年5月5日的航班信息。这可能是因为：  \n- 航空公司尚未开放2026年夏季（5月）的航班预订（通常提前6–12个月开放）；  \n- 系统数据同步存在延迟。  \n\n建议您：  \n✅ 稍后（例如10–15分钟后）重新尝试搜索；  \n✅ 关注航空公司官网或靠谱预订平台（如飞猪、携程、Google Flights），他们通常会提前开放预订；  \n✅ 如需帮助，我可以帮您设置提醒或提供常见航司参考（如厦航、泰航、南航等有该航线）。  \n\n祝您旅途愉快，期待下次为您成功订到心仪航班！✈️",
+          "data": {
+            "type": "flights",
+            "error": "航班搜索暂时不可用"
+          }
+        },
+        {
+          "role": "user",
+          "content": "4.5杭州去曼谷的机票"
+        },
+        {
+          "role": "assistant",
+          "content": "您好！感谢您的关注～  \n目前系统显示，从杭州到曼谷、日期为2026年4月5日的航班搜索暂未成功。这可能是因为：\n\n- 航空公司尚未开放该日期的航班查询（部分航司通常在起飞前330天左右开放预订）；\n- 该日期较远，相关航班信息尚未录入系统；\n- 网络或系统临时波动导致查询失败。\n\n建议您：\n✅ 稍后5–10分钟再尝试搜索一次  \n✅ 稍微调整日期（如前后±1天）看是否能查到结果  \n✅ 建议在航班开放预订后（通常提前2–3个月）再进行正式搜索与预订\n\n如有其他需求，比如需要设置航班提醒或获取常见航线参考信息，我随时为您协助！😊  \n祝您旅途顺利～",
+          "data": {
+            "type": "flights",
+            "error": "航班搜索暂时不可用"
+          }
+        },
+        {
+          "role": "user",
+          "content": "5.5杭州去曼谷的机票"
+        },
+        {
+          "role": "assistant",
+          "content": "您好！感谢您的留言～  \n\n您尝试搜索从杭州到曼谷、日期为2026年5月5日的航班时未能成功，很抱歉给您带来了不便 😊  \n\n可能的原因包括：  \n- 航空公司尚未开放该日期的航班预订（通常航班信息会提前6–12个月上线）；  \n- 系统暂未同步2026年的航班时刻表；  \n- 个别航线在该日期暂无直飞或中转航班信息。  \n\n建议您：  \n✅ 稍后再试（比如第二天或隔几小时）；  \n✅ 尝试将日期灵活调整为5月4日或5月6日，查看是否有可选航班；  \n✅ 关注航空公司官网或使用支持“价格提醒”功能的平台，设置提醒以便开售时及时预订～  \n\n祝您旅途顺利，期待早日帮您找到理想的航班！✈️  \n需要我帮您查一下其他相近日期的参考信息吗？ 😊",
+          "data": {
+            "type": "flights",
+            "error": "航班搜索暂时不可用"
+          }
+        }
+      ]
+    },
+    {
+      "id": "941c5c35-c492-4d6c-a52d-4e0446b5c400",
+      "title": "上海→东京航班查询",
+      "createdAt": "2026-03-27T02:18:33.083Z",
+      "updatedAt": "2026-03-27T02:18:35.326Z",
+      "messages": [
+        {
+          "role": "user",
+          "content": "帮我查去东京的机票"
+        },
+        {
+          "role": "assistant",
+          "content": "上海→东京 **3月28日** 航班精选 ✈️  \n¥5402起，含**最快直达（2h35m）**、**价格最低**及**综合最优**三款推荐，兼顾效率与性价比 🌟",
+          "data": {
+            "type": "flights",
+            "extraction": {
+              "origin": "PVG",
+              "originCity": "上海",
+              "destination": "NRT",
+              "destinationCity": "东京",
+              "departDate": "2026-03-28",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "flights": [
+              {
+                "id": 4,
+                "airline": "国泰航空",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/CX.png",
+                "airline_code": "国泰",
+                "flight_number": "CX 381",
+                "origin": "PVG",
+                "origin_name": "上海浦东国际机场",
+                "destination": "NRT",
+                "destination_name": "成田国际机场",
+                "depart_time": "19:05",
+                "arrive_time": "14:30",
+                "duration": "18h25m",
+                "total_duration_minutes": 1105,
+                "price": 5402,
+                "currency": "CNY",
+                "stops": 1,
+                "stop_cities": [
+                  "香港國際機場"
+                ],
+                "layoverDurationFormatted": "11h0m",
+                "source": "serpapi",
+                "tag": "cheapest",
+                "tagLabel": "价格最低",
+                "recommendation": "¥5402，比均价低¥6537"
+              },
+              {
+                "id": 3,
+                "airline": "吉祥航空",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/HO.png",
+                "airline_code": "吉祥",
+                "flight_number": "HO 1379",
+                "origin": "PVG",
+                "origin_name": "上海浦东国际机场",
+                "destination": "NRT",
+                "destination_name": "成田国际机场",
+                "depart_time": "08:25",
+                "arrive_time": "12:00",
+                "duration": "2h35m",
+                "total_duration_minutes": 155,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "layoverDurationFormatted": "",
+                "source": "serpapi",
+                "tag": "fastest",
+                "tagLabel": "耗时最短",
+                "recommendation": "2h35m直达，最快到达"
+              },
+              {
+                "id": 1,
+                "airline": "春航",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/9C.png",
+                "airline_code": "春航",
+                "flight_number": "9C 6217",
+                "origin": "PVG",
+                "origin_name": "上海浦东国际机场",
+                "destination": "NRT",
+                "destination_name": "成田国际机场",
+                "depart_time": "15:00",
+                "arrive_time": "18:40",
+                "duration": "2h40m",
+                "total_duration_minutes": 160,
+                "price": 7832,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "layoverDurationFormatted": "",
+                "source": "serpapi",
+                "tag": "best",
+                "tagLabel": "综合最优",
+                "recommendation": "价格适中、时间合理，综合推荐"
+              }
+            ],
+            "priceInsights": {
+              "lowestPrice": 5402,
+              "priceLevel": "high",
+              "typicalPriceRange": [
+                740,
+                2600
+              ],
+              "priceHistory": [
+                [
+                  1769270400,
+                  1230
+                ],
+                [
+                  1769356800,
+                  1230
+                ],
+                [
+                  1769443200,
+                  1230
+                ],
+                [
+                  1769529600,
+                  1230
+                ],
+                [
+                  1769616000,
+                  1085
+                ],
+                [
+                  1769702400,
+                  1230
+                ],
+                [
+                  1769788800,
+                  1230
+                ],
+                [
+                  1769875200,
+                  1230
+                ],
+                [
+                  1769961600,
+                  1230
+                ],
+                [
+                  1770048000,
+                  1230
+                ],
+                [
+                  1770134400,
+                  1230
+                ],
+                [
+                  1770220800,
+                  1230
+                ],
+                [
+                  1770307200,
+                  1375
+                ],
+                [
+                  1770393600,
+                  1375
+                ],
+                [
+                  1770480000,
+                  1230
+                ],
+                [
+                  1770566400,
+                  1230
+                ],
+                [
+                  1770652800,
+                  1230
+                ],
+                [
+                  1770739200,
+                  1230
+                ],
+                [
+                  1770825600,
+                  1375
+                ],
+                [
+                  1770912000,
+                  1230
+                ],
+                [
+                  1770998400,
+                  1230
+                ],
+                [
+                  1771084800,
+                  1230
+                ],
+                [
+                  1771171200,
+                  1375
+                ],
+                [
+                  1771257600,
+                  1375
+                ],
+                [
+                  1771344000,
+                  1375
+                ],
+                [
+                  1771430400,
+                  1375
+                ],
+                [
+                  1771516800,
+                  1375
+                ],
+                [
+                  1771603200,
+                  1375
+                ],
+                [
+                  1771689600,
+                  1230
+                ],
+                [
+                  1771776000,
+                  1375
+                ],
+                [
+                  1771862400,
+                  1375
+                ],
+                [
+                  1771948800,
+                  1375
+                ],
+                [
+                  1772035200,
+                  1525
+                ],
+                [
+                  1772121600,
+                  1662
+                ],
+                [
+                  1772208000,
+                  1695
+                ],
+                [
+                  1772294400,
+                  1695
+                ],
+                [
+                  1772380800,
+                  1695
+                ],
+                [
+                  1772467200,
+                  1865
+                ],
+                [
+                  1772553600,
+                  2035
+                ],
+                [
+                  1772640000,
+                  2215
+                ],
+                [
+                  1772726400,
+                  2611
+                ],
+                [
+                  1772812800,
+                  2215
+                ],
+                [
+                  1772899200,
+                  2611
+                ],
+                [
+                  1772985600,
+                  2611
+                ],
+                [
+                  1773072000,
+                  2611
+                ],
+                [
+                  1773158400,
+                  2611
+                ],
+                [
+                  1773244800,
+                  3066
+                ],
+                [
+                  1773331200,
+                  3261
+                ],
+                [
+                  1773417600,
+                  3492
+                ],
+                [
+                  1773504000,
+                  3501
+                ],
+                [
+                  1773590400,
+                  3501
+                ],
+                [
+                  1773676800,
+                  4105
+                ],
+                [
+                  1773763200,
+                  4075
+                ],
+                [
+                  1773849600,
+                  4390
+                ],
+                [
+                  1773936000,
+                  5389
+                ],
+                [
+                  1774022400,
+                  5400
+                ],
+                [
+                  1774108800,
+                  5402
+                ],
+                [
+                  1774195200,
+                  5402
+                ],
+                [
+                  1774281600,
+                  5402
+                ],
+                [
+                  1774368000,
+                  6902
+                ],
+                [
+                  1774454400,
+                  6902
+                ],
+                [
+                  1774540800,
+                  5402
+                ]
+              ]
+            },
+            "searchParams": {
+              "origin": "PVG",
+              "originCity": "上海",
+              "destination": "NRT",
+              "destinationCity": "东京",
+              "departDate": "2026-03-28",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "totalFlightsFound": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "cff11693-cd69-4c13-925e-f1e463614b0f",
+      "title": "新会话",
+      "createdAt": "2026-03-27T02:20:10.452Z",
+      "updatedAt": "2026-03-27T02:20:35.308Z",
+      "messages": [
+        {
+          "role": "user",
+          "content": "杭州去曼谷 5 月 5 日"
+        },
+        {
+          "role": "assistant",
+          "content": "您好！很抱歉，目前暂时无法为您查询到2026年5月5日从杭州到曼谷的航班信息 😊\n\n这可能是因为：\n- 航空公司通常只开放未来6–12个月的航班预订（2026年5月的航班可能尚未开放销售）；\n- 系统暂未同步该航线在2026年的航班时刻表；\n- 该日期较远，部分航司尚未开放查询。\n\n建议您：\n✅ 稍后（例如2025年12月左右）再尝试搜索，那时更多航班信息会开放；  \n✅ 可先关注机票提醒功能，设置目标日期后，一旦有开放可订票会及时通知您；  \n✅ 也可考虑临近日期（如5月4日或5月6日）进行参考查询。\n\n如有其他需求，欢迎随时告诉我，我会尽力协助您～ 🌟",
+          "data": {
+            "type": "flights",
+            "error": "航班搜索暂时不可用"
+          }
+        },
+        {
+          "role": "user",
+          "content": "5.5 纽约到波士顿的机票"
+        },
+        {
+          "role": "assistant",
+          "content": "纽约→波士顿 **5月5日** 航班精选 ✈️  \n14班可选，**¥508** 起！  \n✅ 价格最低｜✅ 耗时最短（1h10m）｜✅ 综合最优——三款高性价比直达航班为您推荐",
+          "data": {
+            "type": "flights",
+            "extraction": {
+              "origin": "JFK",
+              "originCity": "纽约",
+              "destination": "BOS",
+              "destinationCity": "波士顿",
+              "departDate": "2026-05-05",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "flights": [
+              {
+                "id": 1,
+                "airline": "美航",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AA.png",
+                "airline_code": "美航",
+                "flight_number": "AA 4667",
+                "origin": "JFK",
+                "origin_name": "约翰·菲茨杰拉德·肯尼迪国际机场",
+                "destination": "BOS",
+                "destination_name": "爱德华·劳伦斯·洛根将军国际机场",
+                "depart_time": "09:40",
+                "arrive_time": "11:04",
+                "duration": "1h24m",
+                "total_duration_minutes": 84,
+                "price": 508,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "layoverDurationFormatted": "",
+                "source": "serpapi",
+                "tag": "cheapest",
+                "tagLabel": "价格最低",
+                "recommendation": "¥508，比均价低¥94"
+              },
+              {
+                "id": 5,
+                "airline": "捷蓝航空",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/B6.png",
+                "airline_code": "捷蓝",
+                "flight_number": "B6 118",
+                "origin": "JFK",
+                "origin_name": "约翰·菲茨杰拉德·肯尼迪国际机场",
+                "destination": "BOS",
+                "destination_name": "爱德华·劳伦斯·洛根将军国际机场",
+                "depart_time": "06:30",
+                "arrive_time": "07:40",
+                "duration": "1h10m",
+                "total_duration_minutes": 70,
+                "price": 508,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "layoverDurationFormatted": "",
+                "source": "serpapi",
+                "tag": "fastest",
+                "tagLabel": "耗时最短",
+                "recommendation": "1h10m直达，最快到达"
+              },
+              {
+                "id": 3,
+                "airline": "捷蓝航空",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/B6.png",
+                "airline_code": "捷蓝",
+                "flight_number": "B6 418",
+                "origin": "JFK",
+                "origin_name": "约翰·菲茨杰拉德·肯尼迪国际机场",
+                "destination": "BOS",
+                "destination_name": "爱德华·劳伦斯·洛根将军国际机场",
+                "depart_time": "13:00",
+                "arrive_time": "14:16",
+                "duration": "1h16m",
+                "total_duration_minutes": 76,
+                "price": 508,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "layoverDurationFormatted": "",
+                "source": "serpapi",
+                "tag": "best",
+                "tagLabel": "综合最优",
+                "recommendation": "价格适中、时间合理，综合推荐"
+              }
+            ],
+            "priceInsights": {
+              "lowestPrice": 508,
+              "priceLevel": "low",
+              "typicalPriceRange": [
+                570,
+                770
+              ],
+              "priceHistory": [
+                [
+                  1769230800,
+                  652
+                ],
+                [
+                  1769317200,
+                  652
+                ],
+                [
+                  1769403600,
+                  652
+                ],
+                [
+                  1769490000,
+                  650
+                ],
+                [
+                  1769576400,
+                  650
+                ],
+                [
+                  1769662800,
+                  615
+                ],
+                [
+                  1769749200,
+                  614
+                ],
+                [
+                  1769835600,
+                  615
+                ],
+                [
+                  1769922000,
+                  615
+                ],
+                [
+                  1770008400,
+                  615
+                ],
+                [
+                  1770094800,
+                  614
+                ],
+                [
+                  1770181200,
+                  613
+                ],
+                [
+                  1770267600,
+                  613
+                ],
+                [
+                  1770354000,
+                  613
+                ],
+                [
+                  1770440400,
+                  613
+                ],
+                [
+                  1770526800,
+                  613
+                ],
+                [
+                  1770613200,
+                  613
+                ],
+                [
+                  1770699600,
+                  647
+                ],
+                [
+                  1770786000,
+                  645
+                ],
+                [
+                  1770872400,
+                  646
+                ],
+                [
+                  1770958800,
+                  645
+                ],
+                [
+                  1771045200,
+                  645
+                ],
+                [
+                  1771131600,
+                  645
+                ],
+                [
+                  1771218000,
+                  576
+                ],
+                [
+                  1771304400,
+                  576
+                ],
+                [
+                  1771390800,
+                  576
+                ],
+                [
+                  1771477200,
+                  576
+                ],
+                [
+                  1771563600,
+                  576
+                ],
+                [
+                  1771650000,
+                  576
+                ],
+                [
+                  1771736400,
+                  576
+                ],
+                [
+                  1771822800,
+                  576
+                ],
+                [
+                  1771909200,
+                  576
+                ],
+                [
+                  1771995600,
+                  574
+                ],
+                [
+                  1772082000,
+                  573
+                ],
+                [
+                  1772168400,
+                  502
+                ],
+                [
+                  1772254800,
+                  503
+                ],
+                [
+                  1772341200,
+                  503
+                ],
+                [
+                  1772427600,
+                  503
+                ],
+                [
+                  1772514000,
+                  505
+                ],
+                [
+                  1772600400,
+                  541
+                ],
+                [
+                  1772686800,
+                  541
+                ],
+                [
+                  1772773200,
+                  541
+                ],
+                [
+                  1772859600,
+                  506
+                ],
+                [
+                  1772946000,
+                  506
+                ],
+                [
+                  1773028800,
+                  506
+                ],
+                [
+                  1773115200,
+                  576
+                ],
+                [
+                  1773201600,
+                  574
+                ],
+                [
+                  1773288000,
+                  573
+                ],
+                [
+                  1773374400,
+                  573
+                ],
+                [
+                  1773460800,
+                  575
+                ],
+                [
+                  1773547200,
+                  575
+                ],
+                [
+                  1773633600,
+                  575
+                ],
+                [
+                  1773720000,
+                  580
+                ],
+                [
+                  1773806400,
+                  574
+                ],
+                [
+                  1773892800,
+                  573
+                ],
+                [
+                  1773979200,
+                  575
+                ],
+                [
+                  1774065600,
+                  574
+                ],
+                [
+                  1774152000,
+                  574
+                ],
+                [
+                  1774238400,
+                  574
+                ],
+                [
+                  1774324800,
+                  505
+                ],
+                [
+                  1774411200,
+                  506
+                ],
+                [
+                  1774497600,
+                  508
+                ]
+              ]
+            },
+            "searchParams": {
+              "origin": "JFK",
+              "originCity": "纽约",
+              "destination": "BOS",
+              "destinationCity": "波士顿",
+              "departDate": "2026-05-05",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "totalFlightsFound": 14
+          }
+        }
+      ]
+    },
+    {
+      "id": "afa322fe-f823-4778-840b-d8b1dee4a82c",
+      "title": "新会话",
+      "createdAt": "2026-03-27T02:22:43.482Z",
+      "updatedAt": "2026-03-27T02:22:57.328Z",
+      "messages": [
+        {
+          "role": "user",
+          "content": "杭州去曼谷 5 月 5 日"
+        },
+        {
+          "role": "assistant",
+          "content": "您好～很抱歉为您带来不便！目前系统暂时未能查询到从杭州到曼谷、2026年5月5日出发的航班信息，这可能是因为：\n\n- 航空公司尚未开放2026年5月的航班预订（通常提前6–11个月开放）；\n- 系统数据仍在更新中；\n- 该日期的航班计划可能尚未最终确定。\n\n建议您：\n✅ 稍后（比如10–30分钟后）再尝试搜索；  \n✅ 或将出发日期调整为2026年4月或6月，看看当前可预订的类似航线；  \n✅ 也可以关注航空公司官网或通过机票预订平台设置价格提醒哦！\n\n如有其他需求，我随时乐意帮您～祝您旅途顺利！✈️",
+          "data": {
+            "type": "flights",
+            "error": "航班搜索暂时不可用"
+          }
+        }
+      ]
+    },
+    {
+      "id": "6c9efa83-f54c-432d-a3cb-2c76b1c6e5d0",
+      "title": "北京→长沙航班查询",
+      "createdAt": "2026-03-27T02:31:58.016Z",
+      "updatedAt": "2026-03-27T02:32:00.011Z",
+      "messages": [
+        {
+          "role": "user",
+          "content": "下周北京到长沙机票"
+        },
+        {
+          "role": "assistant",
+          "content": "北京→长沙 **4月3日** 航班精选 🛫  \n价格区间 ¥700–900，含 **2h35m最快直达**（¥710）、**¥700最低价中转**（+¥306优惠）及 **¥900综合优选项**（新海航直达）",
+          "data": {
+            "type": "flights",
+            "extraction": {
+              "origin": "PEK",
+              "originCity": "北京",
+              "destination": "CSX",
+              "destinationCity": "长沙",
+              "departDate": "2026-04-03",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "flights": [
+              {
+                "id": "flyai-7-1774578718698",
+                "source": "flyai",
+                "airline": "国航",
+                "airline_code": "CA",
+                "flight_number": "CA1405",
+                "origin": "PEK",
+                "origin_name": "首都国际机场",
+                "destination": "CSX",
+                "destination_name": "黄花机场",
+                "depart_time": "07:30",
+                "arrive_time": "10:30",
+                "depart_datetime": "2026-04-03 07:30:00",
+                "arrive_datetime": "2026-04-03 10:30:00",
+                "duration": "6h35m",
+                "durationMinutes": 395,
+                "price": 700,
+                "currency": "CNY",
+                "stops": 1,
+                "stop_cities": [],
+                "journeyType": "中转",
+                "jumpUrl": "https://a.feizhu.com/2CiSFh",
+                "tag": "cheapest",
+                "tagLabel": "价格最低",
+                "recommendation": "¥700，比均价低¥306"
+              },
+              {
+                "id": "flyai-0-1774578718698",
+                "source": "flyai",
+                "airline": "国航",
+                "airline_code": "CA",
+                "flight_number": "CA1343",
+                "origin": "PEK",
+                "origin_name": "首都国际机场",
+                "destination": "CSX",
+                "destination_name": "黄花机场",
+                "depart_time": "06:45",
+                "arrive_time": "09:20",
+                "depart_datetime": "2026-04-03 06:45:00",
+                "arrive_datetime": "2026-04-03 09:20:00",
+                "duration": "2h35m",
+                "durationMinutes": 155,
+                "price": 710,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "journeyType": "直达",
+                "jumpUrl": "https://a.feizhu.com/3ggoWb",
+                "tag": "fastest",
+                "tagLabel": "耗时最短",
+                "recommendation": "2h35m直达，最快到达"
+              },
+              {
+                "id": "flyai-1-1774578718698",
+                "source": "flyai",
+                "airline": "新海航|海南航空",
+                "airline_code": "HU",
+                "flight_number": "HU7335",
+                "origin": "PEK",
+                "origin_name": "首都国际机场",
+                "destination": "CSX",
+                "destination_name": "黄花机场",
+                "depart_time": "11:55",
+                "arrive_time": "14:35",
+                "depart_datetime": "2026-04-03 11:55:00",
+                "arrive_datetime": "2026-04-03 14:35:00",
+                "duration": "2h40m",
+                "durationMinutes": 160,
+                "price": 900,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "journeyType": "直达",
+                "jumpUrl": "https://a.feizhu.com/1UweOy",
+                "tag": "best",
+                "tagLabel": "综合最优",
+                "recommendation": "价格适中、时间合理，综合推荐"
+              }
+            ],
+            "priceInsights": {
+              "lowestPrice": 115,
+              "priceLevel": "low",
+              "typicalPriceRange": [
+                87,
+                1285
+              ],
+              "priceHistory": [
+                [
+                  1770508800,
+                  910
+                ],
+                [
+                  1770595200,
+                  946
+                ],
+                [
+                  1770681600,
+                  1012
+                ],
+                [
+                  1770768000,
+                  1164
+                ],
+                [
+                  1770854400,
+                  1215
+                ],
+                [
+                  1770940800,
+                  1285
+                ],
+                [
+                  1771027200,
+                  1197
+                ],
+                [
+                  1771113600,
+                  1006
+                ],
+                [
+                  1771200000,
+                  590
+                ],
+                [
+                  1771286400,
+                  601
+                ],
+                [
+                  1771372800,
+                  584
+                ],
+                [
+                  1771459200,
+                  623
+                ],
+                [
+                  1771545600,
+                  566
+                ],
+                [
+                  1771632000,
+                  601
+                ],
+                [
+                  1771718400,
+                  653
+                ],
+                [
+                  1771804800,
+                  625
+                ],
+                [
+                  1771891200,
+                  488
+                ],
+                [
+                  1771977600,
+                  460
+                ],
+                [
+                  1772064000,
+                  421
+                ],
+                [
+                  1772150400,
+                  364
+                ],
+                [
+                  1772236800,
+                  416
+                ],
+                [
+                  1772323200,
+                  372
+                ],
+                [
+                  1772409600,
+                  159
+                ],
+                [
+                  1772496000,
+                  534
+                ],
+                [
+                  1772582400,
+                  316
+                ],
+                [
+                  1772668800,
+                  147
+                ],
+                [
+                  1772755200,
+                  214
+                ],
+                [
+                  1772841600,
+                  243
+                ],
+                [
+                  1772928000,
+                  87
+                ],
+                [
+                  1773014400,
+                  150
+                ],
+                [
+                  1773100800,
+                  608
+                ],
+                [
+                  1773187200,
+                  405
+                ],
+                [
+                  1773273600,
+                  704
+                ],
+                [
+                  1773360000,
+                  115
+                ]
+              ],
+              "dataSource": "自有数据",
+              "currentPrice": 115
+            },
+            "searchParams": {
+              "origin": "PEK",
+              "originCity": "北京",
+              "destination": "CSX",
+              "destinationCity": "长沙",
+              "departDate": "2026-04-03",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "totalFlightsFound": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "667bd69c-4595-4136-a9fb-e1caa5dec3cd",
+      "title": "上海→曼谷航班查询",
+      "createdAt": "2026-03-27T02:32:29.368Z",
+      "updatedAt": "2026-03-27T02:32:32.169Z",
+      "messages": [
+        {
+          "role": "user",
+          "content": "下周去曼谷的机票"
+        },
+        {
+          "role": "assistant",
+          "content": "上海→曼谷 **4月3日** 航班精选 🛫  \n直达航班共16班，**¥1464起**，含价格最低、耗时最短（4h25m）及综合最优三款推荐 ✅",
+          "data": {
+            "type": "flights",
+            "extraction": {
+              "origin": "PVG",
+              "originCity": "上海",
+              "destination": "BKK",
+              "destinationCity": "曼谷",
+              "departDate": "2026-04-03",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "flights": [
+              {
+                "id": 1,
+                "airline": "春航",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/9C.png",
+                "airline_code": "春航",
+                "flight_number": "9C 7281",
+                "origin": "PVG",
+                "origin_name": "上海浦东国际机场",
+                "destination": "BKK",
+                "destination_name": "素万那普机场",
+                "depart_time": "12:00",
+                "arrive_time": "15:35",
+                "duration": "4h35m",
+                "total_duration_minutes": 275,
+                "price": 1464,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "layoverDurationFormatted": "",
+                "source": "serpapi",
+                "tag": "cheapest",
+                "tagLabel": "价格最低",
+                "recommendation": "¥1464，比均价低¥392"
+              },
+              {
+                "id": 11,
+                "airline": "东航",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/MU.png",
+                "airline_code": "东航",
+                "flight_number": "MU 541",
+                "origin": "PVG",
+                "origin_name": "上海浦东国际机场",
+                "destination": "BKK",
+                "destination_name": "素万那普机场",
+                "depart_time": "09:05",
+                "arrive_time": "12:30",
+                "duration": "4h25m",
+                "total_duration_minutes": 265,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "layoverDurationFormatted": "",
+                "source": "serpapi",
+                "tag": "fastest",
+                "tagLabel": "耗时最短",
+                "recommendation": "4h25m直达，最快到达"
+              },
+              {
+                "id": 2,
+                "airline": "春航",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/9C.png",
+                "airline_code": "春航",
+                "flight_number": "9C 7285",
+                "origin": "PVG",
+                "origin_name": "上海浦东国际机场",
+                "destination": "BKK",
+                "destination_name": "素万那普机场",
+                "depart_time": "17:00",
+                "arrive_time": "20:30",
+                "duration": "4h30m",
+                "total_duration_minutes": 270,
+                "price": 1464,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "layoverDurationFormatted": "",
+                "source": "serpapi",
+                "tag": "best",
+                "tagLabel": "综合最优",
+                "recommendation": "价格适中、时间合理，综合推荐"
+              }
+            ],
+            "priceInsights": {
+              "lowestPrice": 1464,
+              "priceLevel": "high",
+              "typicalPriceRange": [
+                740,
+                1300
+              ],
+              "priceHistory": [
+                [
+                  1769270400,
+                  864
+                ],
+                [
+                  1769356800,
+                  864
+                ],
+                [
+                  1769443200,
+                  864
+                ],
+                [
+                  1769529600,
+                  864
+                ],
+                [
+                  1769616000,
+                  864
+                ],
+                [
+                  1769702400,
+                  864
+                ],
+                [
+                  1769788800,
+                  864
+                ],
+                [
+                  1769875200,
+                  864
+                ],
+                [
+                  1769961600,
+                  864
+                ],
+                [
+                  1770048000,
+                  864
+                ],
+                [
+                  1770134400,
+                  864
+                ],
+                [
+                  1770220800,
+                  864
+                ],
+                [
+                  1770307200,
+                  864
+                ],
+                [
+                  1770393600,
+                  864
+                ],
+                [
+                  1770480000,
+                  864
+                ],
+                [
+                  1770566400,
+                  864
+                ],
+                [
+                  1770652800,
+                  864
+                ],
+                [
+                  1770739200,
+                  864
+                ],
+                [
+                  1770825600,
+                  864
+                ],
+                [
+                  1770912000,
+                  864
+                ],
+                [
+                  1770998400,
+                  864
+                ],
+                [
+                  1771084800,
+                  864
+                ],
+                [
+                  1771171200,
+                  864
+                ],
+                [
+                  1771257600,
+                  864
+                ],
+                [
+                  1771344000,
+                  864
+                ],
+                [
+                  1771430400,
+                  864
+                ],
+                [
+                  1771516800,
+                  864
+                ],
+                [
+                  1771603200,
+                  864
+                ],
+                [
+                  1771689600,
+                  864
+                ],
+                [
+                  1771776000,
+                  864
+                ],
+                [
+                  1771862400,
+                  802
+                ],
+                [
+                  1771948800,
+                  802
+                ],
+                [
+                  1772035200,
+                  802
+                ],
+                [
+                  1772121600,
+                  802
+                ],
+                [
+                  1772208000,
+                  802
+                ],
+                [
+                  1772294400,
+                  802
+                ],
+                [
+                  1772380800,
+                  802
+                ],
+                [
+                  1772467200,
+                  802
+                ],
+                [
+                  1772553600,
+                  883
+                ],
+                [
+                  1772640000,
+                  885
+                ],
+                [
+                  1772726400,
+                  802
+                ],
+                [
+                  1772812800,
+                  802
+                ],
+                [
+                  1772899200,
+                  1242
+                ],
+                [
+                  1772985600,
+                  1242
+                ],
+                [
+                  1773072000,
+                  802
+                ],
+                [
+                  1773158400,
+                  802
+                ],
+                [
+                  1773244800,
+                  1234
+                ],
+                [
+                  1773331200,
+                  1264
+                ],
+                [
+                  1773417600,
+                  1242
+                ],
+                [
+                  1773504000,
+                  1242
+                ],
+                [
+                  1773590400,
+                  1264
+                ],
+                [
+                  1773676800,
+                  1264
+                ],
+                [
+                  1773763200,
+                  1264
+                ],
+                [
+                  1773849600,
+                  1264
+                ],
+                [
+                  1773936000,
+                  1264
+                ],
+                [
+                  1774022400,
+                  1264
+                ],
+                [
+                  1774108800,
+                  1264
+                ],
+                [
+                  1774195200,
+                  1464
+                ],
+                [
+                  1774281600,
+                  982
+                ],
+                [
+                  1774368000,
+                  1464
+                ],
+                [
+                  1774454400,
+                  1464
+                ],
+                [
+                  1774540800,
+                  1464
+                ]
+              ]
+            },
+            "searchParams": {
+              "origin": "PVG",
+              "originCity": "上海",
+              "destination": "BKK",
+              "destinationCity": "曼谷",
+              "departDate": "2026-04-03",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "totalFlightsFound": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "7e67b963-cc1a-4af5-8975-0299528cbca8",
+      "title": "上海→东京航班查询",
+      "createdAt": "2026-03-27T02:32:47.094Z",
+      "updatedAt": "2026-03-27T02:32:49.950Z",
+      "messages": [
+        {
+          "role": "user",
+          "content": "帮我查去东京的机票"
+        },
+        {
+          "role": "assistant",
+          "content": "上海→东京 **3月28日** 航班精选 🛫  \n直达航班仅 **¥7832 起**，最快仅 **2h35m**；含中转选项低至 **¥5402**，综合推荐兼顾时间与性价比 ✅",
+          "data": {
+            "type": "flights",
+            "extraction": {
+              "origin": "PVG",
+              "originCity": "上海",
+              "destination": "NRT",
+              "destinationCity": "东京",
+              "departDate": "2026-03-28",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "flights": [
+              {
+                "id": 4,
+                "airline": "国泰航空",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/CX.png",
+                "airline_code": "国泰",
+                "flight_number": "CX 381",
+                "origin": "PVG",
+                "origin_name": "上海浦东国际机场",
+                "destination": "NRT",
+                "destination_name": "成田国际机场",
+                "depart_time": "19:05",
+                "arrive_time": "14:30",
+                "duration": "18h25m",
+                "total_duration_minutes": 1105,
+                "price": 5402,
+                "currency": "CNY",
+                "stops": 1,
+                "stop_cities": [
+                  "香港國際機場"
+                ],
+                "layoverDurationFormatted": "11h0m",
+                "source": "serpapi",
+                "tag": "cheapest",
+                "tagLabel": "价格最低",
+                "recommendation": "¥5402，比均价低¥6537"
+              },
+              {
+                "id": 3,
+                "airline": "吉祥航空",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/HO.png",
+                "airline_code": "吉祥",
+                "flight_number": "HO 1379",
+                "origin": "PVG",
+                "origin_name": "上海浦东国际机场",
+                "destination": "NRT",
+                "destination_name": "成田国际机场",
+                "depart_time": "08:25",
+                "arrive_time": "12:00",
+                "duration": "2h35m",
+                "total_duration_minutes": 155,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "layoverDurationFormatted": "",
+                "source": "serpapi",
+                "tag": "fastest",
+                "tagLabel": "耗时最短",
+                "recommendation": "2h35m直达，最快到达"
+              },
+              {
+                "id": 1,
+                "airline": "春航",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/9C.png",
+                "airline_code": "春航",
+                "flight_number": "9C 6217",
+                "origin": "PVG",
+                "origin_name": "上海浦东国际机场",
+                "destination": "NRT",
+                "destination_name": "成田国际机场",
+                "depart_time": "15:00",
+                "arrive_time": "18:40",
+                "duration": "2h40m",
+                "total_duration_minutes": 160,
+                "price": 7832,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "layoverDurationFormatted": "",
+                "source": "serpapi",
+                "tag": "best",
+                "tagLabel": "综合最优",
+                "recommendation": "价格适中、时间合理，综合推荐"
+              }
+            ],
+            "priceInsights": {
+              "lowestPrice": 5402,
+              "priceLevel": "high",
+              "typicalPriceRange": [
+                740,
+                2600
+              ],
+              "priceHistory": [
+                [
+                  1769270400,
+                  1230
+                ],
+                [
+                  1769356800,
+                  1230
+                ],
+                [
+                  1769443200,
+                  1230
+                ],
+                [
+                  1769529600,
+                  1230
+                ],
+                [
+                  1769616000,
+                  1085
+                ],
+                [
+                  1769702400,
+                  1230
+                ],
+                [
+                  1769788800,
+                  1230
+                ],
+                [
+                  1769875200,
+                  1230
+                ],
+                [
+                  1769961600,
+                  1230
+                ],
+                [
+                  1770048000,
+                  1230
+                ],
+                [
+                  1770134400,
+                  1230
+                ],
+                [
+                  1770220800,
+                  1230
+                ],
+                [
+                  1770307200,
+                  1375
+                ],
+                [
+                  1770393600,
+                  1375
+                ],
+                [
+                  1770480000,
+                  1230
+                ],
+                [
+                  1770566400,
+                  1230
+                ],
+                [
+                  1770652800,
+                  1230
+                ],
+                [
+                  1770739200,
+                  1230
+                ],
+                [
+                  1770825600,
+                  1375
+                ],
+                [
+                  1770912000,
+                  1230
+                ],
+                [
+                  1770998400,
+                  1230
+                ],
+                [
+                  1771084800,
+                  1230
+                ],
+                [
+                  1771171200,
+                  1375
+                ],
+                [
+                  1771257600,
+                  1375
+                ],
+                [
+                  1771344000,
+                  1375
+                ],
+                [
+                  1771430400,
+                  1375
+                ],
+                [
+                  1771516800,
+                  1375
+                ],
+                [
+                  1771603200,
+                  1375
+                ],
+                [
+                  1771689600,
+                  1230
+                ],
+                [
+                  1771776000,
+                  1375
+                ],
+                [
+                  1771862400,
+                  1375
+                ],
+                [
+                  1771948800,
+                  1375
+                ],
+                [
+                  1772035200,
+                  1525
+                ],
+                [
+                  1772121600,
+                  1662
+                ],
+                [
+                  1772208000,
+                  1695
+                ],
+                [
+                  1772294400,
+                  1695
+                ],
+                [
+                  1772380800,
+                  1695
+                ],
+                [
+                  1772467200,
+                  1865
+                ],
+                [
+                  1772553600,
+                  2035
+                ],
+                [
+                  1772640000,
+                  2215
+                ],
+                [
+                  1772726400,
+                  2611
+                ],
+                [
+                  1772812800,
+                  2215
+                ],
+                [
+                  1772899200,
+                  2611
+                ],
+                [
+                  1772985600,
+                  2611
+                ],
+                [
+                  1773072000,
+                  2611
+                ],
+                [
+                  1773158400,
+                  2611
+                ],
+                [
+                  1773244800,
+                  3066
+                ],
+                [
+                  1773331200,
+                  3261
+                ],
+                [
+                  1773417600,
+                  3492
+                ],
+                [
+                  1773504000,
+                  3501
+                ],
+                [
+                  1773590400,
+                  3501
+                ],
+                [
+                  1773676800,
+                  4105
+                ],
+                [
+                  1773763200,
+                  4075
+                ],
+                [
+                  1773849600,
+                  4390
+                ],
+                [
+                  1773936000,
+                  5389
+                ],
+                [
+                  1774022400,
+                  5400
+                ],
+                [
+                  1774108800,
+                  5402
+                ],
+                [
+                  1774195200,
+                  5402
+                ],
+                [
+                  1774281600,
+                  5402
+                ],
+                [
+                  1774368000,
+                  6902
+                ],
+                [
+                  1774454400,
+                  6902
+                ],
+                [
+                  1774540800,
+                  5402
+                ]
+              ]
+            },
+            "searchParams": {
+              "origin": "PVG",
+              "originCity": "上海",
+              "destination": "NRT",
+              "destinationCity": "东京",
+              "departDate": "2026-03-28",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "totalFlightsFound": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "1c672f1a-2b46-4383-af15-b02a7b70bc0c",
+      "title": "纽约→洛杉矶航班查询",
+      "createdAt": "2026-03-27T03:53:00.137Z",
+      "updatedAt": "2026-03-27T03:53:03.557Z",
+      "messages": [
+        {
+          "role": "user",
+          "content": "查明天纽约到洛杉矶的机票"
+        },
+        {
+          "role": "assistant",
+          "content": "纽约→洛杉矶 **3月28日** 航班精选 ✈️  \n共30班，精选3班高性价比之选：  \n- **¥2005起**（边疆航空，1停）  \n- **6h17m最快直达**（达美）  \n- **综合最优**：时间合理+价格适中（捷蓝）",
+          "data": {
+            "type": "flights",
+            "extraction": {
+              "origin": "JFK",
+              "originCity": "纽约",
+              "destination": "LAX",
+              "destinationCity": "洛杉矶",
+              "departDate": "2026-03-28",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "flights": [
+              {
+                "id": 1,
+                "airline": "边疆航空",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/F9.png",
+                "airline_code": "边疆",
+                "flight_number": "F9 1043",
+                "origin": "JFK",
+                "origin_name": "约翰·菲茨杰拉德·肯尼迪国际机场",
+                "destination": "LAX",
+                "destination_name": "洛杉矶国际机场",
+                "depart_time": "16:29",
+                "arrive_time": "22:06",
+                "duration": "8h37m",
+                "total_duration_minutes": 517,
+                "price": 2005,
+                "currency": "CNY",
+                "stops": 1,
+                "stop_cities": [
+                  "奥黑尔"
+                ],
+                "layoverDurationFormatted": "1h10m",
+                "source": "serpapi",
+                "tag": "cheapest",
+                "tagLabel": "价格最低",
+                "recommendation": "¥2005，比均价低¥2996"
+              },
+              {
+                "id": 22,
+                "airline": "达美航空",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/DL.png",
+                "airline_code": "达美",
+                "flight_number": "DL 747",
+                "origin": "JFK",
+                "origin_name": "约翰·菲茨杰拉德·肯尼迪国际机场",
+                "destination": "LAX",
+                "destination_name": "洛杉矶国际机场",
+                "depart_time": "12:30",
+                "arrive_time": "15:47",
+                "duration": "6h17m",
+                "total_duration_minutes": 377,
+                "price": 5035,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "layoverDurationFormatted": "",
+                "source": "serpapi",
+                "tag": "fastest",
+                "tagLabel": "耗时最短",
+                "recommendation": "6h17m直达，最快到达"
+              },
+              {
+                "id": 2,
+                "airline": "捷蓝航空",
+                "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/B6.png",
+                "airline_code": "捷蓝",
+                "flight_number": "B6 2715",
+                "origin": "JFK",
+                "origin_name": "约翰·菲茨杰拉德·肯尼迪国际机场",
+                "destination": "LAX",
+                "destination_name": "洛杉矶国际机场",
+                "depart_time": "17:05",
+                "arrive_time": "20:31",
+                "duration": "6h26m",
+                "total_duration_minutes": 386,
+                "price": 2505,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "layoverDurationFormatted": "",
+                "source": "serpapi",
+                "tag": "best",
+                "tagLabel": "综合最优",
+                "recommendation": "价格适中、时间合理，综合推荐"
+              }
+            ],
+            "priceInsights": {
+              "lowestPrice": 2005,
+              "priceLevel": "high",
+              "typicalPriceRange": [
+                740,
+                1600
+              ],
+              "priceHistory": [
+                [
+                  1769317200,
+                  1313
+                ],
+                [
+                  1769403600,
+                  1313
+                ],
+                [
+                  1769490000,
+                  1309
+                ],
+                [
+                  1769576400,
+                  1239
+                ],
+                [
+                  1769662800,
+                  1239
+                ],
+                [
+                  1769749200,
+                  1447
+                ],
+                [
+                  1769835600,
+                  1693
+                ],
+                [
+                  1769922000,
+                  1693
+                ],
+                [
+                  1770008400,
+                  1693
+                ],
+                [
+                  1770094800,
+                  1437
+                ],
+                [
+                  1770181200,
+                  1574
+                ],
+                [
+                  1770267600,
+                  1574
+                ],
+                [
+                  1770354000,
+                  892
+                ],
+                [
+                  1770440400,
+                  1404
+                ],
+                [
+                  1770526800,
+                  1273
+                ],
+                [
+                  1770613200,
+                  1481
+                ],
+                [
+                  1770699600,
+                  1513
+                ],
+                [
+                  1770786000,
+                  1717
+                ],
+                [
+                  1770872400,
+                  1001
+                ],
+                [
+                  1770958800,
+                  1001
+                ],
+                [
+                  1771045200,
+                  1002
+                ],
+                [
+                  1771131600,
+                  922
+                ],
+                [
+                  1771218000,
+                  1717
+                ],
+                [
+                  1771304400,
+                  1716
+                ],
+                [
+                  1771390800,
+                  1949
+                ],
+                [
+                  1771477200,
+                  2003
+                ],
+                [
+                  1771563600,
+                  1784
+                ],
+                [
+                  1771650000,
+                  1784
+                ],
+                [
+                  1771736400,
+                  1784
+                ],
+                [
+                  1771822800,
+                  1878
+                ],
+                [
+                  1771909200,
+                  1784
+                ],
+                [
+                  1771995600,
+                  1778
+                ],
+                [
+                  1772082000,
+                  1767
+                ],
+                [
+                  1772168400,
+                  1767
+                ],
+                [
+                  1772254800,
+                  1704
+                ],
+                [
+                  1772341200,
+                  1807
+                ],
+                [
+                  1772427600,
+                  1811
+                ],
+                [
+                  1772514000,
+                  1846
+                ],
+                [
+                  1772600400,
+                  1335
+                ],
+                [
+                  1772686800,
+                  1542
+                ],
+                [
+                  1772773200,
+                  1817
+                ],
+                [
+                  1772859600,
+                  1817
+                ],
+                [
+                  1772946000,
+                  1817
+                ],
+                [
+                  1773028800,
+                  1817
+                ],
+                [
+                  1773115200,
+                  1095
+                ],
+                [
+                  1773201600,
+                  1089
+                ],
+                [
+                  1773288000,
+                  1842
+                ],
+                [
+                  1773374400,
+                  1485
+                ],
+                [
+                  1773460800,
+                  931
+                ],
+                [
+                  1773547200,
+                  1241
+                ],
+                [
+                  1773633600,
+                  1928
+                ],
+                [
+                  1773720000,
+                  1909
+                ],
+                [
+                  1773806400,
+                  1905
+                ],
+                [
+                  1773892800,
+                  1587
+                ],
+                [
+                  1773979200,
+                  1584
+                ],
+                [
+                  1774065600,
+                  1859
+                ],
+                [
+                  1774152000,
+                  1909
+                ],
+                [
+                  1774238400,
+                  1307
+                ],
+                [
+                  1774324800,
+                  1307
+                ],
+                [
+                  1774411200,
+                  1654
+                ],
+                [
+                  1774497600,
+                  2005
+                ]
+              ]
+            },
+            "searchParams": {
+              "origin": "JFK",
+              "originCity": "纽约",
+              "destination": "LAX",
+              "destinationCity": "洛杉矶",
+              "departDate": "2026-03-28",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "totalFlightsFound": 30
+          }
+        }
+      ]
+    },
+    {
+      "id": "61d6d5dc-3917-4166-9ff9-280a4d6d27b8",
+      "title": "上海→北京航班查询",
+      "createdAt": "2026-03-27T03:54:08.578Z",
+      "updatedAt": "2026-03-27T03:54:10.746Z",
+      "messages": [
+        {
+          "role": "user",
+          "content": "帮我查到北京的航班"
+        },
+        {
+          "role": "assistant",
+          "content": "上海→北京 **3月28日** 航班精选 🛫  \n3款直达航班任选：**¥420起**（最低价），**2h15m**（最快），**¥480**（综合最优），均无中转，便捷高效！",
+          "data": {
+            "type": "flights",
+            "extraction": {
+              "origin": "PVG",
+              "originCity": "上海",
+              "destination": "PEK",
+              "destinationCity": "北京",
+              "departDate": "2026-03-28",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "flights": [
+              {
+                "id": "flyai-0-1774583649896",
+                "source": "flyai",
+                "airline": "东航",
+                "airline_code": "MU",
+                "flight_number": "MU5165",
+                "origin": "PVG",
+                "origin_name": "浦东国际机场",
+                "destination": "PEK",
+                "destination_name": "首都国际机场",
+                "depart_time": "21:30",
+                "arrive_time": "23:50",
+                "depart_datetime": "2026-03-28 21:30:00",
+                "arrive_datetime": "2026-03-28 23:50:00",
+                "duration": "2h20m",
+                "durationMinutes": 140,
+                "price": 420,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "journeyType": "直达",
+                "jumpUrl": "https://a.feizhu.com/0XKJKz",
+                "tag": "cheapest",
+                "tagLabel": "价格最低",
+                "recommendation": "¥420，比均价低¥354"
+              },
+              {
+                "id": "flyai-1-1774583649896",
+                "source": "flyai",
+                "airline": "新海航|海南航空",
+                "airline_code": "HU",
+                "flight_number": "HU7614",
+                "origin": "PVG",
+                "origin_name": "浦东国际机场",
+                "destination": "PEK",
+                "destination_name": "首都国际机场",
+                "depart_time": "06:40",
+                "arrive_time": "08:55",
+                "depart_datetime": "2026-03-28 06:40:00",
+                "arrive_datetime": "2026-03-28 08:55:00",
+                "duration": "2h15m",
+                "durationMinutes": 135,
+                "price": 530,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "journeyType": "直达",
+                "jumpUrl": "https://a.feizhu.com/0TCgZU",
+                "tag": "fastest",
+                "tagLabel": "耗时最短",
+                "recommendation": "2h15m直达，最快到达"
+              },
+              {
+                "id": "flyai-2-1774583649896",
+                "source": "flyai",
+                "airline": "新海航|海南航空",
+                "airline_code": "HU",
+                "flight_number": "HU7612",
+                "origin": "PVG",
+                "origin_name": "浦东国际机场",
+                "destination": "PEK",
+                "destination_name": "首都国际机场",
+                "depart_time": "19:30",
+                "arrive_time": "21:55",
+                "depart_datetime": "2026-03-28 19:30:00",
+                "arrive_datetime": "2026-03-28 21:55:00",
+                "duration": "2h25m",
+                "durationMinutes": 145,
+                "price": 480,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "journeyType": "直达",
+                "jumpUrl": "https://a.feizhu.com/23hskB",
+                "tag": "best",
+                "tagLabel": "综合最优",
+                "recommendation": "价格适中、时间合理，综合推荐"
+              }
+            ],
+            "priceInsights": {
+              "lowestPrice": 391,
+              "priceLevel": "typical",
+              "typicalPriceRange": [
+                23,
+                677
+              ],
+              "priceHistory": [
+                [
+                  1770508800,
+                  663
+                ],
+                [
+                  1770595200,
+                  593
+                ],
+                [
+                  1770681600,
+                  624
+                ],
+                [
+                  1770768000,
+                  556
+                ],
+                [
+                  1770854400,
+                  664
+                ],
+                [
+                  1770940800,
+                  677
+                ],
+                [
+                  1771027200,
+                  646
+                ],
+                [
+                  1771113600,
+                  498
+                ],
+                [
+                  1771200000,
+                  408
+                ],
+                [
+                  1771286400,
+                  473
+                ],
+                [
+                  1771372800,
+                  506
+                ],
+                [
+                  1771459200,
+                  456
+                ],
+                [
+                  1771545600,
+                  422
+                ],
+                [
+                  1771632000,
+                  444
+                ],
+                [
+                  1771718400,
+                  404
+                ],
+                [
+                  1771804800,
+                  471
+                ],
+                [
+                  1771891200,
+                  456
+                ],
+                [
+                  1771977600,
+                  396
+                ],
+                [
+                  1772064000,
+                  391
+                ],
+                [
+                  1772150400,
+                  349
+                ],
+                [
+                  1772236800,
+                  351
+                ],
+                [
+                  1772323200,
+                  233
+                ],
+                [
+                  1772409600,
+                  397
+                ],
+                [
+                  1772496000,
+                  253
+                ],
+                [
+                  1772582400,
+                  147
+                ],
+                [
+                  1772668800,
+                  222
+                ],
+                [
+                  1772755200,
+                  277
+                ],
+                [
+                  1772841600,
+                  284
+                ],
+                [
+                  1772928000,
+                  23
+                ],
+                [
+                  1773014400,
+                  427
+                ],
+                [
+                  1773100800,
+                  297
+                ],
+                [
+                  1773187200,
+                  67
+                ],
+                [
+                  1773273600,
+                  139
+                ],
+                [
+                  1773360000,
+                  391
+                ]
+              ],
+              "dataSource": "自有数据",
+              "currentPrice": 391
+            },
+            "searchParams": {
+              "origin": "PVG",
+              "originCity": "上海",
+              "destination": "PEK",
+              "destinationCity": "北京",
+              "departDate": "2026-03-28",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "totalFlightsFound": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "f7471ab3-5903-4db4-a549-dc4ef0c7585b",
+      "title": "杭州→成都航班查询",
+      "createdAt": "2026-04-01T07:39:35.871Z",
+      "updatedAt": "2026-04-01T07:39:51.874Z",
+      "messages": [
+        {
+          "role": "user",
+          "content": "看看杭州到成都的机票"
+        },
+        {
+          "role": "assistant",
+          "content": "杭州→成都 **4月2日** ✈️航班精选  \n3款高性价比直达航班：¥458起（最低价），3小时直达，最快仅需3小时；综合推荐兼顾时间与价格～",
+          "data": {
+            "type": "flights",
+            "extraction": {
+              "origin": "HGH",
+              "originCity": "杭州",
+              "destination": "CTU",
+              "destinationCity": "成都",
+              "departDate": "2026-04-02",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "flights": [
+              {
+                "id": "flyai-0-1775029176740",
+                "source": "flyai",
+                "airline": "长龙",
+                "airline_code": "GJ",
+                "flight_number": "GJ8067",
+                "origin": "HGH",
+                "origin_name": "萧山国际机场",
+                "destination": "CTU",
+                "destination_name": "双流国际机场",
+                "depart_time": "06:45",
+                "arrive_time": "09:50",
+                "depart_datetime": "2026-04-02 06:45:00",
+                "arrive_datetime": "2026-04-02 09:50:00",
+                "duration": "3h5m",
+                "durationMinutes": 185,
+                "price": 458,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "journeyType": "直达",
+                "jumpUrl": "https://a.feizhu.com/2MZznO",
+                "tag": "cheapest",
+                "tagLabel": "价格最低",
+                "recommendation": "¥458，比均价低¥169"
+              },
+              {
+                "id": "flyai-1-1775029176740",
+                "source": "flyai",
+                "airline": "国航",
+                "airline_code": "CA",
+                "flight_number": "CA1741",
+                "origin": "HGH",
+                "origin_name": "萧山国际机场",
+                "destination": "CTU",
+                "destination_name": "双流国际机场",
+                "depart_time": "07:40",
+                "arrive_time": "10:40",
+                "depart_datetime": "2026-04-02 07:40:00",
+                "arrive_datetime": "2026-04-02 10:40:00",
+                "duration": "3h0m",
+                "durationMinutes": 180,
+                "price": 500,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "journeyType": "直达",
+                "jumpUrl": "https://a.feizhu.com/3PZCSI",
+                "tag": "fastest",
+                "tagLabel": "耗时最短",
+                "recommendation": "3h0m直达，最快到达"
+              },
+              {
+                "id": "flyai-2-1775029176740",
+                "source": "flyai",
+                "airline": "川航",
+                "airline_code": "3U",
+                "flight_number": "3U8918",
+                "origin": "HGH",
+                "origin_name": "萧山国际机场",
+                "destination": "CTU",
+                "destination_name": "双流国际机场",
+                "depart_time": "09:00",
+                "arrive_time": "12:00",
+                "depart_datetime": "2026-04-02 09:00:00",
+                "arrive_datetime": "2026-04-02 12:00:00",
+                "duration": "3h0m",
+                "durationMinutes": 180,
+                "price": 550,
+                "currency": "CNY",
+                "stops": 0,
+                "stop_cities": [],
+                "journeyType": "直达",
+                "jumpUrl": "https://a.feizhu.com/3nEWpm",
+                "tag": "best",
+                "tagLabel": "综合最优",
+                "recommendation": "价格适中、时间合理，综合推荐"
+              }
+            ],
+            "priceInsights": {
+              "lowestPrice": 390,
+              "priceLevel": "low",
+              "typicalPriceRange": [
+                200,
+                1410
+              ],
+              "priceHistory": [
+                [
+                  1770508800,
+                  1223
+                ],
+                [
+                  1770595200,
+                  1160
+                ],
+                [
+                  1770681600,
+                  1308
+                ],
+                [
+                  1770768000,
+                  1323
+                ],
+                [
+                  1770854400,
+                  1410
+                ],
+                [
+                  1770940800,
+                  1405
+                ],
+                [
+                  1771027200,
+                  1270
+                ],
+                [
+                  1771113600,
+                  1093
+                ],
+                [
+                  1771200000,
+                  573
+                ],
+                [
+                  1771286400,
+                  595
+                ],
+                [
+                  1771372800,
+                  669
+                ],
+                [
+                  1771459200,
+                  567
+                ],
+                [
+                  1771545600,
+                  514
+                ],
+                [
+                  1771632000,
+                  508
+                ],
+                [
+                  1771718400,
+                  475
+                ],
+                [
+                  1771804800,
+                  455
+                ],
+                [
+                  1771891200,
+                  407
+                ],
+                [
+                  1771977600,
+                  340
+                ],
+                [
+                  1772064000,
+                  319
+                ],
+                [
+                  1772150400,
+                  301
+                ],
+                [
+                  1772236800,
+                  317
+                ],
+                [
+                  1772323200,
+                  354
+                ],
+                [
+                  1772409600,
+                  200
+                ],
+                [
+                  1772496000,
+                  300
+                ],
+                [
+                  1772582400,
+                  325
+                ],
+                [
+                  1772668800,
+                  327
+                ],
+                [
+                  1772755200,
+                  336
+                ],
+                [
+                  1772841600,
+                  300
+                ],
+                [
+                  1772928000,
+                  304
+                ],
+                [
+                  1773014400,
+                  343
+                ],
+                [
+                  1773100800,
+                  267
+                ],
+                [
+                  1773187200,
+                  390
+                ],
+                [
+                  1773273600,
+                  267
+                ],
+                [
+                  1773360000,
+                  390
+                ]
+              ],
+              "dataSource": "自有数据",
+              "currentPrice": 390
+            },
+            "searchParams": {
+              "origin": "HGH",
+              "originCity": "杭州",
+              "destination": "CTU",
+              "destinationCity": "成都",
+              "departDate": "2026-04-02",
+              "returnDate": null,
+              "passengers": 1,
+              "cabinClass": "economy"
+            },
+            "totalFlightsFound": 10
+          }
+        },
+        {
+          "role": "user",
+          "content": "东京现在买还是等等"
+        },
+        {
+          "role": "assistant",
+          "content": "✅ **现在入手很划算！** 价格处于近期低位，95% 置信度推荐立即预订。",
+          "data": {
+            "type": "recommendation",
+            "recommendation": {
+              "action": "buy",
+              "confidence": 95,
+              "reason": "当前价格 ¥458 处于低位，比历史均价低约 43%，是近期的好价格。",
+              "currentPrice": 458,
+              "averagePrice": 805,
+              "expectedDrop": 0,
+              "waitUntil": null
+            }
+          }
+        }
+      ]
     }
   ]
 }

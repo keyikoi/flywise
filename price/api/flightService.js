@@ -5,6 +5,10 @@
  * 根据目的地自动选择最优数据源
  */
 
+// 读取配置文件获取 API Key
+const config = require('../config.json');
+const SERPAPI_KEY = config.serpapi?.apiKey || '';
+
 const { serpApiClient } = require('./serpapiClient');
 const { flyaiClient } = require('./flyaiClient');
 const { getPriceHistory: getDomesticPriceHistory } = require('../data/priceHistory');
@@ -157,7 +161,6 @@ class FlightService {
             const airportParams = await this.resolveAirports(params);
 
             // 直接调用 SerpAPI（需要 SERPAPI_KEY）
-            const SERPAPI_KEY = process.env.SERPAPI_KEY || '';
             if (!SERPAPI_KEY) {
                 throw new Error('SerpAPI Key 未配置');
             }
