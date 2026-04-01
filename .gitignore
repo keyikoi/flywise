@@ -1,5 +1,13 @@
+# 依赖和临时文件
 node_modules/
 .DS_Store
 *.bak
+
+# price 产品中的大文件和临时数据
 price/data/
-price/data/
+price/node_modules/
+
+# 其他不需要的文件
+vibe-coding-presentation.html
+vibe-coding-slides-content.md
+机票低价顾问 - AI航班助手.html
