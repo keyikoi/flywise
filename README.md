@@ -48,6 +48,10 @@ http://localhost:3001
 - AI：OpenAI / DashScope Qwen
 - 数据源：SerpAPI Google Flights
 
+**示例：**
+https://github.com/user-attachments/assets/32d85f93-5cb2-471c-9768-ca030bc567c4
+
+
 ---
 
 ### 2. **.agents/skills/price-trend/** - 价格趋势图表 Skill
