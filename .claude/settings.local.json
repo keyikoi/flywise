@@ -81,7 +81,13 @@
       "Bash(cp -r /Users/keyi/work/claude-code-test/figma-design-system-to-design-md/skills/* ~/.claude/plugins/cache/figma-design-system-to-design-md/)",
       "Bash(find /Users/keyi/work/claude-code-test -name *fliggy* -o -name *sans*)",
       "mcp__plugin_figma_figma__get_screenshot",
-      "Bash(ln -s ../.agents/skills/price-trend price-trend)"
+      "Bash(ln -s ../.agents/skills/price-trend price-trend)",
+      "Bash(node -e \"console.log\\(''test''\\)\")",
+      "Read(//Users/keyi/.claude/skills/gstack/**)",
+      "Bash(./setup)",
+      "Bash(cp /Users/keyi/work/claude-code-test/.agents/skills/price-trend/references/price-api.md /Users/keyi/.claude/skills/price-summary/references/)",
+      "Bash(cp /Users/keyi/work/claude-code-test/.agents/skills/price-trend/references/price-analysis.md /Users/keyi/.claude/skills/price-summary/references/)",
+      "Bash(ln:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
