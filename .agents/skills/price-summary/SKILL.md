@@ -156,12 +156,34 @@ const trend = recent7Avg < previous7Avg ? 'falling' : recent7Avg > previous7Avg 
 | 上升趋势 | 📈 | 价格上涨 |
 | 稳定趋势 | ➡️ | 价格平稳 |
 
+## 数据源配置
+
+### 首次使用必需配置
+
+在使用本 skill 前，使用者需要确认是否已配置 SerpAPI Key：
+
+1. **检查配置文件**：查看 `price/config.json` 是否存在且包含有效的 `serpapi.apiKey`
+2. **如果没有配置**：
+   - 引导用户访问 [https://serpapi.com/users/sign_up](https://serpapi.com/users/sign_up) 注册账号
+   - 获取免费的 SerpAPI Key
+   - 复制 `price/config.example.json` 为 `price/config.json`
+   - 将获取的 API Key 填入 `config.json` 中的 `serpapi.apiKey` 字段
+   - 重启服务器使配置生效
+
+### 数据可用性判断
+
+在生成价格总结前，应先检查：
+- 是否有历史价格数据（`price/data/` 目录下的数据文件）
+- 如果数据不足 7 天，应在输出中标注"数据较少，仅供参考"
+- 如果完全没有数据，应提示用户"暂无历史价格数据，请先进行几次航班搜索以积累数据"
+
 ## 注意事项
 
 1. **不要过度承诺**：用"建议"而非"一定"
 2. **标注数据来源**：说明是基于历史数据
 3. **考虑时效性**：临近出发日期的建议应更积极
 4. **避免专业术语**：不说"百分位"，说"比平时便宜 X%"
+5. **配置检查**：使用前确认 SerpAPI Key 已正确配置
 
 ## 与 price-trend 的区别
 

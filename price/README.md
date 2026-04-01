@@ -50,17 +50,59 @@ price/
 - 趋势分析（线性回归）
 - SVG 价格图表生成
 
-## 使用方法
+## 快速开始
 
-### 本地开发
+### 1. 配置 API Key（首次使用必需）
+
+复制配置文件模板：
 ```bash
-# 在 price 目录下启动静态服务器
-cd price
-python3 -m http.server 8080
+cp config.example.json config.json
+```
+
+编辑 `config.json`，填入你的 API Key：
+```json
+{
+  "openai": {
+    "apiKey": "你的-OpenAI-API-Key",
+    "baseURL": "https://coding.dashscope.aliyuncs.com/v1",
+    "model": "qwen3-coder-next"
+  },
+  "serpapi": {
+    "apiKey": "你的-SerpAPI-Key"
+  }
+}
+```
+
+**获取 API Key：**
+- **SerpAPI**: 访问 [https://serpapi.com/users/sign_up](https://serpapi.com/users/sign_up) 注册并获取免费 API Key
+- **OpenAI/DashScope**: 使用你已有的 API Key
+
+### 2. 安装依赖并启动
+
+```bash
+# 安装依赖
+npm install
+
+# 启动服务器
+node server.js
+
+# 访问应用
+http://localhost:3001
+```
+
+### 3. 仅预览前端（不需要后端功能）
+
+如果只想查看页面效果，不需要 AI 对话和航班查询功能：
+
+```bash
+# 启动静态文件服务器
+node serve.js
 
 # 访问
-http://localhost:8080/index.html
+http://localhost:3001
 ```
+
+> ⚠️ 注意：使用 `serve.js` 时，航班查询和 AI 对话功能将不可用。
 
 ### 快捷操作
 应用提供以下快捷操作：

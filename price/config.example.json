@@ -1,11 +1,11 @@
 {
   "openai": {
-    "apiKey": "sk-sp-dba54a74c11945c5bcc934761cce1d04",
+    "apiKey": "your-openai-api-key-here",
     "baseURL": "https://coding.dashscope.aliyuncs.com/v1",
     "model": "qwen3-coder-next"
   },
   "serpapi": {
-    "apiKey": "971d8a3a79327c795ccc3d0c9a574f69ee2010eeef4e8a2f7ae9f6f35070f6cf"
+    "apiKey": "your-serpapi-key-here"
   },
   "flyai": {
     "apiKey": ""
