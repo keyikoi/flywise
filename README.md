@@ -1,5 +1,7 @@
 # FlyWise - AI 航班助手
 
+[English](README_EN.md) | **简体中文**
+
 一个基于 AI 的智能航班预订助手，包含完整的前后端产品和两个可复用的 AI Skill。
 
 ## 📦 项目结构
