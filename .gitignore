@@ -10,34 +10,37 @@ price/node_modules/
 # 配置文件（包含敏感信息）
 price/config.json
 
-# 其他不需要的文件
+# 不需要上传的独立 HTML 文件
+*.html
+!price/index.html
+!.agents/skills/price-trend/components/PriceTrendEmbed.html
+
+# 不需要上传的项目和文件
+flight-tinder/
+flight-search.html
+flight-tinder.html
+popup.html
+CLAUDE.md
+PROJECT_SUMMARY.md
+SKILL.md
+report/
+skills/
+skills-lock.json
 vibe-coding-presentation.html
 vibe-coding-slides-content.md
 机票低价顾问 - AI航班助手.html
 
+# price 目录中不需要的文件
+price/CONFIG.md
+price/FLYAI_INTEGRATION.md
+price/server.js.bak
+price/test-models.js
+price/test.html
+
 # 不需要上传的 skills（只保留 price-summary 和 price-trend）
-.agents/skills/adapt/
-.agents/skills/animate/
-.agents/skills/arrange/
-.agents/skills/audit/
-.agents/skills/bolder/
-.agents/skills/clarify/
-.agents/skills/colorize/
-.agents/skills/critique/
-.agents/skills/delight/
-.agents/skills/distill/
-.agents/skills/extract/
-.agents/skills/flyai/
-.agents/skills/frontend-design/
-.agents/skills/harden/
-.agents/skills/normalize/
-.agents/skills/onboard/
-.agents/skills/optimize/
-.agents/skills/overdrive/
-.agents/skills/polish/
-.agents/skills/quieter/
-.agents/skills/teach-impeccable/
-.agents/skills/typeset/
+.agents/skills/*/
+!.agents/skills/price-summary/
+!.agents/skills/price-trend/
 
 # 不需要上传的配置目录
 .claude/
