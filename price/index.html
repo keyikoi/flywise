@@ -1729,9 +1729,9 @@
                             <div className="welcome__grid">
                                 {[
                                     { icon: '🔍', title: '搜索航班', desc: '查询航班和实时价格', action: '帮我查去东京的机票' },
-                                    { icon: '📊', title: '价格走势', desc: '近期价格趋势图', action: '东京价格走势' },
+                                    { icon: '📊', title: '价格走势', desc: '近期价格趋势图', action: '看看价格走势' },
                                     { icon: '💰', title: '价格水位', desc: '当前价格贵不贵', action: '去曼谷多少钱' },
-                                    { icon: '💡', title: '买入建议', desc: '现在买还是再等等', action: '东京现在买还是等等' },
+                                    { icon: '💡', title: '买入建议', desc: '现在买还是再等等', action: '现在买还是等等' },
                                 ].map(c => (
                                     <div key={c.title} className="welcome__card" onClick={() => send(c.action)}>
                                         <div className="welcome__card-icon">{c.icon}</div>
