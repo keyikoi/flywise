@@ -18400,7 +18400,7 @@
       "id": "1c672f1a-2b46-4383-af15-b02a7b70bc0c",
       "title": "纽约→洛杉矶航班查询",
       "createdAt": "2026-03-27T03:53:00.137Z",
-      "updatedAt": "2026-03-27T03:53:03.557Z",
+      "updatedAt": "2026-04-01T11:16:27.850Z",
       "messages": [
         {
           "role": "user",
@@ -18762,6 +18762,26 @@
               "cabinClass": "economy"
             },
             "totalFlightsFound": 30
+          }
+        },
+        {
+          "role": "user",
+          "content": "东京现在买还是等等"
+        },
+        {
+          "role": "assistant",
+          "content": "当前价格偏高，建议再观望几天，等降价再入手更划算～",
+          "data": {
+            "type": "recommendation",
+            "recommendation": {
+              "action": "wait",
+              "confidence": 90,
+              "reason": "当前价格偏高，高于典型价格区间。建议关注价格变化，等待降价后再入手。",
+              "currentPrice": 2005,
+              "averagePrice": 1170,
+              "expectedDrop": 241,
+              "waitUntil": "1-2 周"
+            }
           }
         }
       ]
