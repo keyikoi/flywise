@@ -48,7 +48,8 @@ http://localhost:3001
 - AI：OpenAI / DashScope Qwen
 - 数据源：SerpAPI Google Flights
 
-**示例：**
+**实现效果示例录屏：**
+
 https://github.com/user-attachments/assets/32d85f93-5cb2-471c-9768-ca030bc567c4
 
 
