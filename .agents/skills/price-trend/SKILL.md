@@ -1,6 +1,6 @@
 ---
-name: price-trend
-description: Embed interactive price trend charts into AI responses when recommending flights with confirmed OD (Origin-Destination). Use this skill to add price trend visualization modules at the end of AI responses containing flight recommendations.
+name: flight-price-chart
+description: Embed interactive flight price trend charts into AI responses. Requires SerpAPI key for real-time data. Use when users want to visualize 60-day price history for specific flight routes.
 metadata:
   version: 1.0.0
   agent:
@@ -23,9 +23,24 @@ metadata:
       - "(how.has.price.changed|price.movement|price.fluctuation)"
 ---
 
-# Price Trend Module
+# Flight Price Chart
 
-Embed an interactive price trend visualization component when AI responses contain flight recommendations with confirmed OD (Origin-Destination) pairs.
+Embed an interactive flight price trend visualization component when AI responses contain flight recommendations with confirmed OD (Origin-Destination) pairs.
+
+## ⚠️ 使用前必需配置
+
+**本 skill 需要 SerpAPI Key 才能获取实时航班价格数据。**
+
+如果用户尚未配置 SerpAPI Key，请先引导用户完成以下步骤：
+
+1. **注册 SerpAPI 账号**：访问 [https://serpapi.com/users/sign_up](https://serpapi.com/users/sign_up) 免费注册
+2. **获取 API Key**：登录后在 Dashboard 中复制你的 API Key
+3. **配置项目**：
+   - 复制 `price/config.example.json` 为 `price/config.json`
+   - 将 API Key 填入 `config.json` 中的 `serpapi.apiKey` 字段
+   - 重启服务器使配置生效
+
+> 💡 SerpAPI 提供免费额度，足够个人使用。配置完成后即可获取真实的航班价格趋势数据。
 
 ## Quick Start
 

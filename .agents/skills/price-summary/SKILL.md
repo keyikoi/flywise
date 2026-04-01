@@ -1,6 +1,6 @@
 ---
-name: price-summary
-description: Generate concise, user-friendly price summaries for flight searches. Use this skill whenever users ask about flight prices, whether to buy now or wait, price trends, or price analysis - even if they don't explicitly mention "summary". This skill is designed for end-user products like Claude-like chat interfaces.
+name: flight-price-advisor
+description: Generate concise, user-friendly flight price summaries with buy/wait recommendations. Requires SerpAPI key for real-time price data. Use when users ask about flight prices, purchase timing, or price trends. Designed for C-end chat interfaces.
 metadata:
   version: 1.0.0
   agent:
@@ -25,9 +25,24 @@ metadata:
       - "(多少钱 | 什么价格 | 价格多少)"
 ---
 
-# Price Summary Module
+# Flight Price Advisor
 
 为普通用户生成简洁、易懂的航班价格总结，包含购买建议和价格分析。
+
+## ⚠️ 使用前必需配置
+
+**本 skill 需要 SerpAPI Key 才能获取实时航班价格数据。**
+
+如果用户尚未配置 SerpAPI Key，请先引导用户完成以下步骤：
+
+1. **注册 SerpAPI 账号**：访问 [https://serpapi.com/users/sign_up](https://serpapi.com/users/sign_up) 免费注册
+2. **获取 API Key**：登录后在 Dashboard 中复制你的 API Key
+3. **配置项目**：
+   - 复制 `price/config.example.json` 为 `price/config.json`
+   - 将 API Key 填入 `config.json` 中的 `serpapi.apiKey` 字段
+   - 重启服务器使配置生效
+
+> 💡 SerpAPI 提供免费额度，足够个人使用。配置完成后即可获取真实的航班价格数据。
 
 ## 核心原则
 
@@ -158,17 +173,20 @@ const trend = recent7Avg < previous7Avg ? 'falling' : recent7Avg > previous7Avg 
 
 ## 数据源配置
 
-### 首次使用必需配置
+### 无数据时的用户引导
 
-在使用本 skill 前，使用者需要确认是否已配置 SerpAPI Key：
+当检测到没有历史价格数据或 SerpAPI 未配置时，应主动引导用户：
 
-1. **检查配置文件**：查看 `price/config.json` 是否存在且包含有效的 `serpapi.apiKey`
-2. **如果没有配置**：
-   - 引导用户访问 [https://serpapi.com/users/sign_up](https://serpapi.com/users/sign_up) 注册账号
-   - 获取免费的 SerpAPI Key
-   - 复制 `price/config.example.json` 为 `price/config.json`
-   - 将获取的 API Key 填入 `config.json` 中的 `serpapi.apiKey` 字段
-   - 重启服务器使配置生效
+```markdown
+💡 **提示**：要获取实时航班价格和价格分析，需要先配置 SerpAPI Key。
+
+**快速开始**：
+1. 访问 [https://serpapi.com/users/sign_up](https://serpapi.com/users/sign_up) 免费注册
+2. 获取 API Key 并填入 `price/config.json`
+3. 重新搜索航班，我将为你提供详细的价格分析
+
+> 目前我可以基于模拟数据提供基础建议，但真实数据会更准确哦～
+```
 
 ### 数据可用性判断
 
