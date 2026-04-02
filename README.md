@@ -50,8 +50,7 @@ http://localhost:3001
 
 **实现效果示例录屏：**
 
-https://github.com/user-attachments/assets/32d85f93-5cb2-471c-9768-ca030bc567c4
-
+https://github.com/user-attachments/assets/3ae01c50-d1aa-48cc-923b-766972d1996f
 
 ---
 
